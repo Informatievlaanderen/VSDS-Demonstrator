@@ -1,26 +1,49 @@
 <template>
-  <h1>placeholder</h1>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  {{ messages }}
-
+  <div style="height:600px; width:100%" id="map"></div>
 </template>
 
 <script>
+
+import "leaflet/dist/leaflet.css";
+import leaflet from "leaflet"
+import { wktToGeoJSON } from "@terraformer/wkt"
+import proj4 from "proj4";
+import { reproject } from "reproject"
 
 // We store the reference to the SSE client out here
 // so we can access it from other methods
 let sseClient;
 
+class StoredEvent {
+  constructor(message, event) {
+    this.message = message;
+    this.event = event;
+  }
+}
+
 export default {
   name: "ConnectionState",
   data() {
     return {
-      messages: [],
-      members: []
+      data: [],
+      members: [],
+      zoom: 8,
+      map: {}
     };
   },
+
   mounted() {
-    
+    this.map = leaflet.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
+    leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
+
+    console.log(this.map)
+
     sseClient = this.$sse.create({
       url: 'http://localhost:3000/sse',
       format: 'json',
@@ -38,12 +61,13 @@ export default {
     });
 
     // Handle 'user' messages
-    sseClient.on('user', this.handleUser);
+    sseClient.on('user', this.handleDataEvent);
+    sseClient.on('mobility-hindrances', this.handleDataEvent)
 
     // Handle messages without a specific event
     sseClient.on('message', this.handleMessage);
 
-    
+
 
     // Handle once for a ban message
     sseClient.once('ban', this.handleBan);
@@ -74,14 +98,28 @@ export default {
   },
   methods: {
     handleBan(banMessage) {
-      // Note that we can access properties of message, since our parser is set to JSON
-      // and the hypothetical object has a `reason` property.
-      this.messages.push(`You've been banned! Reason: ${banMessage.reason}`);
+      this.data.push(`You've been banned! Reason: ${banMessage.reason}`);
     },
-    handleUser(user) {
-      // Note that we can access properties of message, since our parser is set to JSON
-      // and the hypothetical object has these properties.
-      this.messages.push(`user received : ${user}`);
+    handleDataEvent(dataEvent) {
+      this.data.push(new StoredEvent(dataEvent.data, dataEvent.data["@type"]));
+
+      if (dataEvent.data["@type"] == "MobilityHindrance") {
+        var lambert = "+proj=lcc +lat_0=90 +lon_0=4.36748666666667 +lat_1=51.1666672333333 +lat_2=49.8333339 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.8686,52.2978,-103.7239,-0.3366,0.457,-1.8422,-1.2747 +units=m +no_defs +type=crs";
+
+        dataEvent.data.zone.forEach(zone => {
+          var geometry = reproject(wktToGeoJSON(zone.geometry.wkt.split('>')[1]), lambert, proj4.WGS84);
+
+          var geojsonFeature = {
+            "type": "Feature",
+            geometry
+          };
+
+          leaflet.geoJson(geojsonFeature)
+            .addTo(this.map)
+            .bindPopup(dataEvent.data["@id"])
+        }
+      )}
+
     },
     handleMessage(message, lastEventId) {
       console.warn('Received a message w/o an event!', message, lastEventId);
@@ -100,6 +138,4 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
-</style>
+<style scoped></style>

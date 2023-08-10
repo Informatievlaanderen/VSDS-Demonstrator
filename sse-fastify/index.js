@@ -3,8 +3,15 @@ const fastifySse = require('fastify-sse');
 const app = fastify();
 app.register(fastifySse);
 
-let clients = [];
+class StoredEvent {
+    constructor(message, event) {
+      this.message = message;
+      this.event = event;
+    }
+}
+  
 let messages = [];
+let clients = [];
 
 app.get('/ping', (req, reply) => {
     reply.send('pong');
@@ -20,11 +27,10 @@ function eventHandlers(req, reply) {
 
     clients.push(newClient);
 
-    newClient.response.sse({}, { event: 'user'})
-
-
-    messages.forEach((message) => {
-        newClient.response.sse({ data: message });
+    messages.forEach((storedEvent) => {
+        newClient.response.sse({ data: storedEvent.message }, {
+            event: storedEvent.event
+        });
     })
 
     req.raw.on('close', () => {
@@ -39,10 +45,12 @@ app.listen(3000, function() {
     console.log("App is running");
 })
 
-app.post('/user', (req, reply) => {
-    messages.push(req.body)
+app.post('/data/:eventType', (req, reply) => {
+    const { eventType } = req.params;
+
+    messages.push(new StoredEvent(req.body, eventType))
     clients.forEach((client) => {
-        client.response.sse({data: req.body});
+        client.response.sse({ data: req.body }, { event: eventType });
     })
     reply.send()
 });
