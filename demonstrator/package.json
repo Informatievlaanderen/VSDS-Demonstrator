@@ -10,6 +10,7 @@
   "dependencies": {
     "@terraformer/wkt": "^2.2.0",
     "core-js": "^3.8.3",
+    "n3": "^1.17.1",
     "proj4": "^2.9.0",
     "proj4leaflet": "^1.0.2",
     "reproject": "^1.2.7",

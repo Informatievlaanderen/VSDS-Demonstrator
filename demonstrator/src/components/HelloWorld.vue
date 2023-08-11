@@ -9,9 +9,12 @@
 
 import "leaflet/dist/leaflet.css";
 import leaflet from "leaflet"
+
 import { wktToGeoJSON } from "@terraformer/wkt"
 import proj4 from "proj4";
 import { reproject } from "reproject"
+
+import { Store, Parser } from "n3"
 
 // We store the reference to the SSE client out here
 // so we can access it from other methods
@@ -60,9 +63,9 @@ export default {
       // re-add your handlers.
     });
 
-    // Handle 'user' messages
-    sseClient.on('user', this.handleDataEvent);
-    sseClient.on('mobility-hindrances', this.handleDataEvent)
+  
+    sseClient.on('mobility-hindrances', this.handleMobHind)
+    sseClient.on('observation-points', this.handleObservationPoints)
 
     // Handle messages without a specific event
     sseClient.on('message', this.handleMessage);
@@ -100,8 +103,20 @@ export default {
     handleBan(banMessage) {
       this.data.push(`You've been banned! Reason: ${banMessage.reason}`);
     },
-    handleDataEvent(dataEvent) {
-      this.data.push(new StoredEvent(dataEvent.data, dataEvent.data["@type"]));
+    handleMobHind(dataEvent) {
+      this.data.push(new StoredEvent(dataEvent.data, "MobilityHindrance"));
+
+      const parser = new Parser();
+      const store = new Store();
+      parser.parse(dataEvent.data,
+        (error, quad, prefixes) => {
+          if (quad)
+            store.add(quad)
+          else
+            console.log("# That's all, folks!", prefixes);
+            console.log(store)
+            console.log(store.getObjects(null, null, null))
+        });
 
       if (dataEvent.data["@type"] == "MobilityHindrance") {
         var lambert = "+proj=lcc +lat_0=90 +lon_0=4.36748666666667 +lat_1=51.1666672333333 +lat_2=49.8333339 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.8686,52.2978,-103.7239,-0.3366,0.457,-1.8422,-1.2747 +units=m +no_defs +type=crs";
@@ -120,6 +135,31 @@ export default {
         }
       )}
 
+    },
+    handleObservationPoints(dataEvent) {
+      this.data.push(new StoredEvent(dataEvent.data, "ObservationPoint"));
+
+      const store = new Store();
+
+      console.log(dataEvent.data)
+
+      function getWktFromString(str){
+        const matches = str.split('"');
+        return matches[1] ? matches[1].split('>')[1] : str;
+      }
+
+      store.addQuads(new Parser().parse(dataEvent.data));
+
+      var geometry = wktToGeoJSON(getWktFromString(store.getObjects(null, "http://www.opengis.net/ont/geosparql#asWKT", null)[0].id));
+
+      var geojsonFeature = {
+        "type": "Feature",
+        geometry
+      };
+
+      leaflet.geoJson(geojsonFeature)
+        .addTo(this.map)
+        .bindPopup(store.getObjects(null, "http://www.w3.org/2000/01/rdf-schema#label", null)[0].id)
     },
     handleMessage(message, lastEventId) {
       console.warn('Received a message w/o an event!', message, lastEventId);

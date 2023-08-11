@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+
+  ldio-workbench:
+    container_name: ${USECASE_NAME:-nifi-less-approach}_ldio-workbench
+    image: ghcr.io/informatievlaanderen/ldi-orchestrator:${LDI_ORCHESTRATOR_TAG:-latest}
+    ports:
+      - 8081:8080
+    volumes:
+      - ./ldio-workbench.config.yml:/ldio/application.yml:ro
