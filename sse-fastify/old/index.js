@@ -10,8 +10,7 @@ class StoredEvent {
     }
 }
   
-let messages = [];
-let clients = [];
+let measuringPoints = []
 
 app.get('/ping', (req, reply) => {
     reply.send('pong');

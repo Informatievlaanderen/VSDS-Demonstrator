@@ -4,15 +4,30 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@rdfjs/parser-n3": "^2.0.1",
+    "@terraformer/wkt": "^2.2.0",
     "fastify": "^4.21.0",
     "fastify-cors": "^6.1.0",
-    "fastify-sse": "^1.0.0"
+    "fastify-sse": "^1.0.0",
+    "proj4": "^2.9.0",
+    "quadstore-comunica": "^3.1.1",
+    "readable-stream": "^4.4.2",
+    "reproject": "^1.2.7"
+  },
+  "devDependencies": {
+    "@types/n3": "^1.16.0",
+    "@types/node": "^20.5.0",
+    "@types/proj4": "^2.5.2",
+    "@types/rdfjs__parser-n3": "^2.0.1",
+    "@types/readable-stream": "^4.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
   }
 }
