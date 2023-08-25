@@ -12,20 +12,13 @@ import leaflet from "leaflet"
 
 
 import { visualiseObservation } from '@/components/observation'
-import { observationIcon, /*mobilityHindranceIcon*/ } from '@/components/mapConstants'
+import { observationIcon, mobilityHindranceIcon } from '@/components/mapConstants'
 
 import { wktToGeoJSON } from "@terraformer/wkt"
 
 // We store the reference to the SSE client out here
 // so we can access it from other methods
 let sseClient;
-
-class StoredEvent {
-  constructor(message, event) {
-    this.message = message;
-    this.event = event;
-  }
-}
 
 export default {
   name: "ConnectionState",
@@ -52,22 +45,28 @@ export default {
     });
   },
   methods: {
-    handleMobHind(dataEvent) {
-      this.data.push(new StoredEvent(dataEvent.data, "MobilityHindrance"));
+    handleMobHind(mobilityHindrance) {
 
-      
+      mobilityHindrance.zones.features.forEach(feature => {
+        let marker = leaflet.geoJson(feature, {
+          pointToLayer: function(feature, LatLng) {
+            return leaflet.marker(LatLng, {icon: mobilityHindranceIcon});
+          }
+        })
 
-      
-
+        this.map.addLayer(marker)
+        marker.bindPopup(mobilityHindrance.description, {autoPan: false})
+        this.markers.push(marker)
+      })
     },
-    handleObservationPoints(dataEvent) {
+    handleObservationPoints(observationPoint) {
       function getWktFromString(str){
         const matches = str.split('"');
         return matches[1] ? matches[1].split('>')[1] : str;
       }
 
-      if (dataEvent.data.observations.lenght !== 0) {
-        var geometry = wktToGeoJSON(getWktFromString(dataEvent.data.wkt));
+      if (observationPoint.observations.lenght !== 0) {
+        var geometry = wktToGeoJSON(getWktFromString(observationPoint.wkt));
 
         var geojsonFeature = {
           "type": "Feature",
@@ -81,14 +80,9 @@ export default {
         })
 
         this.map.addLayer(marker)
-        marker.bindPopup(visualiseObservation(dataEvent.data.observations))
+        marker.bindPopup(visualiseObservation(observationPoint.observations), {autoPan: false})
         this.markers.push(marker)
       }
-
-      
-    },
-    handleMessage(message, lastEventId) {
-      console.warn('Received a message w/o an event!', message, lastEventId);
     },
 
     requestMapUpdates() {
@@ -110,12 +104,8 @@ export default {
       sseClient.on('error', (e) => {
         console.error('lost connection or failed to parse!', e);
       });
-  
-      sseClient.on('mobility-hindrances', this.handleMobHind)
+      sseClient.on('mobility-hindrance', this.handleMobHind)
       sseClient.on('observation-point', this.handleObservationPoints)
-
-      // Handle messages without a specific event
-      sseClient.on('message', this.handleMessage);
     }
   },
   beforeUnmount() {

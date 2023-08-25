@@ -6,6 +6,7 @@ export class OberservationPoint {
     wkt: string
     lane: string
     observations: Oberservation[] = []
+    type: string = this.eventType()
 
     constructor(id: string, wkt: string, lane: string) {
         this.id = id

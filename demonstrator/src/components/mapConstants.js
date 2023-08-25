@@ -2,7 +2,7 @@ import leaflet from "leaflet"
 
 let mapIcon = leaflet.Icon.extend({
     options: {
-      iconSize:     [30, 30], // size of the icon
+      iconSize: [30, 30], // size of the icon
     }
 });
 

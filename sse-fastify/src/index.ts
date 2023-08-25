@@ -1,52 +1,59 @@
-import './stored-event'
-import { OberservationPoint } from './observation-point'
-import { Oberservation } from './observation'
-import { Client } from './client'
-import { Store, Parser, NamedNode } from "n3"
+import { OberservationPoint } from './types/observation-point'
+import { Oberservation } from './types/observation'
+import { Client } from './types/client'
+import { Store, Parser } from "n3"
 import { Engine } from 'quadstore-comunica';
-import { timeStamp } from 'console';
+import { MobilityHindrance } from './types/mobility-hindrance'
+import { intersects  } from '@terraformer/spatial'
+import { addObservationToPoint, getObservationPoints, saveObservationPoint} from "./db/observations";
+import { getMobilityHindrancesForBBox, saveMobilityHindrance} from "./db/mobility-hindrances"
+import { FastifySSEPlugin } from "fastify-sse-v2";
 
-const fs = require('fs');
 const fastify = require('fastify');
-const fastifySse = require('fastify-sse');
+
 const app = fastify();
 
-/*import proj4 from "proj4";
-import { reproject } from "reproject"
-import { wktToGeoJSON } from "@terraformer/wkt"*/
-app.register(fastifySse);
+app.register(FastifySSEPlugin);
 
+const visibleZoom = 13;
 
-const visibleZoom = 14;
-
-let observationPoints: OberservationPoint[] = []
 let clients: any[] = []
-let messages: any[] = []
 
-
-
-app.get('/ping', (_req: any, reply: { send: (arg0: string) => void; }) => {
-    reply.send(JSON.stringify(observationPoints));
+app.register(require('@fastify/postgres'), {
+    connectionString: 'postgres://docker:docker@localhost:25432/gis'
 })
 
-function eventHandlers(req: any, reply: any) {
+app.get('/ping', (_req: any, reply: { send: (arg0: string) => void; }) => {
+    reply.send("we're alive");
+})
+
+async function eventHandlers(req: any, reply: any) {
     const clientId = req.id;
     const newClient = new Client(clientId, reply, JSON.parse(req.query.bounds), req.query.zoom)
 
     clients.push(newClient);
 
     if (newClient.zoom >= visibleZoom) {
-        Array.from(observationPoints.values()).filter(measuringPoint => pointInBounds(newClient, measuringPoint))
-            .forEach((measuringPoint: OberservationPoint) => {
-                newClient.response.sse({ data: measuringPoint }, {
-                    event: measuringPoint.eventType()
-                });
+        await getObservationPoints(boundingBox(newClient), app)
+            .then((observations: OberservationPoint[]) => {
+                observations.forEach((oberservationPoint: OberservationPoint) => {
+                    newClient.response.sse({data: JSON.stringify(oberservationPoint), event: oberservationPoint.eventType()});
+                })
             })
+
+        await getMobilityHindrancesForBBox(boundingBox(newClient), app)
+            .then((mobilityHindrances: MobilityHindrance[]) => {
+                mobilityHindrances.forEach((mobilityHindrance: MobilityHindrance) => {
+                    newClient.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
+                })
+            })
+    } else {
+        newClient.response.sse({event: 'alive'})
     }
 
-    req.raw.on('close', () => {
+    newClient.response.raw.on('close', () => {
+        clients.unshift(newClient)
         console.log(`${clientId} Connection closed`)
-        clients = clients.filter((client: { id: any; }) => client.id !== clientId);
     })
 }
 
@@ -65,17 +72,15 @@ app.post('/data/:eventType', async (req: { params: { eventType: any; }; body: st
 
     if (eventType == 'observation-point') {
         handleObservationPoint(req.body)
-        console.log("OP", observationPoints.length)
     }
 
     if (eventType == 'observation') {
         handleObservation(req.body)
     }
 
-    if (eventType == 'mobility-hindrances') {
+    if (eventType == 'mobility-hindrance') {
         handleMobilityHindrances(req.body)
     }
-    
 
     reply.send()
 });
@@ -102,20 +107,19 @@ const handleObservationPoint = async(body: string) => {
         let id = store.getObjects(null, "http://purl.org/dc/terms/isVersionOf", null)[0].id
         let lane = store.getObjects(null, "https://data.vlaanderen.be/ns/verkeersmetingen#rijstrook", null).filter(quad => quad.termType == 'Literal')[0].id.replace(/['"]+/g, '')
         let wkt = JSON.parse(bindings.toString()).wkt
-        let ov = new OberservationPoint(id, wkt, lane);
+        let op = new OberservationPoint(id, wkt, lane);
 
-        if (observationPoints.filter(o => o.id == ov.id).length === 0 ) {
-            observationPoints.push(ov)
+        saveObservationPoint(op, app)
+        sendObservationPointUpdate(op)
+    })
+}
 
-            clients.filter(client => client.zoom >= visibleZoom)
-            .filter(client => pointInBounds(client, ov))
-            .forEach(client => {
-                client.response.sse({ data: ov }, {
-                    event: ov.eventType()
-                });
-            })
-        }
-    });
+const sendObservationPointUpdate = (observationPoint: OberservationPoint) => {
+    clients.filter(client => client.zoom >= visibleZoom)
+        .filter(client => pointInBounds(client, observationPoint.geometry))
+        .forEach(client => {
+            client.response.sse({data: JSON.stringify(observationPoint), event: observationPoint.eventType()});
+        })
 }
 
 const handleObservation = async(body: string) => {
@@ -124,82 +128,76 @@ const handleObservation = async(body: string) => {
     store.addQuads(parser.parse(body));
 
     let point = store.getObjects(null, "https://data.vlaanderen.be/ns/verkeersmetingen#verkeersmeetpunt", null)[0].id
+    let observations: Oberservation[] = []
 
-    let optObservationPoint = observationPoints.filter(observationPoint => observationPoint.id == point);
-    if (optObservationPoint.length != 0) {
-        let observationPoint = optObservationPoint[0]
-        observationPoint.observations = []
+    var beginTime = store.getObjects(store.getObjects(null, "http://www.w3.org/2006/time#hasBeginning", null)[0].id, "http://www.w3.org/2006/time#inXSDDateTimeStamp", null)[0].value
+    var endTime = store.getObjects(store.getObjects(null, "http://www.w3.org/2006/time#hasEnd", null)[0].id, "http://www.w3.org/2006/time#inXSDDateTimeStamp", null)[0].value
 
-        var beginTime = store.getObjects(store.getObjects(null, "http://www.w3.org/2006/time#hasBeginning", null)[0].id, "http://www.w3.org/2006/time#inXSDDateTimeStamp", null)[0].value
-        var endTime = store.getObjects(store.getObjects(null, "http://www.w3.org/2006/time#hasEnd", null)[0].id, "http://www.w3.org/2006/time#inXSDDateTimeStamp", null)[0].value
+    store.getSubjects("http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting", null)
+        .forEach(subject => {
+            var valueTypeId = store.getObjects(subject.id, "https://data.vlaanderen.be/ns/verkeersmetingen#geobserveerdKenmerk", null)[0].id
+            var observation = new Oberservation()
+            observation.value = Number.parseInt(store.getObjects(subject.id, "http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.result", null)[0].value)
+            observation.measureType = store.getObjects(valueTypeId, "https://data.vlaanderen.be/ns/verkeersmetingen#type", null)[0].value
+            observation.vehicleTypeId = Number.parseInt(store.getObjects(valueTypeId, "https://data.vlaanderen.be/ns/verkeersmetingen#voertuigType", null)[0].value)
+            observation.observationPoint = point
+            observation.startTime = beginTime
+            observation.endTime = endTime
 
-        store.getSubjects("http://www.w3.org/1999/02/22-rdf-syntax-ns#type", "https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting", null)
-            .forEach(subject => {
-                var valueTypeId = store.getObjects(subject.id, "https://data.vlaanderen.be/ns/verkeersmetingen#geobserveerdKenmerk", null)[0].id
+            observations.push(observation)
+        })
 
-                var observation = new Oberservation()
-                observation.value = Number.parseInt(store.getObjects(subject.id, "http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.result", null)[0].value)
-                observation.measureType = store.getObjects(valueTypeId, "https://data.vlaanderen.be/ns/verkeersmetingen#type", null)[0].value
-                observation.vehicleTypeId = Number.parseInt(store.getObjects(valueTypeId, "https://data.vlaanderen.be/ns/verkeersmetingen#voertuigType", null)[0].value)
-                observation.observationPoint = point
-                observation.startTime = beginTime
-                observation.endTime = endTime
-                observationPoint.observations.push(observation)
-            })
-    }
-    
+    let observationPoint = await addObservationToPoint(observations, app)
+    sendObservationPointUpdate(observationPoint)
+
 }
 
-const pointInBounds = (client: Client, point: OberservationPoint) => (
-    client.bounds._southWest.lat < point.geometry.lat && point.geometry.lat < client.bounds._northEast.lat &&
-    client.bounds._southWest.lng < point.geometry.lng && point.geometry.lng < client.bounds._northEast.lng
-);
-
-const handleMobilityHindrances = async (body: string) => {
+const handleMobilityHindrances = (body: string) => {
     const parser = new Parser();
     const store = new Store();
-    const engine = new Engine(store as any);
     store.addQuads(parser.parse(body));
 
-    var lambert = "+proj=lcc +lat_0=90 +lon_0=4.36748666666667 +lat_1=51.1666672333333 +lat_2=49.8333339 +x_0=150000.013 +y_0=5400088.438 +ellps=intl +towgs84=-106.8686,52.2978,-103.7239,-0.3366,0.457,-1.8422,-1.2747 +units=m +no_defs +type=crs";
+    let id = store.getObjects(null, "http://purl.org/dc/terms/isVersionOf", null)[0].value
+    let description = store.getObjects(null, "http://purl.org/dc/terms/description", null)[0].value
+    let maintainerSubj = store.getObjects(null,"https://data.vlaanderen.be/ns/mobiliteit#beheerder", null)[0].id
+    let maintainer = store.getObjects(maintainerSubj, "http://www.w3.org/2004/02/skos/core#prefLabel", null)[0].value
 
-    const wktQuery = await engine.queryBindings(`
-        PREFIX mob: <https://data.vlaanderen.be/ns/mobiliteit#>
-        PREFIX locn: <http://www.w3.org/ns/locn#>
-        PREFIX geosparql: <http://www.opengis.net/ont/geosparql#>
+    let mobilityHindrance = new MobilityHindrance(id, MobilityHindrance.getZones(store), description, MobilityHindrance.getPeriod(store), maintainer)
 
-        SELECT ?wkt 
-        WHERE {
-            ?s1 mob:Zone [
-                locn:geometry [
-                    geosparql:asWKT ?wkt 
-                ]
-            ]
-        } 
-    `);
+    saveMobilityHindrance(mobilityHindrance, app)
 
-    wktQuery.on('data', (bindings) => {
-        console.log(bindings)
-    });
-
-    /*
-        body.zone.forEach(zone => {
-          var geometry = reproject(wktToGeoJSON(zone.geometry.wkt.split('>')[1]), lambert, proj4.WGS84);
-
-          var geojsonFeature = {
-            "type": "Feature",
-            geometry
-          };
-          
-          leaflet.geoJson(geojsonFeature, {
-            pointToLayer: function(feature, LatLng) {
-              return leaflet.marker(LatLng, {icon: mobilityHindranceIcon});
-            }
-          })
-            .addTo(this.map)
-            .bindPopup(dataEvent.data["@id"])
-        }
-        */
-       
-      
+    clients.filter(client => client.zoom >= visibleZoom)
+        .filter(client => mobilityHindranceInBounds(client, mobilityHindrance))
+        .forEach(client => {
+            client.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
+        })
 }
+
+const mobilityHindranceInBounds = (client: Client, mobilityHindrance: MobilityHindrance) => {
+    const bb = boundingBox(client)
+    let ok = false
+
+    mobilityHindrance.zones.features.forEach(zone => {
+        if (intersects(zone, bb)) {
+            ok = true
+        }
+    })
+
+    return ok
+}
+
+const pointInBounds = (client: Client, geometry: {lat: number, lng: number}) => (
+    client.bounds._southWest.lat < geometry.lat && geometry.lat < client.bounds._northEast.lat &&
+    client.bounds._southWest.lng < geometry.lng && geometry.lng < client.bounds._northEast.lng
+);
+
+const boundingBox = (client: Client) : GeoJSON.GeoJSON => ({
+    type: "Polygon",
+    coordinates: [
+        [ 
+            [client.bounds._northEast.lng, client.bounds._northEast.lat] , [client.bounds._northEast.lng, client.bounds._southWest.lat] , 
+            [client.bounds._southWest.lng, client.bounds._southWest.lat] , [client.bounds._southWest.lng, client.bounds._northEast.lat] ,
+            [client.bounds._northEast.lng, client.bounds._northEast.lat]
+        ]
+    ]
+  })

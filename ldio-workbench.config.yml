@@ -16,3 +16,4 @@ orchestrator:
           config:
             endpoint: http://host.docker.internal:3000/data/mobility-hindrances
             content-type: 'application/n-quads'
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioConsoleOut

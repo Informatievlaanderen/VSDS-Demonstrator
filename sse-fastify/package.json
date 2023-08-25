@@ -11,11 +11,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/postgres": "^5.2.0",
     "@rdfjs/parser-n3": "^2.0.1",
+    "@terraformer/spatial": "^2.1.2",
     "@terraformer/wkt": "^2.2.0",
     "fastify": "^4.21.0",
     "fastify-cors": "^6.1.0",
-    "fastify-sse": "^1.0.0",
+    "fastify-sse-v2": "^3.1.2",
+    "pg": "^8.11.3",
+    "pg-format": "^1.0.4",
     "proj4": "^2.9.0",
     "quadstore-comunica": "^3.1.1",
     "readable-stream": "^4.4.2",
@@ -27,6 +31,7 @@
     "@types/proj4": "^2.5.2",
     "@types/rdfjs__parser-n3": "^2.0.1",
     "@types/readable-stream": "^4.0.1",
+    "@types/terraformer__spatial": "^2.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
