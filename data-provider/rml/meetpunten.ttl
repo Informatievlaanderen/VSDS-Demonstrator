@@ -1,0 +1,70 @@
+@prefix rml:    <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr:     <http://www.w3.org/ns/r2rml#> .
+@prefix ql:     <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix :       <http://www.wegenenverkeer.be/verkeersmetingen/rules/meetpunt/> .
+
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms:  <http://purl.org/dc/terms/> .
+@prefix miv:      <http://www.wegenenverkeer.be/ns/verkeersmetingen#> .
+@prefix carml:    <http://carml.taxonic.com/carml/> .
+
+:ConfigMap a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source [ a carml:Stream ];
+    rml:referenceFormulation ql:XPath;
+    rml:iterator "/mivconfig"
+  ];
+  rr:subjectMap [ rr:termType rr:BlankNode; rr:template "dummy" ].
+
+:ConfigMeetpuntMap a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source [ a carml:Stream ];
+    rml:referenceFormulation ql:XPath;
+    rml:iterator "/mivconfig/meetpunt"
+  ];
+  rr:subjectMap [ 
+    rr:graphMap [ rr:template "http://www.wegenenverkeer.be/id/verkeersmetingen/meetpunt/{@unieke_id}" ];
+    rr:template "http://www.wegenenverkeer.be/id/verkeersmetingen/meetpunt/{@unieke_id}" 
+  ];
+  rr:predicateObjectMap 
+  [
+    rr:predicate rdf:type;
+    rr:objectMap [ rr:constant miv:Meetpunt; rr:termType rr:IRI ]
+  ], [
+    rr:predicate miv:unieke_id;
+    rr:objectMap [ rml:reference "@unieke_id"; rr:datatype xsd:int ]
+  ], [
+    rr:predicate miv:beschrijvende_id;
+    rr:objectMap [ rml:reference "beschrijvende_id" ]
+  ], [
+    rr:predicate miv:volledige_naam;
+    rr:objectMap [ rml:reference "volledige_naam" ]
+  ], [
+    rr:predicate miv:Ident_8;
+    rr:objectMap [ rml:reference "Ident_8" ]
+  ], [
+    rr:predicate miv:lve_nr;
+    rr:objectMap [ rml:reference "lve_nr"; rr:datatype xsd:int ]
+  ], [
+    rr:predicate miv:Kmp_Rsys;
+    rr:objectMap [ rml:reference "Kmp_Rsys" ]
+  ], [
+    rr:predicate miv:Rijstrook;
+    rr:objectMap [ rml:reference "Rijstrook" ]
+  ], [
+    rr:predicate miv:X_coord_EPSG_31370;
+    rr:objectMap [ rml:reference "X_coord_EPSG_31370" ]
+  ], [
+    rr:predicate miv:Y_coord_EPSG_31370;
+    rr:objectMap [ rml:reference "Y_coord_EPSG_31370" ]
+  ], [
+    rr:predicate miv:lengtegraad_EPSG_4326;
+    rr:objectMap [ rml:reference "lengtegraad_EPSG_4326" ]
+  ], [
+    rr:predicate miv:breedtegraad_EPSG_4326;
+    rr:objectMap [ rml:reference "breedtegraad_EPSG_4326" ]
+  ], [
+    rr:predicate dcterms:modified;
+    rr:objectMap [ rml:reference "../tijd_laatste_config_wijziging"; rr:datatype xsd:dateTime ]
+  ].

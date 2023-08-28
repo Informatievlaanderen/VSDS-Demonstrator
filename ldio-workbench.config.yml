@@ -1,0 +1,19 @@
+server:
+  port: 8080
+orchestrator:
+  pipelines:
+    - name: mobility-hindrances
+      description: "Uses a HTTP listener accepting NGSI-v2 messages, converts them to NGSI-LD, and sends NGSI-LD version objects using HTTP to an LDES server."
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances
+          sourceFormat: 'application/ld+json'
+          retries:
+            enabled: true
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+          config:
+            endpoint: http://host.docker.internal:3000/data/mobility-hindrances
+            content-type: 'application/n-quads'
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioConsoleOut

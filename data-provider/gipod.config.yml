@@ -1,0 +1,14 @@
+server:
+  port: 8080
+orchestrator:
+  pipelines:
+    - input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2023-08-27T19:00:19.71Z
+          sourceFormat: application/ld+json
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+          config:
+            endpoint: http://host.docker.internal:3000/data/mobility-hindrance
+            content-type: application/n-quads
