@@ -33,28 +33,27 @@ async function eventHandlers(req: any, reply: any) {
 
     clients.push(newClient);
 
-    if (newClient.zoom >= visibleZoom) {
-        await getObservationPoints(boundingBox(newClient), app)
-            .then((observations: OberservationPoint[]) => {
-                observations.forEach((oberservationPoint: OberservationPoint) => {
-                    newClient.response.sse({data: JSON.stringify(oberservationPoint), event: oberservationPoint.eventType()});
-                })
-            })
-
-        await getMobilityHindrancesForBBox(boundingBox(newClient), app)
-            .then((mobilityHindrances: MobilityHindrance[]) => {
-                mobilityHindrances.forEach((mobilityHindrance: MobilityHindrance) => {
-                    newClient.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
-                })
-            })
-    } else {
-        newClient.response.sse({event: 'alive'})
-    }
-
-    newClient.response.raw.on('close', () => {
-        clients.unshift(newClient)
+    req.socket.on('close', () => {
+        clients = clients.filter((client: { id: any; }) => client.id !== clientId);
         console.log(`${clientId} Connection closed`)
     })
+
+    if (newClient.zoom >= visibleZoom) {
+        const [ observations, mobilityHindrances ] = await Promise.all([getObservationPoints(boundingBox(newClient), app), getMobilityHindrancesForBBox(boundingBox(newClient), app)])
+
+        observations.forEach((observationPoint: OberservationPoint) => {
+            newClient.response.sse({data: JSON.stringify(observationPoint), event: observationPoint.eventType()});
+        });
+
+        mobilityHindrances.forEach((mobilityHindrance: MobilityHindrance) => {
+            if (new Date() < new Date(mobilityHindrance.periode.endTime)){
+                newClient.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
+            }
+        });
+
+    } else {
+        newClient.response.sse({event: 'close'})
+    }
 }
 
 app.get('/sse', eventHandlers);
@@ -148,8 +147,9 @@ const handleObservation = async(body: string) => {
         })
 
     let observationPoint = await addObservationToPoint(observations, app)
-    sendObservationPointUpdate(observationPoint)
-
+    if (observationPoint != undefined ) {
+        sendObservationPointUpdate(observationPoint)
+    }
 }
 
 const handleMobilityHindrances = (body: string) => {
@@ -164,13 +164,15 @@ const handleMobilityHindrances = (body: string) => {
 
     let mobilityHindrance = new MobilityHindrance(id, MobilityHindrance.getZones(store), description, MobilityHindrance.getPeriod(store), maintainer)
 
-    saveMobilityHindrance(mobilityHindrance, app)
+    if (new Date(mobilityHindrance.periode.startTime) <= new Date()) {
+        saveMobilityHindrance(mobilityHindrance, app)
 
-    clients.filter(client => client.zoom >= visibleZoom)
-        .filter(client => mobilityHindranceInBounds(client, mobilityHindrance))
-        .forEach(client => {
-            client.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
-        })
+        clients.filter(client => client.zoom >= visibleZoom)
+            .filter(client => mobilityHindranceInBounds(client, mobilityHindrance))
+            .forEach(client => {
+                client.response.sse({data: JSON.stringify(mobilityHindrance), event: mobilityHindrance.eventType()});
+            })
+    }
 }
 
 const mobilityHindranceInBounds = (client: Client, mobilityHindrance: MobilityHindrance) => {

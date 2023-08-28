@@ -11,9 +11,6 @@ export const visualiseObservation = (observations)  => {
         return a.vehicleType - b.vehicleType;
     });
 
-    console.log(reducedData)
-    
-
     let output = 
     `
     <span>Findings from <b>${observations[0].startTime}</b> until <b>${observations[0].endTime}</b>
@@ -26,7 +23,6 @@ export const visualiseObservation = (observations)  => {
     `
 
     reducedData.forEach(observation => {
-        console.log(observation)
         output += 
         `
         <tr>
@@ -55,7 +51,6 @@ const getTypeImage = (type) => {
         case 4:
             return `<img width="30" height="30" src="https://img.icons8.com/external-justicon-flat-justicon/64/external-pickup-truck-transportation-justicon-flat-justicon-1.png" alt="external-pickup-truck-transportation-justicon-flat-justicon-1"/>`
         case 5:
-            console.log(type)
             return `<img width="30" height="30" src="https://img.icons8.com/external-justicon-flat-justicon/64/external-truck-transportation-justicon-flat-justicon.png" alt="external-truck-transportation-justicon-flat-justicon"/>`
 
     }

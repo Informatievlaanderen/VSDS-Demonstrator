@@ -1,0 +1,65 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX dcterms:      <http://purl.org/dc/terms/>
+PREFIX miv:          <http://www.wegenenverkeer.be/ns/verkeersmetingen#>
+
+PREFIX dv-vm:        <https://data.vlaanderen.be/ns/verkeersmetingen#>
+PREFIX dv-bom:       <https://data.vlaanderen.be/ns/observaties-en-metingen#Bemonsteringsobject.>
+PREFIX dv-net:       <https://data.vlaanderen.be/ns/netwerk/#>
+PREFIX dv-weg:       <https://data.vlaanderen.be/ns/weg#>
+
+PREFIX cl-idt:       <https://example.com/concept/identificatortype/>
+PREFIX cl-trt:       <https://example.com/concept/toepassingsrichtingtype>
+
+PREFIX iso19156-sp:  <http://def.isotc211.org/iso19156/2011/SamplingPoint#SF_SamplingPoint.>
+PREFIX iso19156-sf:  <http://def.isotc211.org/iso19156/2011/SamplingFeature#SF_SamplingFeature.>
+PREFIX sf:           <http://www.opengis.net/ont/sf#>
+PREFIX geo:          <http://www.opengis.net/ont/geosparql#>
+PREFIX adms:         <http://www.w3.org/ns/adms#>
+PREFIX skos:         <http://www.w3.org/2004/02/skos/core#>
+PREFIX schema:       <http://schema.org/>
+PREFIX ucum:         <http://purl.oclc.org/NET/muo/ucum/>
+
+CONSTRUCT {
+    ?mid a dv-vm:Verkeersmeetpunt ;
+        dv-bom:identificator [ a adms:Identifier ; skos:notation ?verkeersmeetpuntid ] ;
+        iso19156-sp:shape [ a sf:Point ; geo:asGML ?gml ; geo:asWKT ?wkt ] ;
+        iso19156-sf:sampledFeature ?rid ;
+        dv-vm:rijstrook ?rid ;
+        dcterms:modified ?modified .
+    
+    ?rid a dv-vm:Rijstrook ;
+        dv-vm:rijstrook ?Rijstrook ;
+        dv-vm:netwerkreferentie [
+            a dv-net:LineaireReferentie ;
+            dv-weg:toepassingsRichting cl-trt:gelijklopend ;
+            dv-weg:element [
+                a dv-weg:Wegsegment ;
+                dv-weg:beginKnoop [ a dv-weg:Wegknoop ; dv-weg:geometrie [ a sf:Point ; geo:asGML ?gml ; geo:asWKT ?wkt ] ] ;
+                dv-weg:eindKnoop [ a dv-weg:Wegknoop ; dv-weg:geometrie [ a sf:Point ; geo:asGML ?gml ; geo:asWKT ?wkt ] ]
+            ] ;
+            dv-weg:vanPositie [ a schema:Distance ; schema:value ?Kmp_Rsys_meters ; schema:unitCode "m"^^ucum:ucumunit ] ;
+            dv-weg:totPositie [ a schema:Distance ; schema:value ?Kmp_Rsys_meters ; schema:unitCode "m"^^ucum:ucumunit ]
+        ] .
+}
+WHERE {
+    ?sub rdf:type <http://www.wegenenverkeer.be/ns/verkeersmetingen#Meetpunt> .
+    ?sub miv:unieke_id ?unieke_id .
+    ?sub miv:beschrijvende_id ?beschrijvende_id .
+    ?sub miv:volledige_naam ?volledige_naam .
+    ?sub miv:Ident_8 ?Ident_8 .
+    ?sub miv:lve_nr ?lve_nr .
+    ?sub miv:Rijstrook ?Rijstrook .
+    ?sub dcterms:modified ?modified .
+    ?sub miv:Kmp_Rsys ?Kmp_Rsys .
+    ?sub miv:X_coord_EPSG_31370 ?X_coord_EPSG_31370 .
+    ?sub miv:Y_coord_EPSG_31370 ?Y_coord_EPSG_31370 .
+    ?sub miv:lengtegraad_EPSG_4326 ?lengtegraad_EPSG_4326 .
+    ?sub miv:breedtegraad_EPSG_4326 ?breedtegraad_EPSG_4326 .
+
+    bind(uri(concat("https://data.vlaanderen.be/id/verkeersmetingen/Verkeersmeetpunt/",str(?unieke_id))) as ?mid) .
+    bind(strdt(str(?unieke_id), cl-idt:verkeersmeetpuntid) as ?verkeersmeetpuntid) .
+    bind(strdt(concat("<gml:Point srsName=\"http://www.opengis.net/def/crs/EPSG/0/31370\"><gml:coordinates>",?X_coord_EPSG_31370,",",?Y_coord_EPSG_31370,"</gml:coordinates><gml:Point>"), geo:gmlLiteral) as ?gml) .
+    bind(strdt(concat("<http://www.opengis.net/def/crs/OGC/1.3/CRS84>POINT(",?lengtegraad_EPSG_4326," ",?breedtegraad_EPSG_4326,")"), geo:wktLiteral) as ?wkt) .
+    bind(uri(concat("https://data.vlaanderen.be/id/verkeersmetingen/Verkeersmeetpunt/",str(?unieke_id),"#rijstrook")) as ?rid) .
+    bind(?Kmp_Rsys * 1000 as ?Kmp_Rsys_meters) .
+}

@@ -29,7 +29,7 @@ export const saveObservationPoint = (observationPoint: OberservationPoint, app:a
     })
 }
 
-export const addObservationToPoint = async (observations: Oberservation[], app:any): Promise<OberservationPoint> => {
+export const addObservationToPoint = async (observations: Oberservation[], app:any): Promise<OberservationPoint | undefined> => {
     return app.pg.transact(async (client: any) => {
         let values:any[] = []
         observations.forEach(observation => values.push([observation.observationPoint, observation.vehicleTypeId, observation.measureType, observation.value, observation.startTime, observation.endTime]))
@@ -41,14 +41,19 @@ export const addObservationToPoint = async (observations: Oberservation[], app:a
     })
 }
 
-export const getObservationPoint = async (id: string, app:any): Promise<OberservationPoint> => {
+export const getObservationPoint = async (id: string, app:any): Promise<OberservationPoint | undefined> => {
     return app.pg.transact(async (client: any) => {
         const {rows} = await client.query(`select *, vsds_observations_for_point(id) as observations
                                            from observation_points
                                            where id = $1 LIMIT 1`, [id]);
 
-        let observationPoint = new OberservationPoint(rows[0].id, rows[0].wkt, rows[0].lane)
-        observationPoint.observations = rows[0].observations
-        return observationPoint
+        if(rows.length == 1) {
+            let observationPoint = new OberservationPoint(rows[0].id, rows[0].wkt, rows[0].lane)
+            observationPoint.observations = rows[0].observations
+            return observationPoint
+        }
+        else {
+            return undefined
+        }
     })
 }
