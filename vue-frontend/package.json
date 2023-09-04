@@ -9,12 +9,17 @@
   },
   "dependencies": {
     "@livereader/graphly-d3-vue": "^1.1.2",
+    "@terraformer/wkt": "^2.2.0",
     "axios": "^1.5.0",
     "d3": "^7.8.5",
-    "vue": "^3.3.4"
+    "proj4": "^2.9.0",
+    "proj4leaflet": "^1.0.2",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.3.1",
+    "leaflet": "^1.9.4",
     "vite": "^4.4.9"
   }
 }
