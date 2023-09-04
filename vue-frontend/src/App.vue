@@ -7,17 +7,18 @@ import LeafletMap from './components/map/LeafletMap.vue'
 
   <main>
 
-    <div style="width: 100%;">
-      <div style="float:left; width: auto">
-            <KnowledgeGraph/>
-      </div>
-      <div style="float:right; width: 55%">
-            <LeafletMap/>
+    <div>
+<!--      <div style="float:left; width: auto">-->
+<!--            <KnowledgeGraph/>-->
+<!--      </div>-->
+      <div>
+        <LeafletMap ></LeafletMap>
       </div>
     </div>
 
   </main>
 </template>
+
 
 
 <style>

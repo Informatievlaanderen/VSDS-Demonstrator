@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg></svg>
+    <svg style="height:500px; width:100%"></svg>
   </div>
 </template>
 <script>
@@ -12,9 +12,7 @@ export default {
   methods:
       {
         async visualizeTriples(triples) {
-          const width = 800;
-          const height = 500;
-          const svg = d3.select("svg").attr("width", width).attr("height", height);
+          const svg = d3.select("svg");
 
           let graph = triplesToGraph(triples);
           let force = d3.forceSimulation(graph.nodes);
@@ -147,39 +145,39 @@ export default {
         }
       }, async mounted() {
 
-    // let triples = [
-    //   {
-    //     subject: "ex:ThaiLand",
-    //     predicate: "ex:hasFood",
-    //     object: "ex:TomYumKung",
-    //   },
-    //   {
-    //     subject: "ex:TomYumKung",
-    //     predicate: "rdf:type",
-    //     object: "ex:SpicyFood",
-    //   },
-    //   {
-    //     subject: "ex:TomYumKung",
-    //     predicate: "ex:includes",
-    //     object: "ex:shrimp",
-    //   },
-    //   {
-    //     subject: "ex:TomYumKung",
-    //     predicate: "ex:includes",
-    //     object: "ex:chilly",
-    //   },
-    //   {
-    //     subject: "ex:TomYumKung",
-    //     predicate: "ex:includes",
-    //     object: "ex:lemon",
-    //   },
-    //   {subject: "ex:lemon", predicate: "ex:hasTaste", object: "ex:sour"},
-    //   {subject: "ex:chilly", predicate: "ex:hasTaste", object: "ex:spicy"},
-    // ];
+    let triples = [
+      {
+        subject: "ex:ThaiLand",
+        predicate: "ex:hasFood",
+        object: "ex:TomYumKung",
+      },
+      {
+        subject: "ex:TomYumKung",
+        predicate: "rdf:type",
+        object: "ex:SpicyFood",
+      },
+      {
+        subject: "ex:TomYumKung",
+        predicate: "ex:includes",
+        object: "ex:shrimp",
+      },
+      {
+        subject: "ex:TomYumKung",
+        predicate: "ex:includes",
+        object: "ex:chilly",
+      },
+      {
+        subject: "ex:TomYumKung",
+        predicate: "ex:includes",
+        object: "ex:lemon",
+      },
+      {subject: "ex:lemon", predicate: "ex:hasTaste", object: "ex:sour"},
+      {subject: "ex:chilly", predicate: "ex:hasTaste", object: "ex:spicy"},
+    ];
 
-    let triples = await axios
-        .get('http://localhost:8080/start')
-    await this.visualizeTriples(triples.data);
+    // let triples = await axios
+    //     .get('http://localhost:8080/start')
+    await this.visualizeTriples(triples);
   },
 };
 </script>

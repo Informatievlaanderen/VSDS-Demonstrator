@@ -1,44 +1,21 @@
 <script setup>
-import KnowledgeGraph from '../graph/KnowledgeGraph.vue'
 </script>
 
 <template>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  <div style="height:800px; width:100%" id="map"></div>
-
-
-<!--  <div style="width: 100%;">-->
-<!--    <div style="float:right;">-->
-<!--&lt;!&ndash;      <KnowledgeGraph/>&ndash;&gt;-->
-<!--    </div>-->
-<!--    <div style="float:left; width: 80%">-->
-<!--      <div style="height:600px; width:600px" id="map"></div>-->
-
-<!--&lt;!&ndash;      <KnowledgeGraph/>&ndash;&gt;-->
-<!--    </div>-->
-<!--  </div>-->
-
-
-
+  <div style="float:left; height:500px; width:500px"><svg></svg></div>
+  <div style="float:right; height:500px; width:600px" id="map"></div>
 </template>
 
 <script>
 
 import "leaflet/dist/leaflet.css"
-import leaflet from "leaflet"
-import { onBeforeUnmount } from 'vue'
-
-import { visualiseObservation } from '@/components/map/observation'
-import { observationIcon, mobilityHindranceIcon } from '@/components/map/mapConstants'
-
-import { wktToGeoJSON } from "@terraformer/wkt"
-import {visualiseMobilityHindrance} from "@/components/map/mobility-hindrance";
-
-// We store the reference to the SSE client out here
-// so we can access it from other methods
-let sseClient;
+import L from 'leaflet';
+import * as d3 from "d3";
+import axios from 'axios'
+import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 
 export default {
   name: "ConnectionState",
@@ -46,96 +23,229 @@ export default {
     return {
       data: [],
       map: {},
-      markers: []
+      markers: [],
+      memberId :null
     };
   },
 
   mounted() {
-    this.map = leaflet.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
-    leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.map = L.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
+    this.map.on('moveend', function() {
+
+    });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
-
-    this.requestMapUpdates();
-
     this.map.on("moveend", () => {
-      sseClient.disconnect()
-      this.requestMapUpdates()
+      extracted.call(this);
     });
-  },
-  methods: {
-    handleMobHind(mobilityHindrance) {
+    extracted.call(this);
 
-      mobilityHindrance.zones.features.forEach(feature => {
-        let marker = leaflet.geoJson(feature, {
-          pointToLayer: function(feature, LatLng) {
-            return leaflet.marker(LatLng, {icon: mobilityHindranceIcon});
-          }
-        })
-
-        this.map.addLayer(marker)
-        marker.bindPopup(visualiseMobilityHindrance(mobilityHindrance), {autoPan: false})
-        this.markers.push(marker)
-      })
-    },
-    handleObservationPoints(observationPoint) {
-      function getWktFromString(str){
-        const matches = str.split('"');
-        return matches[1] ? matches[1].split('>')[1] : str;
-      }
-
-      if (observationPoint.observations.lenght !== 0) {
-        var geometry = wktToGeoJSON(getWktFromString(observationPoint.wkt));
-
-        var geojsonFeature = {
-          "type": "Feature",
-          geometry
-        };
-        
-        let marker = leaflet.geoJson(geojsonFeature, {
-          pointToLayer: function(feature, LatLng) {
-            return leaflet.marker(LatLng, {icon: observationIcon});
-          }
-        })
-
-        this.map.addLayer(marker)
-        marker.bindPopup(visualiseObservation(observationPoint.observations), {autoPan: false})
-        this.markers.push(marker)
-      }
-    },
-
-    requestMapUpdates() {
-      this.markers.forEach(marker => this.map.removeLayer(marker))
-      sseClient = this.$sse.create({
-          url: 'http://localhost:3000/sse?bounds='+ JSON.stringify(this.map.getBounds()) + "&zoom=" + this.map._zoom,
-          format: 'json',
-          withCredentials: false,
-          polyfill: true,
-        });
-      
-      sseClient.connect().then(() => {
-        
-      })
-      .catch((err) => {
-        console.error('Failed to connect to server', err);
+    function extracted() {
+      axios({
+        method: 'post',
+        url: 'http://localhost:5173/in-rectangle',
+        data: this.map.getBounds(),
+        headers: {
+          'Content-type': 'application/json',
+        }
+      }).then((response) => {
+        this.handleMemberGeometries(response.data)
       });
-
-      sseClient.on('error', (e) => {
-        console.error('lost connection or failed to parse!', e);
-      });
-      sseClient.on('mobility-hindrance', this.handleMobHind)
-      sseClient.on('observation-point', this.handleObservationPoints)
     }
   },
-  setup() {
-    onBeforeUnmount(() => {
-      // Make sure to close the connection with the events server
-      // when the component is destroyed, or we'll have ghost connections!
-      sseClient.disconnect();
-      // Alternatively, we could have added the `sse: { cleanup: true }` option to our component,
-      // and the SSEManager would have automatically disconnected during beforeDestroy.
-    })
+  methods: {
+    handleMemberGeometries(memberGeometries) {
+      function visualizeTriples(triples) {
+        const width = 500;
+        const height = 500;
+        const svg = d3.select("svg").attr("width", width).attr("height", height);
+
+        let graph = triplesToGraph(triples);
+        let force = d3.forceSimulation(graph.nodes);
+
+        function dragstart() {
+          d3.select(this).classed("fixed", true);
+        }
+
+        function clamp(x, lo, hi) {
+          return x < lo ? lo : x > hi ? hi : x;
+        }
+
+        function dragged(event, d) {
+          d.fx = clamp(event.x, 0, width);
+          d.fy = clamp(event.y, 0, height);
+          force.alpha(1).restart();
+        }
+
+        const drag = d3.drag().on("start", dragstart).on("drag", dragged);
+
+        svg
+            .append("svg:defs")
+            .selectAll("marker")
+            .data(["end"])
+            .enter()
+            .append("svg:marker")
+            .attr("id", String)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 30)
+            .attr("refY", -0.5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("svg:polyline")
+            .attr("points", "0,-5 10,0 0,5");
+
+        var links = svg
+            .selectAll(".link")
+            .data(graph.links)
+            .enter()
+            .append("line")
+            .attr("marker-end", "url(#end)")
+            .attr("class", "link")
+            .attr("stroke-width", 1); //links
+        // ==================== Add Link Names =====================
+        var linkTexts = svg
+            .selectAll(".link-text")
+            .data(graph.links)
+            .enter()
+            .append("text")
+            .attr("class", "link-text")
+            .text(function (d) {
+              return d.predicate;
+            });
+        // ==================== Add Link Names =====================
+        var nodeTexts = svg
+            .selectAll(".node-text")
+            .data(graph.nodes)
+            .enter()
+            .append("text")
+            .attr("class", "node-text")
+            .text(function (d) {
+              return d.label;
+            });
+        // ==================== Add Node =====================
+        var nodes = svg
+            .selectAll(".node")
+            .data(graph.nodes)
+            .enter()
+            .append("circle")
+            .attr("class", "node")
+            .attr("r", 8)
+            .on("click", async function (d) {
+              let triples = await axios
+                  .get('http://localhost:8080/'+d.name)
+              await this.visualizeTriples(triples.data);
+              // alert("You clicked on node " + d.name);
+            }.bind(this))
+            .call(drag);
+
+        function ticked() {
+          nodes
+              .attr("cx", function (d) {
+                return d.x;
+              })
+              .attr("cy", function (d) {
+                return d.y;
+              });
+
+          links
+              .attr("x1", function (d) {
+                return d.source.x;
+              })
+              .attr("y1", function (d) {
+                return d.source.y;
+              })
+              .attr("x2", function (d) {
+                return d.target.x;
+              })
+              .attr("y2", function (d) {
+                return d.target.y;
+              });
+
+          nodeTexts
+              .attr("x", function (d) {
+                return d.x + 12;
+              })
+              .attr("y", function (d) {
+                return d.y + 3;
+              });
+
+          linkTexts
+              .attr("x", function (d) {
+                return 4 + (d.source.x + d.target.x) / 2;
+              })
+              .attr("y", function (d) {
+                return 4 + (d.source.y + d.target.y) / 2;
+              });
+        }
+
+        force.on("tick", ticked);
+
+        force
+            .force(
+                "link",
+                d3.forceLink(graph.links).id((d) => d.id)
+            )
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+      }
+
+      function whenClicked(e) {
+        // let memberId = e.sourceTarget._popup._content
+        let triples = [
+          {
+            subject: "ex:ThaiLand",
+            predicate: "ex:hasFood",
+            object: "ex:TomYumKung",
+          },
+          {
+            subject: "ex:TomYumKung",
+            predicate: "rdf:type",
+            object: "ex:SpicyFood",
+          },
+          {
+            subject: "ex:TomYumKung",
+            predicate: "ex:includes",
+            object: "ex:shrimp",
+          },
+          {
+            subject: "ex:TomYumKung",
+            predicate: "ex:includes",
+            object: "ex:chilly",
+          },
+          {
+            subject: "ex:TomYumKung",
+            predicate: "ex:includes",
+            object: "ex:lemon",
+          },
+          {subject: "ex:lemon", predicate: "ex:hasTaste", object: "ex:sour"},
+          {subject: "ex:chilly", predicate: "ex:hasTaste", object: "ex:spicy"},
+        ];
+        visualizeTriples(triples)
+      }
+      function onEachFeature(feature, layer) {
+        if (feature.properties && feature.properties.popupContent) {
+          layer.bindPopup(feature.properties.popupContent);
+        }
+        //bind click
+        layer.on({
+          click: whenClicked
+        });
+      }
+      memberGeometries.forEach(feature => {
+        var geoJsonFeature = {
+          "type": "Feature",
+          "geometry": feature.geojsonGeometry,
+          "properties":{
+            "popupContent": feature.memberId
+          }
+        }
+        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature} ).addTo(this.map)
+        this.markers.push(marker)
+      })
+    },
   }
 
 };
