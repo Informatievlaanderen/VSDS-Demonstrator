@@ -1,0 +1,15 @@
+server:
+  port: 8080
+orchestrator:
+  pipelines:
+    - name: gipod
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2023-08-27T19:00:19.71Z
+          sourceFormat: application/ld+json
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://host.docker.internal:8080/rdf4j-server
+            repository-id: test4

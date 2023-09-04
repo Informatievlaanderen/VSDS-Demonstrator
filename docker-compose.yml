@@ -1,0 +1,31 @@
+services:
+
+  gipod-data-provider:
+    image: ghcr.io/informatievlaanderen/ldi-orchestrator:20230831073618
+    container_name: demonstrator_gipod-data-provider
+    ports:
+      - 8082:8080
+    volumes:
+      - ./gipod.config.yml:/ldio/application.yml:ro
+
+  rdf4j-server:
+    image: eclipse/rdf4j-workbench:latest
+    container_name: demonstrator-rdf4j-server
+    environment:
+      - "JAVA_OPTS=-Xms1g -Xmx4g"
+    ports:
+      - 8080:8080
+    networks:
+      - ldes
+
+  graphdb:
+    image: ontotext/graphdb:10.0.2
+    container_name: graphdb
+    ports:
+      - 7200:7200
+    networks:
+      - ldes
+
+networks:
+  ldes:
+    name: demonstrator
