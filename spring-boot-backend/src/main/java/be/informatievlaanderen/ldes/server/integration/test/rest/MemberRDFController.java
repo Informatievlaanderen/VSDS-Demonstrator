@@ -6,6 +6,7 @@ import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeom
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class MemberRDFController {
@@ -25,5 +26,11 @@ public class MemberRDFController {
     @CrossOrigin(origins = "*", allowedHeaders = "")
     public List<MemberGeometryDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto) {
         return service.getMembersInRectangle(mapBoundsDto.getGeometry());
+    }
+
+    @GetMapping(value = "/triples")
+    @CrossOrigin(origins = "*", allowedHeaders = "")
+    public List<TripleDTO> retrieveTriplesOfNode(@PathVariable("memberId") String memberId) {
+        return List.of(new TripleDTO(memberId,"ex:hasFood", UUID.randomUUID().toString()));
     }
 }
