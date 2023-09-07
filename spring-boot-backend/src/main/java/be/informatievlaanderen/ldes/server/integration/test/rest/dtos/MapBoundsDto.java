@@ -20,7 +20,7 @@ public class MapBoundsDto {
     }
 
     public Geometry getGeometry() {
-        Coordinate [] coordinates = new Coordinate[] {
+        Coordinate[] coordinates = new Coordinate[]{
                 new Coordinate(_southWest.getLng(), _southWest.getLat()),
                 new Coordinate(_southWest.getLng(), _northEast.getLat()),
                 new Coordinate(_northEast.getLng(), _northEast.getLat()),

@@ -1,6 +1,5 @@
 package be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.entities;
 
-import org.geolatte.geom.M;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;

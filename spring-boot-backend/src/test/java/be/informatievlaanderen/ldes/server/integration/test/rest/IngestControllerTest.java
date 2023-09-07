@@ -9,6 +9,7 @@ import com.apicatalog.jsonld.http.media.MediaType;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ResourceUtils;
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles({"test"})
 @WebMvcTest
 @ContextConfiguration(classes = {IngestController.class, MemberConverter.class, MemberConverter.class, StreamsConfig.class})
 class IngestControllerTest {
@@ -39,13 +42,14 @@ class IngestControllerTest {
     private MemberGeometryService service;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private StreamsConfig streamsConfig;
 
     @Test
     void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
-        final List<String> streams = List.of("https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder");
         Model model = RDFParser.source("members/mobility-hindrance.nq").lang(Lang.NQUADS).toModel();
         MemberDTO dto = new MemberDTO(model);
-        MemberGeometry memberGeometry = dto.getMemberGeometry(streams);
+        MemberGeometry memberGeometry = dto.getMemberGeometry(streamsConfig.getStreams());
 
         mockMvc.perform(post("/members")
                         .content(readDataFromFile("members/mobility-hindrance.nq"))

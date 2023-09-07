@@ -4,6 +4,7 @@ package be.informatievlaanderen.ldes.server.integration.test.rest.converters;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberDTO;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
 import org.apache.jena.riot.RDFParserBuilder;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -39,7 +40,7 @@ public class MemberConverter extends AbstractHttpMessageConverter<MemberDTO> {
 				ofNullable(nameToLang(contentType.getType() + "/" + contentType.getSubtype()))
 						.orElseGet(() -> ofNullable(nameToLang(contentType.getSubtype()))
 								.orElseThrow(() -> new RuntimeException("TODO")));
-		Model memberModel = RDFParserBuilder.create().fromString(new String(inputMessage.getBody().readAllBytes(), StandardCharsets.UTF_8)).lang(lang).toModel();
+		Model memberModel = RDFParser.source(inputMessage.getBody()).lang(lang).toModel();
 
 		return new MemberDTO(memberModel);
 	}

@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.swing.text.html.Option;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,13 +25,16 @@ import static org.mockito.Mockito.*;
 class MemberGeometryRepositoryImplTest {
     private static final String ID = "member-id";
     private static Geometry point;
+    private static Geometry rectangle;
     private MemberGeometryRepository repository;
     @Mock
     private MemberGeometryJpaRepository jpaRepository;
 
     @BeforeAll
     static void beforeAll() throws ParseException {
-        point = new WKTReader().read("POINT(1 1)");
+        final WKTReader reader = new WKTReader();
+        point = reader.read("POINT(1 1)");
+        rectangle = reader.read("POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))");
     }
 
     @BeforeEach
@@ -65,6 +70,32 @@ class MemberGeometryRepositoryImplTest {
         }
     }
 
+    @Nested
+    class RetrievalInRectangle {
+        @Test
+        void when_DbDoesContainMembers_then_ReturnMembersInRectangle() throws ParseException {
+            final List<MemberGeometryEntity> entities = initMembers();
+            final List<MemberGeometry> members = entities.stream()
+                    .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry()))
+                    .toList();
+
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle)).thenReturn(entities);
+
+            assertEquals(members, repository.getMembersByGeometry(rectangle));
+
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle);
+        }
+
+        @Test
+        void when_DbContainsOnlyMembersOutsideRectangle_then_ReturnEmptyList() {
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle)).thenReturn(List.of());
+
+            assertEquals(List.of(), repository.getMembersByGeometry(rectangle));
+
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle);
+        }
+    }
+
     @Test
     void test_Saving() {
         MemberGeometry memberGeometry = new MemberGeometry(ID, point);
@@ -72,5 +103,17 @@ class MemberGeometryRepositoryImplTest {
         repository.saveMember(memberGeometry);
 
         verify(jpaRepository).save(argThat(entity -> entity.getMemberId().equals(memberGeometry.getMemberId())));
+    }
+
+    private List<MemberGeometryEntity> initMembers() throws ParseException {
+        final WKTReader reader = new WKTReader();
+        List<MemberGeometryEntity> members = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
+                members.add(new MemberGeometryEntity("id-%d".formatted(i * 6 + j), geometry));
+            }
+        }
+        return members;
     }
 }

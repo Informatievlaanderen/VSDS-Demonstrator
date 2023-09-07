@@ -48,18 +48,14 @@ class MemberGeometryServiceImplTest {
     class GetMembersInRectangle {
         @Test
         void when_GetMembersInRectangle_then_ReturnListOfMemberGeometryDtos() throws ParseException {
-            List<MemberGeometry> members = initMembers();
+            final GeoJSONReader geoJSONReader = new GeoJSONReader();
+            final List<MemberGeometry> members = initMembers();
             when(repository.getMembersByGeometry(rectangle)).thenReturn(members);
 
-            List<MemberGeometryDto> retrievedMembers = service.getMembersInRectangle(rectangle);
-            for (int i = 0; i < members.size(); i++) {
-                MemberGeometryDto memberGeometryDto = retrievedMembers.get(i);
-                MemberGeometry memberGeometry = members.get(i);
-                Geometry geometry = new GeoJSONReader().read(memberGeometryDto.getGeojsonGeometry());
-
-                assertEquals(memberGeometry.getMemberId(), memberGeometryDto.getMemberId());
-                assertEquals(memberGeometry.getGeometry(), geometry);
-            }
+            final List<MemberGeometry> retrievedMembers = service.getMembersInRectangle(rectangle).stream()
+                    .map(dto -> new MemberGeometry(dto.getMemberId(), geoJSONReader.read(dto.getGeojsonGeometry())))
+                    .toList();
+            assertEquals(members, retrievedMembers);
             verify(repository).getMembersByGeometry(rectangle);
         }
 
@@ -119,10 +115,11 @@ class MemberGeometryServiceImplTest {
     }
 
     private List<MemberGeometry> initMembers() throws ParseException {
+        final WKTReader reader = new WKTReader();
         List<MemberGeometry> members = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                Geometry geometry = new WKTReader().read("POINT(%d %d)".formatted(i, j));
+                Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
                 members.add(new MemberGeometry("id-%d".formatted(i * 6 + j), geometry));
             }
         }
