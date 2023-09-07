@@ -16,6 +16,14 @@
 
         <!-- SPRING BOOT -->
         <spring-boot.version>3.1.2</spring-boot.version>
+
+        <!-- TESTING -->
+        <junit.version>4.13.2</junit.version>
+        <junit-platform-suite.version>1.10.0</junit-platform-suite.version>
+        <junit-jupiter-api.version>5.8.2</junit-jupiter-api.version>
+        <jupiter.version>5.10.0</jupiter.version>
+        <mockito.version>5.4.0</mockito.version>
+        <cucumber.version>7.13.0</cucumber.version>
         <!-- RDF4j -->
         <rdf4j.version>4.3.3</rdf4j.version>
     </properties>
@@ -93,23 +101,39 @@
             <version>10.14.2.0</version>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
             <version>1.5.5.Final</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.9.2</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-client</artifactId>
             <type>pom</type>
         </dependency>
 
+        <!-- TESTING -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${jupiter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit-platform-suite.version}</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
