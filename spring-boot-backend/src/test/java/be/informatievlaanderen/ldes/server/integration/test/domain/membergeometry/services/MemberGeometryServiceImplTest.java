@@ -51,7 +51,7 @@ class MemberGeometryServiceImplTest {
             List<MemberGeometry> members = initMembers();
             when(repository.getMembersByGeometry(rectangle)).thenReturn(members);
 
-            List<MemberGeometryDto> retrievedMembers = service.getMembersInRectangle(new GeoJSONWriter().write(rectangle));
+            List<MemberGeometryDto> retrievedMembers = service.getMembersInRectangle(rectangle);
             for (int i = 0; i < members.size(); i++) {
                 MemberGeometryDto memberGeometryDto = retrievedMembers.get(i);
                 MemberGeometry memberGeometry = members.get(i);
@@ -69,7 +69,7 @@ class MemberGeometryServiceImplTest {
             final GeoJSONReader geoJSONReader = new GeoJSONReader();
             when(repository.getMembersByGeometry(rectangle)).thenReturn(initMembers());
 
-            List<Geometry> retrievedMembers = service.getMembersInRectangle(new GeoJSONWriter().write(rectangle)).stream()
+            List<Geometry> retrievedMembers = service.getMembersInRectangle(rectangle).stream()
                     .map(dto -> geoJSONReader.read(dto.getGeojsonGeometry()))
                     .toList();
             Geometry outsidePoint = wktReader.read("POINT(6 6)");
