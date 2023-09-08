@@ -16,5 +16,5 @@ export default defineConfig({
   server: {
     proxy: {
       // string shorthand: http://localhost:5173/foo -> http://localhost:4567/foo
-      '/in-rectangle': 'http://localhost:8080'}}
+      '/in-rectangle': 'http://localhost:8084'}}
 })
