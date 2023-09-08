@@ -1,3 +1,5 @@
+
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:25432/test
@@ -13,4 +15,5 @@ spring:
 ldes:
   streams:
     - "https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder"
-
+server:
+  port: 8084

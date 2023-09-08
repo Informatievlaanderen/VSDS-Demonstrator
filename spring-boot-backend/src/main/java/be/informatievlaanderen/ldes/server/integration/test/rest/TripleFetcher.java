@@ -1,6 +1,7 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest;
 
 
+import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,7 +37,7 @@ public class TripleFetcher {
 
 // Request parameters and other properties.
 
-        String queryString = "Describe" + id;
+        String queryString = "Describe<" + id+">";
         List<NameValuePair> params = new ArrayList<NameValuePair>(1);
         params.add(new BasicNameValuePair("query", queryString));
         httppost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -47,6 +48,7 @@ public class TripleFetcher {
 
         if (entity != null) {
             try (InputStream instream = entity.getContent()) {
+//                System.out.println(new String(instream.readAllBytes()));
                 Model model = Rio.parse(instream, RDFFormat.NTRIPLES);
                 model.forEach(statement -> { triples.add(new TripleDTO(statement.getSubject().stringValue(), statement.getPredicate().stringValue(), statement.getObject().stringValue()));});
             }

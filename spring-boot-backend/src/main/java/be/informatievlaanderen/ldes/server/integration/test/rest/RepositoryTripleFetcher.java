@@ -1,5 +1,6 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest;
 
+import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
 import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;

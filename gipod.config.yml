@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8087
 orchestrator:
   pipelines:
     - name: gipod
@@ -11,5 +11,9 @@ orchestrator:
       outputs:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
           config:
-            sparql-host: http://host.docker.internal:8080/rdf4j-server
-            repository-id: test4
+            sparql-host: http://localhost:8080/rdf4j-server
+            repository-id: test
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+          config:
+            content-type: application/n-quads
+            endpoint: http://localhost:8084/members    
