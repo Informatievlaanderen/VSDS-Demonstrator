@@ -2,11 +2,13 @@
 </script>
 
 <template>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-  <div style="float:left; height:500px; width:500px"><svg></svg></div>
-  <div style="float:right; height:500px; width:600px" id="map"></div>
+  <div style="float:left; height:500px; width:600px">
+    <svg></svg>
+  </div>
+  <div style="float:right; height:500px; width:500px" id="map"></div>
 </template>
 
 <script>
@@ -24,13 +26,14 @@ export default {
       data: [],
       map: {},
       markers: [],
-      memberId :null
+      memberId: null,
+      simulation: null
     };
   },
 
   mounted() {
     this.map = L.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
-    this.map.on('moveend', function() {
+    this.map.on('moveend', function () {
 
     });
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -58,10 +61,12 @@ export default {
   methods: {
     handleMemberGeometries(memberGeometries) {
       function visualizeTriples(triples) {
-        const width = 500;
-        const height = 500;
-        const svg = d3.select("svg").attr("width", width).attr("height", height);
+        let children = d3.select("svg").selectAll("*")
+        children.remove();
 
+        const width = 600;
+        const height = 500;
+        let svg = d3.select("svg").attr("width", width).attr("height", height);
         let graph = triplesToGraph(triples);
         let force = d3.forceSimulation(graph.nodes);
 
@@ -133,98 +138,77 @@ export default {
             .append("circle")
             .attr("class", "node")
             .attr("r", 8)
-            .on("click", async function (d) {
-              let triples = await axios
-                  .get('http://localhost:8080/'+d.name)
-              await this.visualizeTriples(triples.data);
-              // alert("You clicked on node " + d.name);
-            }.bind(this))
+            // .on("click", async function (d) {
+            //   let triples = await axios
+            //       .get('http://localhost:8080/'+d.name)
+            //   await this.visualizeTriples(triples.data);
+            //   // alert("You clicked on node " + d.name);
+            // }
+            // .bind(this))
             .call(drag);
 
         function ticked() {
           nodes
               .attr("cx", function (d) {
-                return d.x;
+                return 2 * d.x;
               })
               .attr("cy", function (d) {
-                return d.y;
+                return 2 * d.y;
               });
 
           links
               .attr("x1", function (d) {
-                return d.source.x;
+                return 2 * d.source.x;
               })
               .attr("y1", function (d) {
-                return d.source.y;
+                return 2 * d.source.y;
               })
               .attr("x2", function (d) {
-                return d.target.x;
+                return 2 * d.target.x;
               })
               .attr("y2", function (d) {
-                return d.target.y;
+                return 2 * d.target.y;
               });
 
           nodeTexts
               .attr("x", function (d) {
-                return d.x + 12;
+                return 2 * d.x + 12;
               })
               .attr("y", function (d) {
-                return d.y + 3;
+                return 2 * d.y + 3;
               });
 
           linkTexts
               .attr("x", function (d) {
-                return 4 + (d.source.x + d.target.x) / 2;
+                return 4 + 2 * (d.source.x + d.target.x) / 2;
               })
               .attr("y", function (d) {
-                return 4 + (d.source.y + d.target.y) / 2;
+                return 4 + 2 * (d.source.y + d.target.y) / 2;
               });
         }
 
         force.on("tick", ticked);
 
-        force
+        return force
             .force(
                 "link",
                 d3.forceLink(graph.links).id((d) => d.id)
             )
             .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            .force("center", d3.forceCenter(width / 5, height / 4));
       }
 
       function whenClicked(e) {
-        // let memberId = e.sourceTarget._popup._content
-        let triples = [
-          {
-            subject: "ex:ThaiLand",
-            predicate: "ex:hasFood",
-            object: "ex:TomYumKung",
-          },
-          {
-            subject: "ex:TomYumKung",
-            predicate: "rdf:type",
-            object: "ex:SpicyFood",
-          },
-          {
-            subject: "ex:TomYumKung",
-            predicate: "ex:includes",
-            object: "ex:shrimp",
-          },
-          {
-            subject: "ex:TomYumKung",
-            predicate: "ex:includes",
-            object: "ex:chilly",
-          },
-          {
-            subject: "ex:TomYumKung",
-            predicate: "ex:includes",
-            object: "ex:lemon",
-          },
-          {subject: "ex:lemon", predicate: "ex:hasTaste", object: "ex:sour"},
-          {subject: "ex:chilly", predicate: "ex:hasTaste", object: "ex:spicy"},
-        ];
-        visualizeTriples(triples)
+
+        let memberId = e.sourceTarget._popup._content
+        axios({
+          method: 'get',
+          url: 'http://localhost:5173/triples/' + memberId,
+        }).then((response) => {
+          visualizeTriples(response.data)
+        });
       }
+
       function onEachFeature(feature, layer) {
         if (feature.properties && feature.properties.popupContent) {
           layer.bindPopup(feature.properties.popupContent);
@@ -234,15 +218,16 @@ export default {
           click: whenClicked
         });
       }
+
       memberGeometries.forEach(feature => {
         var geoJsonFeature = {
           "type": "Feature",
           "geometry": feature.geojsonGeometry,
-          "properties":{
+          "properties": {
             "popupContent": feature.memberId
           }
         }
-        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature} ).addTo(this.map)
+        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature}).addTo(this.map)
         this.markers.push(marker)
       })
     },
