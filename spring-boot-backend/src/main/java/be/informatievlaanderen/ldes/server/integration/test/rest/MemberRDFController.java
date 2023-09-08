@@ -4,11 +4,11 @@ import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometr
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MapBoundsDto;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeometryDto;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 public class MemberRDFController {
@@ -30,11 +30,12 @@ public class MemberRDFController {
         return service.getMembersInRectangle(mapBoundsDto.getGeometry());
     }
 
-    @GetMapping(value = "/triples/{memberId}")
+    @GetMapping(value = "/triples/**")
     @CrossOrigin(origins = "*", allowedHeaders = "")
-    public List<TripleDTO> retrieveTriplesOfNode(@PathVariable("memberId") String memberId) throws IOException {
-       memberId="https://private-api.gipod.vlaanderen.be/api/v1/mobility-hindrances/15191214/29836822";
+    public List<TripleDTO> retrieveTriplesOfNode(HttpServletRequest request) throws IOException {
+        String requestURL = request.getRequestURL().toString();
+
+        String memberId = requestURL.split("/triples/")[1];
         return new TripleFetcher("test", "http://localhost:8080/rdf4j-server/repositories/").fetchNodeHttp(memberId);
-//    return null;
     }
 }
