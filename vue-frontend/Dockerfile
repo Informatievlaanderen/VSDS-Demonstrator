@@ -14,7 +14,7 @@ RUN apk upgrade
 RUN apk add bash
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-COPY ./substituteEnv.sh /docker-entrypoint.d/substituteEnv.sh
+RUN sed -i 's/localhost:5173/localhost:8084/g' /usr/share/nginx/html/assets/*.js
 
 # Execute the subsitution script and pass the path of the file to replace
 

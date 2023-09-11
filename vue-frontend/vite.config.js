@@ -14,6 +14,9 @@ export default defineConfig({
         }
     },
     server: {
+        cors: {
+            origin: "*"
+        },
         proxy: {
             // string shorthand: http://localhost:5173/foo -> http://localhost:8084/foo
             '/in-rectangle': 'http://spring-boot-backend:8084',

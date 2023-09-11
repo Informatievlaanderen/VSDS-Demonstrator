@@ -78,4 +78,5 @@ services:
 
 networks:
   demonstrator:
+    driver: bridge
     name: demonstrator

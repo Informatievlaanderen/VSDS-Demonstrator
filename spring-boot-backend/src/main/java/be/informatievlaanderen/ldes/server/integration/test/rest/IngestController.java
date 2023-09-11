@@ -6,6 +6,7 @@ import be.informatievlaanderen.ldes.server.integration.test.rest.config.StreamsC
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberDTO;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ public class IngestController {
     }
 
     @PostMapping(value = "/members")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void ingestLdesMember(@RequestBody MemberDTO memberDTO) throws FactoryException, TransformException {
         service.ingestMemberGeometry(memberDTO.getMemberGeometry(streamsConfig.getStreams()));
     }

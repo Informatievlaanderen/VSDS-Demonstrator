@@ -52,6 +52,7 @@ export default {
         data: this.map.getBounds(),
         headers: {
           'Content-type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       }).then((response) => {
         this.handleMemberGeometries(response.data)

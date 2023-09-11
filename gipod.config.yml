@@ -16,4 +16,4 @@ orchestrator:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             content-type: application/n-quads
-            endpoint: http://spring-boot-backend:8084/members
+            endpoint: http://host.docker.internal:8084/members

@@ -19,19 +19,18 @@ public class MemberRDFController {
     }
 
     @GetMapping(value = "/geometry/{memberId}")
-    @CrossOrigin(origins = "*", allowedHeaders = "")
     public MemberGeometryDto retrieveLdesFragment(@PathVariable String memberId) {
         return service.getMemberById(memberId);
     }
 
     @PostMapping(value = "/in-rectangle", consumes = {"application/json"})
-    @CrossOrigin(origins = "*", allowedHeaders = "")
-    public List<MemberGeometryDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto) {
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    public List<MemberGeometryDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto, HttpServletRequest request) {
         return service.getMembersInRectangle(mapBoundsDto.getGeometry());
     }
 
     @GetMapping(value = "/triples/**")
-    @CrossOrigin(origins = "*", allowedHeaders = "")
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     public List<TripleDTO> retrieveTriplesOfNode(HttpServletRequest request) throws IOException {
         String requestURL = request.getRequestURL().toString();
 
