@@ -7,6 +7,11 @@ services:
       - 8082:8080
     volumes:
       - ./gipod.config.yml:/ldio/application.yml:ro
+    depends_on:
+      - spring-boot-backend
+      - rdf4j-server
+    networks:
+      - demonstrator
 
   spring-boot-backend:
     container_name: demonstrator-spring-boot-backend
@@ -26,6 +31,21 @@ services:
     depends_on:
       - postgresql
       - rdf4j-server
+    networks:
+      - demonstrator
+
+  vue-frontend:
+    container_name: demonstrator-vue-frontend
+    image: demonstrator-vue-frontend
+    build:
+      context: vue-frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8085:80
+    depends_on:
+      - spring-boot-backend
+    networks:
+      - demonstrator
 
   rdf4j-server:
     image: eclipse/rdf4j-workbench:latest
@@ -35,7 +55,7 @@ services:
     ports:
       - 8080:8080
     networks:
-      - ldes
+      - demonstrator
 
   postgresql:
     image: kartoza/postgis
@@ -53,7 +73,9 @@ services:
     restart: on-failure
     healthcheck:
       test: "PGPASSWORD=docker pg_isready -h 127.0.0.1 -U docker -d gis"
+    networks:
+      - demonstrator
 
 networks:
-  ldes:
+  demonstrator:
     name: demonstrator
