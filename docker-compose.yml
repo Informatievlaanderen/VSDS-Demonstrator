@@ -26,6 +26,8 @@ services:
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_HIBERNATE_DDLAUTO=update
       - LDES_STREAMS_0_=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
+      - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
+      - GRAPHDB_REPOSITORYID=test
     ports:
       - 8084:8080
     depends_on:

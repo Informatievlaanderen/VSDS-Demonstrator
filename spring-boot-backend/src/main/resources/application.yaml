@@ -13,5 +13,8 @@
 #ldes:
 #  streams:
 #    - "https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder"
+#graphdb:
+#  url: "http://localhost:8080/rdf4j-server/repositories/"
+#  repositoryId: "test"
 #server:
 #  port: 8084
