@@ -7,19 +7,16 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.config.RepositoryImplConfig;
-import org.eclipse.rdf4j.repository.http.config.HTTPRepositoryConfig;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositoryTripleFetcher {
     private final String repositoryId;
-    private final String urlString = "http://localhost:8080/rdf4j-server/repositories/";
     private final RepositoryManager repositoryManager;
     private Repository repository;
 
@@ -50,9 +47,7 @@ public class RepositoryTripleFetcher {
 
 
             try (GraphQueryResult queryResult = dbConnection.prepareGraphQuery(queryString).evaluate()) {
-                queryResult.forEach(statement -> {
-                    triples.add(new TripleDTO(statement.getSubject().stringValue(), statement.getPredicate().stringValue(), statement.getObject().stringValue()));
-                });
+                queryResult.forEach(statement -> triples.add(new TripleDTO(statement.getSubject().stringValue(), statement.getPredicate().stringValue(), statement.getObject().stringValue())));
             }
         }
 
