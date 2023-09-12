@@ -9,7 +9,7 @@ public class FetcherConfig {
 
     @Bean
     public RepositoryTripleFetcher tripleFetcher() {
-        return new RepositoryTripleFetcher("test", "http://localhost:8080/rdf4j-server");
+        return new RepositoryTripleFetcher("test", "http://host.docker.internal:8080/rdf4j-server");
     }
 
 }
