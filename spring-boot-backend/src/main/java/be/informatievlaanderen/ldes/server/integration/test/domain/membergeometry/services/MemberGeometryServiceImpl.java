@@ -6,7 +6,6 @@ import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometr
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeometryDto;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
-import org.wololo.jts2geojson.GeoJSONReader;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
 import java.util.List;
@@ -37,6 +36,6 @@ public class MemberGeometryServiceImpl implements MemberGeometryService {
     public MemberGeometryDto getMemberById(String memberId) {
         return repo.findByMemberId(memberId)
                 .map(memberGeometry -> new MemberGeometryDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry())))
-                .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
+                .orElseThrow(() -> new ResourceNotFoundException("MemberGeometry", memberId));
     }
 }
