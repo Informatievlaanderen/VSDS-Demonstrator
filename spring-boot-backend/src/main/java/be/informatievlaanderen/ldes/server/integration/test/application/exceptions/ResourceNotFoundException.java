@@ -1,4 +1,4 @@
-package be.informatievlaanderen.ldes.server.integration.test.domain.exceptions;
+package be.informatievlaanderen.ldes.server.integration.test.application.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     private final String type;

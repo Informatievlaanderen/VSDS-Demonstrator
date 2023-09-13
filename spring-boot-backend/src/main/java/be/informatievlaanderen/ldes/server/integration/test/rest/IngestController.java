@@ -1,11 +1,9 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest;
 
-import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.services.MemberGeometryService;
+import be.informatievlaanderen.ldes.server.integration.test.application.services.MemberGeometryService;
 
-import be.informatievlaanderen.ldes.server.integration.test.rest.config.StreamsConfig;
-import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberDTO;
-import org.opengis.referencing.operation.TransformException;
-import org.opengis.util.FactoryException;
+import be.informatievlaanderen.ldes.server.integration.test.application.valueobjects.MemberDTO;
+import org.apache.jena.rdf.model.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,16 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class IngestController {
     private final MemberGeometryService service;
-    private final StreamsConfig streamsConfig;
 
-    public IngestController(MemberGeometryService service, StreamsConfig streamsConfig) {
+    public IngestController(MemberGeometryService service) {
         this.service = service;
-        this.streamsConfig = streamsConfig;
     }
 
     @PostMapping(value = "/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public void ingestLdesMember(@RequestBody MemberDTO memberDTO) throws FactoryException, TransformException {
-        service.ingestMemberGeometry(memberDTO.getMemberGeometry(streamsConfig.getStreams()));
+    public void ingestLdesMember(@RequestBody Model model) {
+        service.ingestMemberGeometry(new MemberDTO(model));
     }
 }

@@ -1,4 +1,4 @@
-package be.informatievlaanderen.ldes.server.integration.test.rest.config;
+package be.informatievlaanderen.ldes.server.integration.test.application.config;
 
 import org.springframework.context.annotation.Configuration;
 

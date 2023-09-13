@@ -1,5 +1,6 @@
-package be.informatievlaanderen.ldes.server.integration.test.rest.config;
+package be.informatievlaanderen.ldes.server.integration.test.application.config;
 
+import be.informatievlaanderen.ldes.server.integration.test.application.config.EventStreamConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

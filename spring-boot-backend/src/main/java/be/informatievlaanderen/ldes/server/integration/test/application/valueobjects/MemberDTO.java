@@ -1,7 +1,7 @@
-package be.informatievlaanderen.ldes.server.integration.test.rest.dtos;
+package be.informatievlaanderen.ldes.server.integration.test.application.valueobjects;
 
 import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.entities.MemberGeometry;
-import be.informatievlaanderen.ldes.server.integration.test.rest.config.EventStreamConfig;
+import be.informatievlaanderen.ldes.server.integration.test.application.config.EventStreamConfig;
 import org.apache.jena.ext.com.google.common.collect.Iterables;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
 import org.apache.jena.geosparql.implementation.vocabulary.SRS_URI;
@@ -24,6 +24,10 @@ public class MemberDTO {
 
     public MemberDTO(Model model) {
         this.model = model;
+    }
+
+    public Model getModel() {
+        return model;
     }
 
     public MemberGeometry getMemberGeometry(List<EventStreamConfig> streams) throws FactoryException, TransformException {

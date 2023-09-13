@@ -1,9 +1,9 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest;
 
-import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.services.MemberGeometryService;
+import be.informatievlaanderen.ldes.server.integration.test.application.services.MemberGeometryService;
 import be.informatievlaanderen.ldes.server.integration.test.rest.config.GraphDBConfig;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MapBoundsDto;
-import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeometryDto;
+import be.informatievlaanderen.ldes.server.integration.test.application.valueobjects.MemberGeometryDto;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;

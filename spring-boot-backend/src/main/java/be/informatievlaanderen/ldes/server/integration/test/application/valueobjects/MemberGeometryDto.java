@@ -1,4 +1,4 @@
-package be.informatievlaanderen.ldes.server.integration.test.rest.dtos;
+package be.informatievlaanderen.ldes.server.integration.test.application.valueobjects;
 
 import org.wololo.geojson.Geometry;
 
