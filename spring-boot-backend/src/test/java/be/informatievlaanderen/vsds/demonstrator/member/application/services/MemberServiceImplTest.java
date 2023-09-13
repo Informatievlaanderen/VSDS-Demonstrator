@@ -39,6 +39,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
+    private static final String TIME_PERIOD = "PT5M";
+    private static final Duration duration = Duration.parse(TIME_PERIOD).dividedBy(2);
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = timestamp.minus(duration);
     private static final LocalDateTime endTime = timestamp.plus(duration);
@@ -70,9 +72,9 @@ class MemberServiceImplTest {
         void when_GetMembersInRectangle_then_ReturnListOfMemberDtos() throws ParseException {
             final GeoJSONReader geoJSONReader = new GeoJSONReader();
             final List<Member> members = initMembers();
-            when(repository.getMembersByGeometry(rectangle, timestamp)).thenReturn(members);
+            when(repository.getMembersByGeometry(rectangle, startTime, endTime)).thenReturn(members);
 
-            final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, timestamp).stream()
+            final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, timestamp, TIME_PERIOD).stream()
                     .map(dto -> new Member(dto.getMemberId(), geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp()))
                     .toList();
             assertEquals(members, retrievedMembers);

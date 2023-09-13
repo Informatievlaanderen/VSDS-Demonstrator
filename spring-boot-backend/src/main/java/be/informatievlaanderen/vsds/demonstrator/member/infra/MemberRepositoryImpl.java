@@ -23,9 +23,9 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public List<Member> getMembersByGeometry(Geometry geometry, LocalDateTime timestamp) {
+    public List<Member> getMembersByGeometry(Geometry geometry, LocalDateTime startTime, LocalDateTime endTime) {
         return memberGeometryJpaRepo
-                .getMemberGeometryEntitiesCoveredByGeometry(geometry, timestamp)
+                .getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(geometry, startTime, endTime)
                 .stream()
                 .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
                 .toList();

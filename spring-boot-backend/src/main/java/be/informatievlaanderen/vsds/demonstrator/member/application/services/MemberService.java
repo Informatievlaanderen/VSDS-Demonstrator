@@ -10,7 +10,7 @@ import java.util.List;
 public interface MemberService {
     void ingestMember(IngestedMemberDto ingestedMemberDto);
 
-    List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp);
+    List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp, String timePeriod);
 
     MemberDto getMemberById(String memberId);
 }

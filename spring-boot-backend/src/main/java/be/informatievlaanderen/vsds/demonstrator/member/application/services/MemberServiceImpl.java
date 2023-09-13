@@ -12,6 +12,7 @@ import org.opengis.util.FactoryException;
 import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,8 +37,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp) {
-        return repository.getMembersByGeometry(rectangleGeometry, timestamp).stream().map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp())).toList();
+    public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp, String timePeriod) {
+        var duration = Duration.parse(timePeriod).dividedBy(2);
+        return repository.getMembersByGeometry(rectangleGeometry, timestamp.minus(duration), timestamp.plus(duration))
+                .stream()
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
+                .toList();
     }
 
     @Override
