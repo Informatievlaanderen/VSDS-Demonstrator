@@ -13,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build ./vue-frontend --file Dockerfile --tag vsds-demonstrator-ui:$(date +%s)
+        run: docker build ./vue-frontend --file ./vue-frontend/Dockerfile --tag vsds-demonstrator-ui:$(date +%s)
         
   Back-end:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build ./spring-boot-backend --file Dockerfile --tag vsds-demonstrator-server:$(date +%s)
+        run: docker build ./spring-boot-backend --file ./spring-boot-backend/Dockerfile --tag vsds-demonstrator-server:$(date +%s)
