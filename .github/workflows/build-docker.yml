@@ -34,7 +34,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/Informatievlaanderen/vsds-demonstrator-ui
           tags: |
-            type=raw,value=$(date +'%Y%m%d%H%M%S')
+            type=raw,value={{date 'YYYYMMDDHHmmss'}}
             type=raw,value=latest
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
@@ -68,7 +68,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/Informatievlaanderen/vsds-demonstrator-server
           tags: |
-            type=raw,value=$(date +'%Y%m%d%H%M%S')
+            type=raw,value={{date 'YYYYMMDDHHmmss'}}
             type=raw,value=latest
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
