@@ -2,9 +2,6 @@ package be.informatievlaanderen.vsds.demonstrator.member.infra;
 
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.infra.MemberEntity;
-import be.informatievlaanderen.vsds.demonstrator.member.infra.MemberEntityJpaRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.infra.MemberRepositoryImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -22,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

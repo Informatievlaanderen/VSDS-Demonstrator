@@ -6,9 +6,9 @@ import be.informatievlaanderen.vsds.demonstrator.triple.infra.exceptions.TripleF
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.rdf4j.model.Model;
@@ -30,9 +30,7 @@ public class TripleRepositoryImpl implements TripleRepository {
 
     @Override
     public MemberDescription getById(String id) {
-        HttpClient httpclient = HttpClients.createDefault();
-
-        try {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httppost = new HttpPost(graphDBConfig.getUrl() + graphDBConfig.getRepositoryId());
 
 // Request parameters and other properties.
