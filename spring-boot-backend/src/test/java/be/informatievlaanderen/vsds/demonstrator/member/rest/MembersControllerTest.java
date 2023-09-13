@@ -1,11 +1,17 @@
-package be.informatievlaanderen.vsds.demonstrator.rest;
+package be.informatievlaanderen.vsds.demonstrator.member.rest;
 
+
+import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
-import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberGeometryService;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.MembersController;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.converters.ModelHttpConverter;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.GraphDBConfig;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.MemberExceptionHandler;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ResourceUtils;
@@ -38,18 +45,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ActiveProfiles({"test"})
 @WebMvcTest
-@ContextConfiguration(classes = {MembersController.class, MemberExceptionHandler.class, GraphDBConfig.class})
+@ContextConfiguration(classes = {MembersController.class, ModelHttpConverter.class, MemberExceptionHandler.class, GraphDBConfig.class, StreamsConfig.class})
 class MembersControllerTest {
     private static final String ID = "member-id";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static org.wololo.geojson.Geometry geoJSON;
 
     @MockBean
-    private MemberGeometryService service;
+    private MemberService service;
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private StreamsConfig streamsConfig;
 
     @BeforeAll
     static void beforeAll() throws ParseException {
@@ -96,15 +106,29 @@ class MembersControllerTest {
 
         mockMvc.perform(post("/in-rectangle?timestamp=" + timestamp)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(readMapBounds()))
+                        .content(readDataFromFile("mapbounds/rectangle.json")))
                 .andExpect(content().json(json))
                 .andExpect(status().isOk());
 
         verify(service).getMembersInRectangle(rectangle, timestamp);
     }
 
-    private byte[] readMapBounds() throws IOException {
-        Path path = ResourceUtils.getFile("classpath:mapbounds/rectangle.json").toPath();
+    @Test
+    void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
+        Model model = RDFParser.source("members/mobility-hindrance.nq").lang(Lang.NQUADS).toModel();
+        IngestedMemberDto dto = new IngestedMemberDto(model);
+        Member member = dto.getMemberGeometry(streamsConfig.getStreams());
+
+        mockMvc.perform(post("/members")
+                        .content(readDataFromFile("members/mobility-hindrance.nq"))
+                        .contentType(Lang.NQUADS.getHeaderString()))
+                .andExpect(status().isOk());
+
+//        verify(service).ingestMemberGeometry(argThat(result -> result.getGeometry().equals(memberGeometry.getGeometry()) && result.getTimestamp().isEqual(memberGeometry.getTimestamp())));
+    }
+
+    private byte[] readDataFromFile(String filename) throws IOException {
+        Path path = ResourceUtils.getFile("classpath:" + filename).toPath();
         return Files.readAllBytes(path);
     }
 

@@ -14,7 +14,7 @@ public class StreamsConfig {
         return streams;
     }
 
-    public List<String> getCollectionNames() {
+    public List<String> getMemberTypes() {
         return streams.stream().map(EventStreamConfig::getMemberType).toList();
     }
 

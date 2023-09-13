@@ -7,8 +7,8 @@ import org.locationtech.jts.geom.Geometry;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface MemberGeometryService {
-    void ingestMemberGeometry(IngestedMemberDto ingestedMemberDto);
+public interface MemberService {
+    void ingestMember(IngestedMemberDto ingestedMemberDto);
 
     List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp);
 

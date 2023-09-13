@@ -1,7 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects;
 
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import org.apache.jena.ext.com.google.common.collect.Iterables;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
 import org.apache.jena.geosparql.implementation.vocabulary.SRS_URI;

@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.infra;
+package be.informatievlaanderen.vsds.demonstrator.member.infra;
 
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;

@@ -1,6 +1,5 @@
-package be.informatievlaanderen.vsds.demonstrator.domain.member.entities;
+package be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities;
 
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;

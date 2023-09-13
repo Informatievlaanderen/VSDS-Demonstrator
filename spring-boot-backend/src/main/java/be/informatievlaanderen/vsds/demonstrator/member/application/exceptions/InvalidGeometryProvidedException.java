@@ -4,9 +4,8 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFWriter;
 
-@SuppressWarnings("java:S1948")
 public class InvalidGeometryProvidedException extends RuntimeException {
-    private final Model model;
+    private final transient Model model;
 
     public InvalidGeometryProvidedException(Model model, Throwable cause) {
         super(cause);

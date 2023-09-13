@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.member.rest;
 
-import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberGeometryService;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.MapBoundsDto;
@@ -12,9 +12,9 @@ import java.util.List;
 
 @RestController
 public class MembersController {
-    private final MemberGeometryService service;
+    private final MemberService service;
 
-    public MembersController(MemberGeometryService service) {
+    public MembersController(MemberService service) {
         this.service = service;
     }
 
@@ -32,6 +32,6 @@ public class MembersController {
     @PostMapping(value = "/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void ingestLdesMember(@RequestBody Model model) {
-        service.ingestMemberGeometry(new IngestedMemberDto(model));
+        service.ingestMember(new IngestedMemberDto(model));
     }
 }

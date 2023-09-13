@@ -1,9 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.application.services;
 
 import be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects.Triple;
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.entities.MemberDescription;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
-import org.eclipse.rdf4j.model.Model;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
