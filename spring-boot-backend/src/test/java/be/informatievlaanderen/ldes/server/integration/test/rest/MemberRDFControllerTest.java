@@ -2,6 +2,7 @@ package be.informatievlaanderen.ldes.server.integration.test.rest;
 
 import be.informatievlaanderen.ldes.server.integration.test.domain.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.services.MemberGeometryService;
+import be.informatievlaanderen.ldes.server.integration.test.rest.config.GraphDBConfig;
 import be.informatievlaanderen.ldes.server.integration.test.rest.config.MemberGeometryExceptionHandler;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeometryDto;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-@ContextConfiguration(classes = {MemberRDFController.class, MemberGeometryExceptionHandler.class})
+@ContextConfiguration(classes = {MemberRDFController.class, MemberGeometryExceptionHandler.class, GraphDBConfig.class})
 class MemberRDFControllerTest {
     private static final String ID = "member-id";
     private static org.wololo.geojson.Geometry geoJSON;

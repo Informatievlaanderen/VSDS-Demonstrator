@@ -1,25 +1,26 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class CoordinateDto {
-    private double lat;
-    private double lng;
+    @JsonProperty(value = "lat")
+    private double latitude;
+    @JsonProperty(value = "lng")
+    private double longitude;
 
-    public CoordinateDto() {
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
-    public void setLng(double lng) {
-        this.lng = lng;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLng() {
-        return lng;
+    public double getLongitude() {
+        return longitude;
     }
 }
