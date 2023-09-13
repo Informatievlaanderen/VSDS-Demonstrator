@@ -1,5 +1,6 @@
-package be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher;
+package be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher.services;
 
+import be.informatievlaanderen.ldes.server.integration.test.rest.config.GraphDBConfig;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
 import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.eclipse.rdf4j.query.GraphQueryResult;
@@ -11,18 +12,20 @@ import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RepositoryTripleFetcher {
+@Service
+public class RepositoryTripleFetcher implements RdfFetcherService{
     private final String repositoryId;
     private final RepositoryManager repositoryManager;
     private Repository repository;
 
-    public RepositoryTripleFetcher(String repositoryId, String hostUrl) {
-        this.repositoryId = repositoryId;
-        this.repositoryManager = new RemoteRepositoryManager(hostUrl);
+    public RepositoryTripleFetcher(GraphDBConfig config) {
+        this.repositoryId = config.getRepositoryId();
+        this.repositoryManager = new RemoteRepositoryManager(config.getUrl());
         init();
     }
 

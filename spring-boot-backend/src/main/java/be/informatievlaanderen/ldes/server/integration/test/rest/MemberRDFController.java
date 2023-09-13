@@ -1,8 +1,7 @@
 package be.informatievlaanderen.ldes.server.integration.test.rest;
 
 import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometry.services.MemberGeometryService;
-import be.informatievlaanderen.ldes.server.integration.test.rest.config.GraphDBConfig;
-import be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher.RepositoryTripleFetcher;
+import be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher.services.RepositoryTripleFetcher;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MapBoundsDto;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.MemberGeometryDto;
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
@@ -15,12 +14,10 @@ import java.util.List;
 @RestController
 public class MemberRDFController {
     private final MemberGeometryService service;
-    private final GraphDBConfig graphDBConfig;
     private final RepositoryTripleFetcher tripleFetcher;
 
-    public MemberRDFController(MemberGeometryService service, GraphDBConfig graphDBConfig, RepositoryTripleFetcher tripleFetcher) {
+    public MemberRDFController(MemberGeometryService service, RepositoryTripleFetcher tripleFetcher) {
         this.service = service;
-        this.graphDBConfig = graphDBConfig;
         this.tripleFetcher = tripleFetcher;
     }
 

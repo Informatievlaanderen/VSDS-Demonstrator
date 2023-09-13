@@ -1,4 +1,4 @@
-package be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher;
+package be.informatievlaanderen.ldes.server.integration.test.domain.triplefetcher.services;
 
 
 import be.informatievlaanderen.ldes.server.integration.test.rest.dtos.TripleDTO;
