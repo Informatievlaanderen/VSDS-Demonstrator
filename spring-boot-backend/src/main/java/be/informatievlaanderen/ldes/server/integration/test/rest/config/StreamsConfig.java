@@ -8,13 +8,19 @@ import java.util.List;
 @Configuration
 @ConfigurationProperties(prefix = "ldes")
 public class StreamsConfig {
-    private List<String> streams;
+    private List<EventStreamConfig> streams;
 
-    public List<String> getStreams() {
+    public List<EventStreamConfig> getStreams() {
         return streams;
     }
 
-    public void setStreams(List<String> streams) {
+    public List<String> getCollectionNames() {
+        return streams.stream().map(EventStreamConfig::getMemberType).toList();
+    }
+
+    public void setStreams(List<EventStreamConfig> streams) {
         this.streams = streams;
     }
+
+
 }

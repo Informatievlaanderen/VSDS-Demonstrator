@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -28,8 +29,8 @@ public class MemberRDFController {
 
     @PostMapping(value = "/in-rectangle", consumes = {"application/json"})
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<MemberGeometryDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto, HttpServletRequest request) {
-        return service.getMembersInRectangle(mapBoundsDto.getGeometry());
+    public List<MemberGeometryDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp) {
+        return service.getMembersInRectangle(mapBoundsDto.getGeometry(), timestamp);
     }
 
     @GetMapping(value = "/triples/**")

@@ -5,6 +5,7 @@ import be.informatievlaanderen.ldes.server.integration.test.domain.membergeometr
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,16 +18,16 @@ public class MemberGeometryRepositoryImpl implements MemberGeometryRepository {
     }
 
     @Override
-    public void saveMember(MemberGeometry geometry) {
-        memberGeometryJpaRepo.save(new MemberGeometryEntity(geometry.getMemberId(), geometry.getGeometry()));
+    public void saveMember(MemberGeometry member) {
+        memberGeometryJpaRepo.save(new MemberGeometryEntity(member.getMemberId(), member.getGeometry(), member.getTimestamp()));
     }
 
     @Override
-    public List<MemberGeometry> getMembersByGeometry(Geometry geometry) {
+    public List<MemberGeometry> getMembersByGeometry(Geometry geometry, LocalDateTime timestamp) {
         return memberGeometryJpaRepo
-                .getMemberGeometryEntitiesCoveredByGeometry(geometry)
+                .getMemberGeometryEntitiesCoveredByGeometry(geometry, timestamp)
                 .stream()
-                .map(memberGeometryEntity -> new MemberGeometry(memberGeometryEntity.getMemberId(), memberGeometryEntity.getGeometry()))
+                .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
                 .toList();
     }
 
@@ -34,6 +35,6 @@ public class MemberGeometryRepositoryImpl implements MemberGeometryRepository {
     public Optional<MemberGeometry> findByMemberId(String memberId) {
         return memberGeometryJpaRepo
                 .findById(memberId)
-                .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry()));
+                .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()));
     }
 }

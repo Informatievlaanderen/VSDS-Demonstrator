@@ -13,7 +13,8 @@ import org.locationtech.jts.io.WKTReader;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MemberGeometryRepositoryImplTest {
     private static final String ID = "member-id";
+    private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static Geometry point;
     private static Geometry rectangle;
     private MemberGeometryRepository repository;
@@ -46,8 +48,8 @@ class MemberGeometryRepositoryImplTest {
     class RetrievalById {
         @Test
         void when_DbContainsMember_then_ReturnMemberInOptional() {
-            final MemberGeometryEntity entity = new MemberGeometryEntity(ID, point);
-            final MemberGeometry memberGeometry = new MemberGeometry(ID, point);
+            final MemberGeometryEntity entity = new MemberGeometryEntity(ID, point, timestamp);
+            final MemberGeometry memberGeometry = new MemberGeometry(ID, point, timestamp);
 
             when(jpaRepository.findById(ID)).thenReturn(Optional.of(entity));
 
@@ -76,29 +78,29 @@ class MemberGeometryRepositoryImplTest {
         void when_DbDoesContainMembers_then_ReturnMembersInRectangle() throws ParseException {
             final List<MemberGeometryEntity> entities = initMembers();
             final List<MemberGeometry> members = entities.stream()
-                    .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry()))
+                    .map(entity -> new MemberGeometry(entity.getMemberId(), entity.getGeometry(), timestamp))
                     .toList();
 
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle)).thenReturn(entities);
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp)).thenReturn(entities);
 
-            assertEquals(members, repository.getMembersByGeometry(rectangle));
+            assertEquals(members, repository.getMembersByGeometry(rectangle, timestamp));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp);
         }
 
         @Test
         void when_DbContainsOnlyMembersOutsideRectangle_then_ReturnEmptyList() {
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle)).thenReturn(List.of());
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp)).thenReturn(List.of());
 
-            assertEquals(List.of(), repository.getMembersByGeometry(rectangle));
+            assertEquals(List.of(), repository.getMembersByGeometry(rectangle, timestamp));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp);
         }
     }
 
     @Test
     void test_Saving() {
-        MemberGeometry memberGeometry = new MemberGeometry(ID, point);
+        MemberGeometry memberGeometry = new MemberGeometry(ID, point, timestamp);
 
         repository.saveMember(memberGeometry);
 
@@ -111,7 +113,7 @@ class MemberGeometryRepositoryImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberGeometryEntity("id-%d".formatted(i * 6 + j), geometry));
+                members.add(new MemberGeometryEntity("id-%d".formatted(i * 6 + j), geometry, timestamp));
             }
         }
         return members;

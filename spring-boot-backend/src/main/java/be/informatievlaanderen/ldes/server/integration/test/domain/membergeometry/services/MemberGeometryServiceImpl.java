@@ -8,6 +8,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,17 +26,17 @@ public class MemberGeometryServiceImpl implements MemberGeometryService {
     }
 
     @Override
-    public List<MemberGeometryDto> getMembersInRectangle(Geometry rectangleGeometry) {
-        return repo.getMembersByGeometry(rectangleGeometry)
+    public List<MemberGeometryDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp) {
+        return repo.getMembersByGeometry(rectangleGeometry, timestamp)
                 .stream()
-                .map(memberGeometry -> new MemberGeometryDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry())))
+                .map(memberGeometry -> new MemberGeometryDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
                 .toList();
     }
 
     @Override
     public MemberGeometryDto getMemberById(String memberId) {
         return repo.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberGeometryDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry())))
+                .map(memberGeometry -> new MemberGeometryDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
                 .orElseThrow(() -> new ResourceNotFoundException("MemberGeometry", memberId));
     }
 }

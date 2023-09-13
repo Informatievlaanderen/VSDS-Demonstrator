@@ -15,8 +15,9 @@ import org.locationtech.jts.io.WKTReader;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.wololo.jts2geojson.GeoJSONReader;
-import org.wololo.jts2geojson.GeoJSONWriter;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class MemberGeometryServiceImplTest {
+    private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static Geometry rectangle;
 
     @Mock
@@ -50,22 +52,22 @@ class MemberGeometryServiceImplTest {
         void when_GetMembersInRectangle_then_ReturnListOfMemberGeometryDtos() throws ParseException {
             final GeoJSONReader geoJSONReader = new GeoJSONReader();
             final List<MemberGeometry> members = initMembers();
-            when(repository.getMembersByGeometry(rectangle)).thenReturn(members);
+            when(repository.getMembersByGeometry(rectangle, timestamp)).thenReturn(members);
 
-            final List<MemberGeometry> retrievedMembers = service.getMembersInRectangle(rectangle).stream()
-                    .map(dto -> new MemberGeometry(dto.getMemberId(), geoJSONReader.read(dto.getGeojsonGeometry())))
+            final List<MemberGeometry> retrievedMembers = service.getMembersInRectangle(rectangle, timestamp).stream()
+                    .map(dto -> new MemberGeometry(dto.getMemberId(), geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp()))
                     .toList();
             assertEquals(members, retrievedMembers);
-            verify(repository).getMembersByGeometry(rectangle);
+            verify(repository).getMembersByGeometry(rectangle, timestamp);
         }
 
         @Test
         void when_GetMembersInRectangle_then_VerifyMemberGeometryIsInRectangle() throws ParseException {
             final WKTReader wktReader = new WKTReader();
             final GeoJSONReader geoJSONReader = new GeoJSONReader();
-            when(repository.getMembersByGeometry(rectangle)).thenReturn(initMembers());
+            when(repository.getMembersByGeometry(rectangle, timestamp)).thenReturn(initMembers());
 
-            List<Geometry> retrievedMembers = service.getMembersInRectangle(rectangle).stream()
+            List<Geometry> retrievedMembers = service.getMembersInRectangle(rectangle, timestamp).stream()
                     .map(dto -> geoJSONReader.read(dto.getGeojsonGeometry()))
                     .toList();
             Geometry outsidePoint = wktReader.read("POINT(6 6)");
@@ -82,7 +84,7 @@ class MemberGeometryServiceImplTest {
 
         @Test
         void when_MemberIsPresent_then_ReturnMemberGeometry() {
-            MemberGeometry memberGeometry = new MemberGeometry(ID, rectangle);
+            MemberGeometry memberGeometry = new MemberGeometry(ID, rectangle, timestamp);
 
             when(repository.findByMemberId(ID)).thenReturn(Optional.of(memberGeometry));
 
@@ -108,7 +110,7 @@ class MemberGeometryServiceImplTest {
 
     @Test
     void test_saveMember() {
-        MemberGeometry memberGeometry = new MemberGeometry("member-id", rectangle);
+        MemberGeometry memberGeometry = new MemberGeometry("member-id", rectangle, timestamp);
         service.ingestMemberGeometry(memberGeometry);
 
         verify(repository).saveMember(memberGeometry);
@@ -120,7 +122,7 @@ class MemberGeometryServiceImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberGeometry("id-%d".formatted(i * 6 + j), geometry));
+                members.add(new MemberGeometry("id-%d".formatted(i * 6 + j), geometry, timestamp));
             }
         }
         return members;

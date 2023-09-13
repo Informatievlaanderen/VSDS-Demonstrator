@@ -23,6 +23,9 @@ import org.wololo.jts2geojson.GeoJSONWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {MemberRDFController.class, MemberGeometryExceptionHandler.class, GraphDBConfig.class})
 class MemberRDFControllerTest {
     private static final String ID = "member-id";
+    private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static org.wololo.geojson.Geometry geoJSON;
 
     @MockBean
@@ -57,8 +61,8 @@ class MemberRDFControllerTest {
     class GetSingleMemberGeometry {
         @Test
         void when_MemberGeometryPresent_then_MemberGeomtryIsReturned_and_StatusIs200() throws Exception {
-            final String json = "{\"memberId\": \"%s\", \"geojsonGeometry\": %s}".formatted(ID, geoJSON.toString());
-            MemberGeometryDto dto = new MemberGeometryDto(ID, geoJSON);
+            final String json = transformToJson(ID, geoJSON, timestamp);
+            MemberGeometryDto dto = new MemberGeometryDto(ID, geoJSON, timestamp);
 
             when(service.getMemberById(ID)).thenReturn(dto);
 
@@ -85,18 +89,18 @@ class MemberRDFControllerTest {
         Geometry rectangle = new WKTReader().read("POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))");
         List<MemberGeometryDto> members = initMembers();
         String json = "[" + members.stream()
-                .map(dto -> "{'memberId': %s, 'geojsonGeometry': %s}".formatted(dto.getMemberId(), dto.getGeojsonGeometry().toString()))
+                .map(dto -> transformToJson(dto.getMemberId(), dto.getGeojsonGeometry(), dto.getTimestamp()))
                 .collect(Collectors.joining(", ")) + "]";
 
-        when(service.getMembersInRectangle(rectangle)).thenReturn(members);
+        when(service.getMembersInRectangle(rectangle, timestamp)).thenReturn(members);
 
-        mockMvc.perform(post("/in-rectangle")
+        mockMvc.perform(post("/in-rectangle?timestamp=" + timestamp)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(readMapBounds()))
                 .andExpect(content().json(json))
                 .andExpect(status().isOk());
 
-        verify(service).getMembersInRectangle(rectangle);
+        verify(service).getMembersInRectangle(rectangle, timestamp);
     }
 
     private byte[] readMapBounds() throws IOException {
@@ -112,10 +116,14 @@ class MemberRDFControllerTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberGeometryDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry)));
+                members.add(new MemberGeometryDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp));
             }
         }
         return members;
+    }
+
+    private String transformToJson(String id, org.wololo.geojson.Geometry geometry, LocalDateTime timestamp) {
+        return "{\"memberId\": \"%s\", \"geojsonGeometry\": %s, \"timestamp\":\"%s\"}".formatted(id, geometry, timestamp);
     }
 
 }
