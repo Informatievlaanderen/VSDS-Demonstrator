@@ -19,7 +19,7 @@ export default defineConfig({
         },
         proxy: {
             // string shorthand: http://localhost:5173/foo -> http://localhost:8084/foo
-            '/in-rectangle': 'http://spring-boot-backend:8084',
+            '/in-rectangle': 'http://localhost:8084',
             '/triples': 'http://spring-boot-backend:8084'
         }
     }

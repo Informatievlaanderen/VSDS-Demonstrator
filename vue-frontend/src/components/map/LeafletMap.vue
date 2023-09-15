@@ -48,7 +48,7 @@ export default {
     function extracted() {
       axios({
         method: 'post',
-        url: 'http://localhost:5173/in-rectangle',
+        url: 'http://localhost:5173/in-rectangle?timestamp=2023-08-27T20:42:40.230',
         data: this.map.getBounds(),
         headers: {
           'Content-type': 'application/json',
