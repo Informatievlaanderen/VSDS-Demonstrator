@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -20,9 +17,19 @@ import axios from 'axios'
 import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 
 export default {
+  watch: {
+    time: function (newVal) {
+      this.selectedTime = newVal;
+      this.extracted();
+    }
+  },
+  props: {
+    time: Number,
+  },
   name: "ConnectionState",
   data() {
     return {
+      selectedTime: null,
       data: [],
       map: {},
       markers: [],
@@ -41,14 +48,20 @@ export default {
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
     this.map.on("moveend", () => {
-      extracted.call(this);
+      this.extracted();
     });
-    extracted.call(this);
+    this.extracted();
 
-    function extracted() {
+  },
+  methods: {
+    extracted() {
       axios({
         method: 'post',
-        url: 'http://localhost:5173/in-rectangle?timestamp=2023-08-27T20:42:40.230',
+        url: 'http://localhost:5173/in-rectangle',
+        params: {
+          timestamp: new Date(this.selectedTime).toISOString().replace("Z", ""),
+          timePeriod: "P1D"
+        },
         data: this.map.getBounds(),
         headers: {
           'Content-type': 'application/json',
@@ -57,9 +70,7 @@ export default {
       }).then((response) => {
         this.handleMemberGeometries(response.data)
       });
-    }
-  },
-  methods: {
+    },
     handleMemberGeometries(memberGeometries) {
       function visualizeTriples(triples) {
         let children = d3.select("svg").selectAll("*")
