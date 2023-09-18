@@ -1,6 +1,8 @@
 package be.informatievlaanderen.vsds.demonstrator.member.rest;
 
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
+import org.locationtech.jts.util.AssertionFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -19,5 +21,11 @@ public class MemberExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNotFound(RuntimeException e, WebRequest request) {
         log.error(e.getMessage());
         return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {InvalidGeometryProvidedException.class, AssertionFailedException.class})
+    protected ResponseEntity<Object> handleInvalidGeometry(RuntimeException e, WebRequest request) {
+        log.error(e.getMessage());
+        return handleExceptionInternal(e, e.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 }

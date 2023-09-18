@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class MemberTest {
     private static final String ID = "member-id";

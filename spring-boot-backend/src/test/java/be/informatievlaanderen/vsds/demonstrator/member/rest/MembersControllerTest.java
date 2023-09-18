@@ -4,14 +4,10 @@ package be.informatievlaanderen.vsds.demonstrator.member.rest;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
-import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.converters.ModelHttpConverter;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.GraphDBConfig;
-import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,11 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,19 +109,26 @@ class MembersControllerTest {
         verify(service).getMembersInRectangle(rectangle, timestamp);
     }
 
-    @Test
-    void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
-        Model model = RDFParser.source("members/mobility-hindrance.nq").lang(Lang.NQUADS).toModel();
-        IngestedMemberDto dto = new IngestedMemberDto(model);
-        Member member = dto.getMemberGeometry(streamsConfig.getStreams());
+   @Nested
+   class IngestMember {
+       @Test
+       void when_MemberWithInvalidGeometryIsPosted_then_Status400IsExpected() throws Exception {
+           mockMvc.perform(post("/members")
+                           .content(readDataFromFile("members/mobility-hindrance-with-invalid-wkt.nq"))
+                           .contentType(Lang.NQUADS.getHeaderString()))
+                   .andExpect(status().isBadRequest());
+       }
 
-        mockMvc.perform(post("/members")
-                        .content(readDataFromFile("members/mobility-hindrance.nq"))
-                        .contentType(Lang.NQUADS.getHeaderString()))
-                .andExpect(status().isOk());
+       @Test
+       void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
+           mockMvc.perform(post("/members")
+                           .content(readDataFromFile("members/mobility-hindrance.nq"))
+                           .contentType(Lang.NQUADS.getHeaderString()))
+                   .andExpect(status().isOk());
 
-//        verify(service).ingestMemberGeometry(argThat(result -> result.getGeometry().equals(memberGeometry.getGeometry()) && result.getTimestamp().isEqual(memberGeometry.getTimestamp())));
-    }
+           verify(service).ingestMember(any());
+       }
+   }
 
     private byte[] readDataFromFile(String filename) throws IOException {
         Path path = ResourceUtils.getFile("classpath:" + filename).toPath();
