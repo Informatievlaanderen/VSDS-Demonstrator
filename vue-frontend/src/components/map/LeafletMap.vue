@@ -25,6 +25,8 @@ import axios from 'axios'
 import {useMarkers} from "@/components/map/useMarkers";
 import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
+import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
+import Stomp from "webstomp-client";
 
 export default {
   components: {Slider},
@@ -54,6 +56,8 @@ export default {
   },
 
   mounted() {
+    this.connect()
+
     this.map = L.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
     this.map.on('moveend', function () {
 
@@ -91,6 +95,37 @@ export default {
       this.markers = useMarkers(memberGeometries);
       this.markers.forEach(marker => marker.addTo(this.map))
     },
+    //websocket
+    connect() {
+      const stompC = new Stomp.client('ws://localhost:5173/update');
+      stompC.connect(
+          {},
+          frame => {
+            console.log(frame);
+            stompC.subscribe("/websocket/broker", (message) => {
+              console.log(message);
+              // var geoJsonFeature = {
+              //   "type": "Feature",
+              //   "geometry": message.geojsonGeometry,
+              //   "properties": {
+              //     "popupContent": message.memberId
+              //   }
+              // }
+              // let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature}).addTo(this.map)
+              // this.markers.push(marker)
+            });
+          },
+          error => {
+            console.log(error);
+            this.connect()
+          }
+      );
+    },
+    disconnect() {
+      if (this.stompClient) {
+        this.stompClient.disconnect();
+      }
+    }
   }
 
 };
