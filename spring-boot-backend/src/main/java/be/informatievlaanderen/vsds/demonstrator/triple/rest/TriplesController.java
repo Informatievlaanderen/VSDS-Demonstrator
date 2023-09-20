@@ -22,7 +22,6 @@ public class TriplesController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     public List<Triple> retrieveTriplesOfNode(HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
-
         String memberId = requestURL.split("/triples/")[1];
         return tripleService.getTriplesById(memberId);
     }

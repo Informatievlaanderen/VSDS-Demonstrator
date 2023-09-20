@@ -12,13 +12,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.TreeModelFactory;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class TripleRepositoryImpl implements TripleRepository {
@@ -42,14 +43,11 @@ public class TripleRepositoryImpl implements TripleRepository {
 
 //Execute and get the response.
             HttpResponse response = httpclient.execute(httppost);
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = Objects.requireNonNull(response.getEntity());
 
-            if (entity != null) {
-                Model model = Rio.parse(entity.getContent(), RDFFormat.NTRIPLES);
-                return new MemberDescription(id, model);
-            }
-            return new MemberDescription(id, new TreeModelFactory().createEmptyModel());
-        } catch (Exception e) {
+            Model model = Rio.parse(entity.getContent(), RDFFormat.NTRIPLES);
+            return new MemberDescription(id, model);
+        } catch (IOException e) {
             throw new TripleFetchFailedException(id, e);
         }
     }
