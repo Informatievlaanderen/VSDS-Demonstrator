@@ -7,12 +7,16 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.MemberExceptionHandler;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.WebSocketConfig;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,10 +27,14 @@ public class MemberServiceImpl implements MemberService {
     private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
     private final MemberRepository repository;
     private final StreamsConfig streams;
+    private final MessageController messageController;
+    private static final Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 
-    public MemberServiceImpl(MemberRepository repository, StreamsConfig streams) {
+
+    public MemberServiceImpl(MemberRepository repository, StreamsConfig streams, MessageController messageController) {
         this.repository = repository;
         this.streams = streams;
+        this.messageController = messageController;
     }
 
     @Override
@@ -34,8 +42,9 @@ public class MemberServiceImpl implements MemberService {
         try {
             Member member = ingestedMemberDto.getMemberGeometry(streams.getStreams());
             repository.saveMember(member);
-            WebSocketConfig.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()));
+            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()));
 
+            log.info("nem member ingested");
         } catch (FactoryException | TransformException e) {
             throw new InvalidGeometryProvidedException(ingestedMemberDto.getModel(), e);
         }

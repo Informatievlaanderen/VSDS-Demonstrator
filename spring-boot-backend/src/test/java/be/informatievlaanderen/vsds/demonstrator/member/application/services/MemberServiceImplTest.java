@@ -7,6 +7,8 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.WebSocketConfig;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
@@ -34,8 +36,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
@@ -63,7 +64,7 @@ class MemberServiceImplTest {
         eventStreamConfig.setTimestampPath("http://www.w3.org/ns/prov#generatedAtTime");
         StreamsConfig streams = new StreamsConfig();
         streams.setStreams(List.of(eventStreamConfig));
-        service = new MemberServiceImpl(repository, streams);
+        service = new MemberServiceImpl(repository, streams, mock(MessageController.class));
     }
 
     @Nested

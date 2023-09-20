@@ -102,7 +102,7 @@ export default {
           {},
           frame => {
             console.log(frame);
-            stompC.subscribe("/websocket/broker", (message) => {
+            stompC.subscribe("/broker/member", (message) => {
               console.log(message);
               // var geoJsonFeature = {
               //   "type": "Feature",
