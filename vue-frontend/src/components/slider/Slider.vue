@@ -49,10 +49,8 @@ function onPauseClick() {
   <div>
   </div>
   <div>
-    <button @click="onPlayClick">Play</button>
-    <button v-if="!isPlaying && intervalId != null" @click="onPlayClick">Resume</button>
-    <button v-else @click="onPauseClick" :disabled="intervalId == null">Pause</button>
-
+    <button v-if="!isPlaying" @click="onPlayClick">Play</button>
+    <button v-else @click="onPauseClick">Pause</button>
     <input type="range" min="0" :max="maxSeconds" v-model="sliderValue" :step="step" @input="onChange">
   </div>
   <div style="display: flex; justify-content: center">
