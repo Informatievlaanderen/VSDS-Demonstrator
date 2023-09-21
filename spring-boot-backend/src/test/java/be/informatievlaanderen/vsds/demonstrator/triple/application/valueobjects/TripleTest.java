@@ -32,7 +32,7 @@ class TripleTest {
 
     @ParameterizedTest
     @ArgumentsSource(TripleArgumentsProvider.class)
-    void test_inequality(Triple other) {
+    void test_inequality(Object other) {
         assertNotEquals(triple, other);
     }
 
@@ -43,7 +43,9 @@ class TripleTest {
                     new Triple("false-subject", "false-predicate", "false-object"),
                     new Triple("other-subject", PREDICATE, OBJECT),
                     new Triple(SUBJECT, "other-predicate", OBJECT),
-                    new Triple(SUBJECT, PREDICATE, "other-object")
+                    new Triple(SUBJECT, PREDICATE, "other-object"),
+                    null,
+                    new Object()
             ).map(Arguments::of);
         }
     }
