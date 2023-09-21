@@ -38,7 +38,7 @@ class TripleTest {
 
     static class TripleArgumentsProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+        public Stream<Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
             return Stream.of(
                     new Triple("false-subject", "false-predicate", "false-object"),
                     new Triple("other-subject", PREDICATE, OBJECT),

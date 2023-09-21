@@ -1,7 +1,5 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects;
 
-import java.util.Objects;
-
 public class Triple {
     private final String subject;
     private final String predicate;
@@ -20,16 +18,16 @@ public class Triple {
 
         Triple triple = (Triple) o;
 
-        if (!Objects.equals(subject, triple.subject)) return false;
-        if (!Objects.equals(predicate, triple.predicate)) return false;
-        return Objects.equals(object, triple.object);
+        if (!subject.equals(triple.subject)) return false;
+        if (!predicate.equals(triple.predicate)) return false;
+        return object.equals(triple.object);
     }
 
     @Override
     public int hashCode() {
-        int result = subject != null ? subject.hashCode() : 0;
-        result = 31 * result + (predicate != null ? predicate.hashCode() : 0);
-        result = 31 * result + (object != null ? object.hashCode() : 0);
+        int result = subject.hashCode();
+        result = 31 * result + predicate.hashCode();
+        result = 31 * result + object.hashCode();
         return result;
     }
 
