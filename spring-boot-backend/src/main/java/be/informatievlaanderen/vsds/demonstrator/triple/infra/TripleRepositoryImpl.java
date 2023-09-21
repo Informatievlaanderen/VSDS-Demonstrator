@@ -16,7 +16,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class TripleRepositoryImpl implements TripleRepository {
 
             Model model = Rio.parse(entity.getContent(), RDFFormat.NTRIPLES);
             return new MemberDescription(id, model);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new TripleFetchFailedException(id, e);
         }
     }

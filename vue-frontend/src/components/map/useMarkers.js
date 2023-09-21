@@ -83,13 +83,6 @@ export function useMarkers(memberGeometries) {
             .append("circle")
             .attr("class", "node")
             .attr("r", 8)
-            // .on("click", async function (d) {
-            //   let triples = await axios
-            //       .get('http://localhost:8080/'+d.name)
-            //   await this.visualizeTriples(triples.data);
-            //   // alert("You clicked on node " + d.name);
-            // }
-            // .bind(this))
             .call(drag);
 
         function ticked() {
