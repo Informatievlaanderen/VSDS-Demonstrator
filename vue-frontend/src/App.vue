@@ -1,9 +1,6 @@
 <script setup>
 import LeafletMap from './components/map/LeafletMap.vue'
-import Slider from "@/components/slider/Slider.vue";
-import {ref} from "vue";
 
-const time = ref(new Date().getTime())
 </script>
 
 <template>
@@ -11,16 +8,10 @@ const time = ref(new Date().getTime())
   <main>
 
     <div>
-      <!--      <div style="float:left; width: auto">-->
-      <!--            <KnowledgeGraph/>-->
-      <!--      </div>-->
       <div>
         <LeafletMap></LeafletMap>
       </div>
 
-      <div class="slider-container">
-        <Slider :time="time"></Slider>
-      </div>
     </div>
 
   </main>

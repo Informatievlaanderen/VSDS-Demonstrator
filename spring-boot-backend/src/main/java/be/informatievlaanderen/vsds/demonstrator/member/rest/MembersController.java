@@ -25,8 +25,8 @@ public class MembersController {
 
     @PostMapping(value = "/in-rectangle", consumes = {"application/json"})
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<MemberDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp) {
-        return service.getMembersInRectangle(mapBoundsDto.getGeometry(), timestamp);
+    public List<MemberDto> getMembersInRectangle(@RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp, @RequestParam(defaultValue = "PT1M") String timePeriod) {
+        return service.getMembersInRectangle(mapBoundsDto.getGeometry(), timestamp, timePeriod);
     }
 
     @PostMapping(value = "/members")

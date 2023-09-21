@@ -92,21 +92,24 @@ class MembersControllerTest {
 
     @Test
     void when_MapBoundariesArePosted_then_ReturnMemberGeometries() throws Exception {
+        final String timePeriod = "PT1M";
         Geometry rectangle = new WKTReader().read("POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))");
         List<MemberDto> members = initMembers();
         String json = "[" + members.stream()
                 .map(dto -> transformToJson(dto.getMemberId(), dto.getGeojsonGeometry(), dto.getTimestamp()))
                 .collect(Collectors.joining(", ")) + "]";
 
-        when(service.getMembersInRectangle(rectangle, timestamp)).thenReturn(members);
+        when(service.getMembersInRectangle(rectangle, timestamp, timePeriod)).thenReturn(members);
 
-        mockMvc.perform(post("/in-rectangle?timestamp=" + timestamp)
+        mockMvc.perform(post("/in-rectangle")
+                        .param("timestamp", timestamp.toString())
+                        .param("timePeriod", timePeriod)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(readDataFromFile("mapbounds/rectangle.json")))
                 .andExpect(content().json(json))
                 .andExpect(status().isOk());
 
-        verify(service).getMembersInRectangle(rectangle, timestamp);
+        verify(service).getMembersInRectangle(rectangle, timestamp, timePeriod);
     }
 
    @Nested

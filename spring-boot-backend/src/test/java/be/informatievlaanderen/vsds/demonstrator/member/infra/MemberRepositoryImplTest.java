@@ -27,6 +27,8 @@ import static org.mockito.Mockito.*;
 class MemberRepositoryImplTest {
     private static final String ID = "member-id";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
+    private static final LocalDateTime startTime = ZonedDateTime.parse("2022-05-20T09:53:15.867Z").toLocalDateTime();
+    private static final LocalDateTime endTime = ZonedDateTime.parse("2022-05-20T10:03:15.867Z").toLocalDateTime();
     private static Geometry point;
     private static Geometry rectangle;
     private MemberRepository repository;
@@ -82,20 +84,20 @@ class MemberRepositoryImplTest {
                     .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), timestamp))
                     .toList();
 
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp)).thenReturn(entities);
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime)).thenReturn(entities);
 
-            assertEquals(members, repository.getMembersByGeometry(rectangle, timestamp));
+            assertEquals(members, repository.getMembersByGeometry(rectangle, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime);
         }
 
         @Test
         void when_DbContainsOnlyMembersOutsideRectangle_then_ReturnEmptyList() {
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp)).thenReturn(List.of());
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime)).thenReturn(List.of());
 
-            assertEquals(List.of(), repository.getMembersByGeometry(rectangle, timestamp));
+            assertEquals(List.of(), repository.getMembersByGeometry(rectangle, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometry(rectangle, timestamp);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime);
         }
     }
 

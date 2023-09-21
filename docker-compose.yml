@@ -25,7 +25,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=test
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_HIBERNATE_DDLAUTO=update
-      - LDES_STREAMS_0_=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
+      - LDES_STREAMS_0_MEMBER_TYPE=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
+      - LDES_STREAMS_0_TIMESTAMP_PATH=http://www.w3.org/ns/prov#generatedAtTime
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
     ports:

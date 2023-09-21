@@ -6,7 +6,7 @@ import org.locationtech.jts.geom.Geometry;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "member_entity")
 public class MemberEntity {
     @Id
     private String memberId;
