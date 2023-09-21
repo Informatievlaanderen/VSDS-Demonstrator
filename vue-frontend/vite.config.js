@@ -18,7 +18,6 @@ export default defineConfig({
             origin: "*"
         },
         proxy: {
-            // string shorthand: http://localhost:5173/foo -> http://localhost:8084/foo
             '/in-rectangle': 'http://localhost:8084',
             '/triples': 'http://localhost:8084'
         }
