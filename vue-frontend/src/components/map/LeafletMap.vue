@@ -102,17 +102,18 @@ export default {
           {},
           frame => {
             console.log(frame);
-            stompC.subscribe("/broker/member", (message) => {
-              console.log(message);
-              // var geoJsonFeature = {
-              //   "type": "Feature",
-              //   "geometry": message.geojsonGeometry,
-              //   "properties": {
-              //     "popupContent": message.memberId
-              //   }
-              // }
-              // let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature}).addTo(this.map)
-              // this.markers.push(marker)
+            stompC.subscribe("/broker/member", (member) => {
+              console.log(member);
+              var geoJsonFeature = {
+                "type": "Feature",
+                "geometry": member.geojsonGeometry,
+                "properties": {
+                  "popupContent": member.memberId
+                }
+              }
+              let marker = L.geoJson(geoJsonFeature, {}).addTo(this.map)
+              this.markers.push(marker)
+              console.log(this.markers)
             });
           },
           error => {
