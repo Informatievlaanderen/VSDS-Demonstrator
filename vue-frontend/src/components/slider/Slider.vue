@@ -2,7 +2,7 @@
 
 import {ref} from "vue";
 
-const emit = defineEmits(['timestampChanged'])
+const emit = defineEmits(['timestampChanged', 'realtime', 'notRealtime'])
 const now = new Date();
 
 const maxSeconds = 7 * 24 * 60 * 60;
@@ -21,6 +21,14 @@ function onChange() {
 function onShortcutClick(amount) {
   sliderValue.value = maxSeconds - amount * 60 * 60;
   emit('timestampChanged', now.getTime() - amount * 60 * 60 * 1000, "PT10M")
+  emit("notRealtime")
+}
+
+function onRealTime() {
+  sliderValue.value = maxSeconds;
+  onPauseClick()
+  emit('timestampChanged', now.getTime(), "PT10M")
+  emit("realtime")
 }
 
 function onPlayClick() {
@@ -70,6 +78,9 @@ function onPauseClick() {
       </li>
       <li class="shortcut-item">
         <button @click="onShortcutClick(1)">1 uur geleden</button>
+      </li>
+      <li class="shortcut-item">
+        <button @click="onRealTime()">nu</button>
       </li>
     </ul>
   </div>

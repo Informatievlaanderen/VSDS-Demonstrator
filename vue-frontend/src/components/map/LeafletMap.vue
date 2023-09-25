@@ -13,7 +13,10 @@
     <Slider @timestamp-changed="(timestamp, period) => {
       time = timestamp;
       timePeriod = period;
-    }"/>
+    }"
+    @realtime="() => {connect()}"
+    @notRealtime="() => {disconnect()}"
+    />
   </div>
 </template>
 
@@ -25,7 +28,6 @@ import axios from 'axios'
 import {useMarkers} from "@/components/map/useMarkers";
 import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
-import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 import Stomp from "webstomp-client";
 
 export default {
@@ -51,7 +53,8 @@ export default {
       map: {},
       markers: [],
       memberId: null,
-      simulation: null
+      simulation: null,
+      stompClient: null
     };
   },
 
@@ -87,7 +90,6 @@ export default {
           'Access-Control-Allow-Origin': '*'
         }
       }).then((response) => {
-        console.log(response.data)
         this.handleMemberGeometries(response.data)
       });
     },
@@ -98,24 +100,17 @@ export default {
     },
     //websocket
     connect() {
-      const stompC = new Stomp.client('ws://localhost:8084/update');
-      stompC.connect(
+      this.stompClient = new Stomp.client('ws://localhost:8084/update');
+      this.stompClient.connect(
           {},
           frame => {
-            console.log(frame);
-            stompC.subscribe("/broker/member", (member) => {
-              // console.log(member);
-              var geoJsonFeature = {
-                "type": "Feature",
-                "geometry": member.geojsonGeometry,
-                "properties": {
-                  "popupContent": member.memberId
-                }
-              }
-              let marker = L.geoJson(geoJsonFeature, {style: {color: "red"}})
-              // this.markers.push(marker)
+            this.stompClient.subscribe("/broker/member", (member) => {
+              var body = JSON.parse(member.body)
+              var marker = useMarkers([body]).at(0)
+              marker.setStyle({color: 'red'})
+              setTimeout(function () { this.updateMarker(marker) }.bind(this), 1000)
+              this.markers.push(marker)
               marker.addTo(this.map)
-              console.log(marker)
             });
           },
           error => {
@@ -128,6 +123,9 @@ export default {
       if (this.stompClient) {
         this.stompClient.disconnect();
       }
+    },
+    updateMarker(marker) {
+      marker.setStyle({color: 'blue'})
     }
   }
 

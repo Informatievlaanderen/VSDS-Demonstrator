@@ -165,11 +165,8 @@ export function useMarkers(memberGeometries) {
                 "popupContent": feature.memberId
             }
         }
-        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature,
-            style: {color: blue}
-        })
+        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature})
         markers.push(marker)
     })
-    console.log(markers)
     return markers;
 }

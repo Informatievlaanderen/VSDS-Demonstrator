@@ -38,18 +38,18 @@ services:
     networks:
       - demonstrator
 
-#  vue-frontend:
-#    container_name: demonstrator-vue-frontend
-#    image: demonstrator-vue-frontend
-#    build:
-#      context: vue-frontend
-#      dockerfile: Dockerfile
-#    ports:
-#      - 8085:80
-#    depends_on:
-#      - spring-boot-backend
-#    networks:
-#      - demonstrator
+  vue-frontend:
+    container_name: demonstrator-vue-frontend
+    image: demonstrator-vue-frontend
+    build:
+      context: vue-frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8085:80
+    depends_on:
+      - spring-boot-backend
+    networks:
+      - demonstrator
 
   rdf4j-server:
     image: eclipse/rdf4j-workbench:latest
