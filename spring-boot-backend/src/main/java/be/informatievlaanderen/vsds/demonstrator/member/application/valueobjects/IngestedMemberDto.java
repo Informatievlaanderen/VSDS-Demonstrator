@@ -1,6 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.NoGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import org.apache.jena.ext.com.google.common.collect.Iterables;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
@@ -35,7 +36,7 @@ public class IngestedMemberDto {
         String memberId = getMemberId(streams);
         String timestampString = (String) getTimestampPath(streams);
         LocalDateTime timestamp;
-        if(timestampString.contains("Z")) {
+        if (timestampString.contains("Z")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString);
@@ -44,10 +45,14 @@ public class IngestedMemberDto {
     }
 
     private Geometry getMemberGeometry() throws FactoryException, TransformException {
-        RDFNode wktObject = Iterables.getOnlyElement(model
-                .listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList());
-        GeometryWrapper geometryWrapper = ((GeometryWrapper) wktObject.asLiteral().getValue()).convertSRS(SRS_URI.WGS84_CRS);
-        return geometryWrapper.getXYGeometry();
+        List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
+        if(wktNodes.isEmpty()) {
+            throw new NoGeometryProvidedException();
+        } else {
+            RDFNode wktObject = wktNodes.get(0);
+            GeometryWrapper geometryWrapper = ((GeometryWrapper) wktObject.asLiteral().getValue()).convertSRS(SRS_URI.WGS84_CRS);
+            return geometryWrapper.getXYGeometry();
+        }
     }
 
     private Statement getMemberProperty(List<EventStreamConfig> streams, Function<EventStreamConfig, Selector> createSelector) {
