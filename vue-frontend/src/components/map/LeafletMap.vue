@@ -87,6 +87,7 @@ export default {
           'Access-Control-Allow-Origin': '*'
         }
       }).then((response) => {
+        console.log(response.data)
         this.handleMemberGeometries(response.data)
       });
     },
@@ -103,7 +104,7 @@ export default {
           frame => {
             console.log(frame);
             stompC.subscribe("/broker/member", (member) => {
-              console.log(member);
+              // console.log(member);
               var geoJsonFeature = {
                 "type": "Feature",
                 "geometry": member.geojsonGeometry,
@@ -111,9 +112,10 @@ export default {
                   "popupContent": member.memberId
                 }
               }
-              let marker = L.geoJson(geoJsonFeature, {}).addTo(this.map)
-              this.markers.push(marker)
-              console.log(this.markers)
+              let marker = L.geoJson(geoJsonFeature, {style: {color: "red"}})
+              // this.markers.push(marker)
+              marker.addTo(this.map)
+              console.log(marker)
             });
           },
           error => {

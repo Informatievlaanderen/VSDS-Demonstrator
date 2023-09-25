@@ -48,8 +48,6 @@ public class MemberServiceImpl implements MemberService {
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {
             throw new InvalidGeometryProvidedException(ingestedMemberDto.getModel(), e);
-        } catch (NoSuchElementException e) {
-            log.error("no predicate http://www.opengis.net/ont/geosparql#asWKT found");
         }
     }
 
