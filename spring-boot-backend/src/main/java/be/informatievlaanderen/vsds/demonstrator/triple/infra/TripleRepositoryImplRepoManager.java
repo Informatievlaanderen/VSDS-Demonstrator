@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
 import java.util.ArrayList;
 import java.util.List;
 
+@org.springframework.stereotype.Repository
 public class TripleRepositoryImplRepoManager implements TripleRepository {
     private final String repositoryId;
     private final RepositoryManager repositoryManager;
@@ -26,7 +27,7 @@ public class TripleRepositoryImplRepoManager implements TripleRepository {
 
     public TripleRepositoryImplRepoManager(GraphDBConfig config) {
         this.repositoryId = config.getRepositoryId();
-        this.repositoryManager = new RemoteRepositoryManager(config.getUrl());
+        this.repositoryManager = new RemoteRepositoryManager(config.getUrl().replace("repositories/", ""));
         init();
     }
 
