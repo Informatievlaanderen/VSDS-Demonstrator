@@ -29,6 +29,7 @@ services:
       - LDES_STREAMS_0_TIMESTAMP_PATH=http://www.w3.org/ns/prov#generatedAtTime
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
+      - SERVER_PORT=8080
     ports:
       - 8084:8080
     depends_on:
@@ -75,7 +76,7 @@ services:
       - "25432:5432"
     restart: on-failure
     healthcheck:
-      test: "PGPASSWORD=docker pg_isready -h 127.0.0.1 -U docker -d gis"
+      test: "PGPASSWORD=test pg_isready -h 127.0.0.1 -U postgres -d test"
     networks:
       - demonstrator
 
