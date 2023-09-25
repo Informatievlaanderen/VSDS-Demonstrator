@@ -97,7 +97,7 @@ export default {
     },
     //websocket
     connect() {
-      const stompC = new Stomp.client('ws://localhost:5173/update');
+      const stompC = new Stomp.client('ws://localhost:8084/update');
       stompC.connect(
           {},
           frame => {

@@ -21,6 +21,7 @@ import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageCo
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -44,9 +45,11 @@ public class MemberServiceImpl implements MemberService {
             repository.saveMember(member);
             messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()));
 
-            log.info("nem member ingested");
+            log.info("new member ingested");
         } catch (FactoryException | TransformException e) {
             throw new InvalidGeometryProvidedException(ingestedMemberDto.getModel(), e);
+        } catch (NoSuchElementException e) {
+            log.error("no predicate http://www.opengis.net/ont/geosparql#asWKT found");
         }
     }
 
