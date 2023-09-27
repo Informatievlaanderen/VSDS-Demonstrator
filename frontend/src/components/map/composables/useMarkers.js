@@ -5,7 +5,7 @@ export function useMarkers(memberGeometries, onMarkerClicked) {
 
     function onEachFeature(feature, layer) {
         if (feature.properties && feature.properties.popupContent) {
-            layer.bindPopup(feature.properties.popupContent);
+            layer.bindPopup(feature.properties.popupContent, {remove: () => console.log("closed")});
         }
         //bind click
         layer.on({

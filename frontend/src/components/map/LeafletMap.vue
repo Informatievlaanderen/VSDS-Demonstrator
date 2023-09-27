@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <div style="float:right; height:500px; width:850px" id="map"></div>
+  <div style="display: flex; width: 100%">
+    <div style="width: 50%" id="map"></div>
+    <div style="width: 50%">
+      <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
+    </div>
   </div>
   <div>
     <Slider @timestamp-changed="(timestamp, period) => {
       time = timestamp;
       timePeriod = period;
     }"
-            @realtime="() => {connect()}"
-            @notRealtime="() => {disconnect()}"
+            @realtime-toggled="(isRealTimeEnabled) => {isRealTimeEnabled ? connect() : disconnect}"
     />
   </div>
 </template>
@@ -23,10 +23,10 @@ import {useMarkers} from "@/components/map/composables/useMarkers";
 import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
+import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
 
 export default {
-  components: {Slider},
-  emits: ['markerClicked'],
+  components: {KnowledgeGraph, Slider},
   watch: {
     time: function () {
       this.fetchMembers();
@@ -56,14 +56,13 @@ export default {
   mounted() {
     this.connect()
 
-    this.map = L.map("map", {zoomAnimation: false}).setView([50.7747, 4.4852], 8)
-    this.map.on('moveend', function () {
-
-    });
+    this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
+    L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
+    this.map.on("popupclose", () => this.memberId = null)
     this.map.on("moveend", () => {
       this.fetchMembers();
     });
@@ -74,7 +73,7 @@ export default {
     fetchMembers() {
       axios({
         method: 'post',
-        url: 'api/in-rectangle',
+        url: '/in-rectangle',
         params: {
           timestamp: new Date(this.time).toISOString().replace("Z", ""),
           timePeriod: this.timePeriod
@@ -90,7 +89,7 @@ export default {
     },
     handleMemberGeometries(memberGeometries) {
       this.markers.forEach(marker => this.map.removeLayer(marker))
-      this.markers = useMarkers(memberGeometries, (memberId) => this.$emit("markerClicked", memberId));
+      this.markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId);
       this.markers.forEach(marker => marker.addTo(this.map))
     },
     //websocket
@@ -103,7 +102,9 @@ export default {
               var body = JSON.parse(member.body)
               var marker = useMarkers([body]).at(0)
               marker.setStyle({color: 'red'})
-              setTimeout(function () { this.updateMarker(marker) }.bind(this), 1000)
+              setTimeout(function () {
+                this.updateMarker(marker)
+              }.bind(this), 1000)
               this.markers.push(marker)
               marker.addTo(this.map)
             });
@@ -130,6 +131,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  color: #05C !important;
+  border: 0 !important;
+  width: 35px !important;
+  height: 35px !important;
+  line-height: 35px !important;
+  background: #FFF !important;
+}
+
+.leaflet-control-zoom-in {
+  border-radius: 3px 3px 0 0 !important;
+}
+
+.leaflet-control-zoom-out {
+  border-radius: 0 0 3px 3px !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  border-radius: 3px !important;
+  box-shadow: 0 2px 12px 0 rgb(106, 118, 134, 0.35) !important;
+}
+
+
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;

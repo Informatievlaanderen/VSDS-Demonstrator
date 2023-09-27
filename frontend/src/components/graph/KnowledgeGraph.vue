@@ -1,6 +1,11 @@
 <template>
   <div>
-    <svg style="height:500px; width:600px"></svg>
+    <svg id="knowledge-graph" class="linked-data-container" v-if="memberId" style="height:500px; min-width:600px; width: 100%"></svg>
+    <div class="linked-data-container" v-else style="height:500px; min-width:600px">
+      <img src="../../assets/svgs/Linked%20data.svg" alt="Linked data" class="linked-data-icon"/>
+      <span>Linked data</span>
+      <span>Klik op een punt op de kaart om de kennisgrafiek te laden</span>
+    </div>
   </div>
 </template>
 <script>
@@ -12,7 +17,9 @@ export default {
   },
   watch: {
     memberId: function (newVal) {
-      useTriplesFetching(newVal)
+      if(newVal) {
+        useTriplesFetching(newVal)
+      }
     }
   },
 };
@@ -45,8 +52,22 @@ marker {
   fill: grey;
 }
 
-svg {
-  border: 1px solid black;
+.linked-data-container {
+  border: 1px solid rgba(207, 213, 221, 0.50);
+  border-left: 0;
+}
+
+.linked-data-icon {
+  width: 21px;
+  height: 25px;
+  rotation: 225deg;
+}
+
+div.linked-data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 header {
