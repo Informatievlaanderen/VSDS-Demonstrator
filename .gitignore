@@ -34,3 +34,4 @@ node_modules
 target
 *.iml
 ./backend/src/main/resources/public/
+derby.log

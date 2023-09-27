@@ -72,7 +72,7 @@ class MembersControllerTest {
 
             when(service.getMemberById(ID)).thenReturn(dto);
 
-            mockMvc.perform(get("/geometry/" + ID).accept(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get("/api/geometry/" + ID).accept(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(json))
                     .andExpect(status().isOk());
 
@@ -83,7 +83,7 @@ class MembersControllerTest {
         void when_MemberGeometryIsNotPresent_then_StatusIs404() throws Exception {
             when(service.getMemberById(ID)).thenThrow(ResourceNotFoundException.class);
 
-            mockMvc.perform(get("/geometry/" + ID).accept(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get("/api/geometry/" + ID).accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
 
             verify(service).getMemberById(ID);
@@ -101,7 +101,7 @@ class MembersControllerTest {
 
         when(service.getMembersInRectangle(rectangle, timestamp, timePeriod)).thenReturn(members);
 
-        mockMvc.perform(post("/in-rectangle")
+        mockMvc.perform(post("/api/in-rectangle")
                         .param("timestamp", timestamp.toString())
                         .param("timePeriod", timePeriod)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ class MembersControllerTest {
    class IngestMember {
        @Test
        void when_MemberWithInvalidGeometryIsPosted_then_Status400IsExpected() throws Exception {
-           mockMvc.perform(post("/members")
+           mockMvc.perform(post("/api/members")
                            .content(readDataFromFile("members/mobility-hindrance-with-invalid-wkt.nq"))
                            .contentType(Lang.NQUADS.getHeaderString()))
                    .andExpect(status().isBadRequest());
@@ -124,7 +124,7 @@ class MembersControllerTest {
 
        @Test
        void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
-           mockMvc.perform(post("/members")
+           mockMvc.perform(post("/api/members")
                            .content(readDataFromFile("members/mobility-hindrance.nq"))
                            .contentType(Lang.NQUADS.getHeaderString()))
                    .andExpect(status().isOk());

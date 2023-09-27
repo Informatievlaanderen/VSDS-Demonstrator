@@ -21,7 +21,7 @@ import java.nio.file.Path;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@WireMockTest(httpPort = 8080)
+@WireMockTest(httpPort = 8189)
 class TripleRepositoryImplTest {
     private static final String MEMBER_ID = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
     private static final String ENDPOINT = "/rdf4j-server/repositories/test";
@@ -30,7 +30,7 @@ class TripleRepositoryImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        graphDbConfig.setUrl("http://localhost:8080/rdf4j-server/repositories/");
+        graphDbConfig.setUrl("http://localhost:8189/rdf4j-server/repositories/");
         graphDbConfig.setRepositoryId("test");
     }
 
