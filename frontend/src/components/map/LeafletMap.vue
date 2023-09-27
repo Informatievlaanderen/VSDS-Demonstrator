@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import L from 'leaflet';
 import "leaflet/dist/leaflet.css"
+import L from 'leaflet';
 import "leaflet.markercluster/dist/MarkerCluster.css"
 // import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import "leaflet.markercluster/dist/leaflet.markercluster"
@@ -88,12 +88,13 @@ export default {
       markers: [],
       memberId: null,
       simulation: null,
-      stompClient: null,
+      stompClient: null
     };
   },
 
   mounted() {
     this.connect()
+
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -101,6 +102,7 @@ export default {
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
     //TODO: delete this and hard code the bounds of Flanders/Belgium for performance reasons
+    this.map.on("popupclose", () => this.memberId = null)
     this.map.on("moveend", () => {
       this.fetchMembers();
     });
