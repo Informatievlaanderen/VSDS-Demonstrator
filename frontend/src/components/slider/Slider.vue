@@ -18,6 +18,17 @@ function onChange() {
   emit('timestampChanged', getTime(), "PT10M")
 }
 
+function onForwardClick(amount) {
+  let updatedValue = +sliderValue.value + amount * 60;
+  if (updatedValue < 0) {
+    updatedValue = 0
+  } else if (updatedValue > maxSeconds) {
+    updatedValue = maxSeconds;
+  }
+  sliderValue.value = updatedValue;
+  emit('timestampChanged', getTime(), "PT5M")
+}
+
 function onShortcutClick(amount) {
   sliderValue.value = maxSeconds - amount * 60 * 60;
   emit('timestampChanged', now.getTime() - amount * 60 * 60 * 1000, "PT10M")
@@ -57,9 +68,13 @@ function onPauseClick() {
   <div>
   </div>
   <div>
+    <button @click="onForwardClick(-60)" :disabled="sliderValue <= 0">&lt;&lt;</button>
+    <button @click="onForwardClick(-5)" :disabled="sliderValue <= 0">&lt;</button>
     <button v-if="!isPlaying" @click="onPlayClick">Play</button>
     <button v-else @click="onPauseClick">Pause</button>
     <input type="range" min="0" :max="maxSeconds" v-model="sliderValue" :step="step" @input="onChange">
+    <button @click="onForwardClick(5)" :disabled="sliderValue >= maxSeconds">&gt;</button>
+    <button @click="onForwardClick(60)" :disabled="sliderValue >= maxSeconds">&gt;&gt;</button>
   </div>
   <div style="display: flex; justify-content: center">
     <ul class="shortcut-list">

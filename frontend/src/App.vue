@@ -1,15 +1,20 @@
 <script setup>
 import LeafletMap from './components/map/LeafletMap.vue'
-
+import {ref} from "vue";
+import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
+const selectedMember = ref(null);
 </script>
 
 <template>
 
   <main>
 
-    <div>
+    <div style="display: flex; justify-content: space-between">
       <div>
-        <LeafletMap></LeafletMap>
+        <KnowledgeGraph :member-id="selectedMember"></KnowledgeGraph>
+      </div>
+      <div>
+        <LeafletMap @marker-clicked="id => selectedMember = id"></LeafletMap>
       </div>
 
     </div>
