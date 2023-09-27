@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-//@Repository
+@Repository
 public class TripleRepositoryImpl implements TripleRepository {
     private final GraphDBConfig graphDBConfig;
 

@@ -1,22 +1,23 @@
 <script setup>
 import LeafletMap from './components/map/LeafletMap.vue'
-import {ref} from "vue";
-import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
-const selectedMember = ref(null);
 </script>
 
 <template>
 
   <main>
+    <h1>VSDS Demonstrator</h1>
+    <p>
+      De Vlaamse Smart Data Space helpt bij het <b>duurzame</b> delen van snel en traag veranderende data en hun
+      contextinformatie. Hiervoor wordt data gepubliceerd als <b>Linked Data Event Streams</b>.
+    </p>
+    <p>
+      Deze technische standaard houdt de <b>historiek</b> bij, maakt de data zelfbeschrijvend via semantische
+      standaarden en interoperabel via het <b>linked data</b> principe en houdt de eindgebruiker altijd
+      <b>up-to-date</b> met de bron.
+    </p>
 
-    <div style="display: flex; justify-content: space-between">
-      <div>
-        <KnowledgeGraph :member-id="selectedMember"></KnowledgeGraph>
-      </div>
-      <div>
-        <LeafletMap @marker-clicked="id => selectedMember = id"></LeafletMap>
-      </div>
-
+    <div>
+      <LeafletMap></LeafletMap>
     </div>
 
   </main>

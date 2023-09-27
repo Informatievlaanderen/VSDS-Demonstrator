@@ -2,7 +2,7 @@
 
 import {ref} from "vue";
 
-const emit = defineEmits(['timestampChanged', 'realtime', 'notRealtime'])
+const emit = defineEmits(['timestampChanged', 'realtimeToggled'])
 const now = new Date();
 
 const maxSeconds = 7 * 24 * 60 * 60;
@@ -32,14 +32,14 @@ function onForwardClick(amount) {
 function onShortcutClick(amount) {
   sliderValue.value = maxSeconds - amount * 60 * 60;
   emit('timestampChanged', now.getTime() - amount * 60 * 60 * 1000, "PT10M")
-  emit("notRealtime")
+  emit("realtimeToggled", false)
 }
 
 function onRealTime() {
   sliderValue.value = maxSeconds;
   onPauseClick()
   emit('timestampChanged', now.getTime(), "PT10M")
-  emit("realtime")
+  emit("realtimeToggled", true)
 }
 
 function onPlayClick() {

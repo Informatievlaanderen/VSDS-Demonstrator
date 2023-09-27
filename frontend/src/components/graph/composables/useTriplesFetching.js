@@ -8,7 +8,7 @@ function visualizeTriples(triples) {
 
     const width = 600;
     const height = 500;
-    let svg = d3.select("svg").attr("width", width).attr("height", height);
+    let svg = d3.select("#knowledge-graph");
     let graph = triplesToGraph(triples);
     let force = d3.forceSimulation(graph.nodes);
 
@@ -136,7 +136,7 @@ function visualizeTriples(triples) {
 export function useTriplesFetching(memberId) {
     axios({
         method: 'get',
-        url: 'http://localhost:5173/triples/' + memberId,
+        url: '/triples/' + memberId,
     }).then((response) => {
         console.log(response.data)
         visualizeTriples(response.data)
