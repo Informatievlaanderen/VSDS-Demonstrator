@@ -2,36 +2,31 @@
   <div>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-
-    <div style="float:left; height:500px; width:600px">
-      <svg></svg>
-    </div>
-
-    <div style="float:right; height:500px; width:500px" id="map"></div>
+    <div style="float:right; height:500px; width:850px" id="map"></div>
   </div>
   <div>
     <Slider @timestamp-changed="(timestamp, period) => {
       time = timestamp;
       timePeriod = period;
     }"
-    @realtime="() => {connect()}"
-    @notRealtime="() => {disconnect()}"
+            @realtime="() => {connect()}"
+            @notRealtime="() => {disconnect()}"
     />
   </div>
 </template>
 
 <script>
-
 import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
 import axios from 'axios'
-import {useMarkers} from "@/components/map/useMarkers";
+import {useMarkers} from "@/components/map/composables/useMarkers";
 import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
 
 export default {
   components: {Slider},
+  emits: ['markerClicked'],
   watch: {
     time: function () {
       this.fetchMembers();
@@ -95,7 +90,7 @@ export default {
     },
     handleMemberGeometries(memberGeometries) {
       this.markers.forEach(marker => this.map.removeLayer(marker))
-      this.markers = useMarkers(memberGeometries);
+      this.markers = useMarkers(memberGeometries, (memberId) => this.$emit("markerClicked", memberId));
       this.markers.forEach(marker => marker.addTo(this.map))
     },
     //websocket
