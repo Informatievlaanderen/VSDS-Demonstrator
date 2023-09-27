@@ -29,6 +29,7 @@
         <wiremock.version>2.35.0</wiremock.version>
         <!-- RDF4j -->
         <rdf4j.version>4.3.3</rdf4j.version>
+        <jacoco.version>0.8.10</jacoco.version>
     </properties>
 
     <dependencies>
