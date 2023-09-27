@@ -8,16 +8,16 @@ services:
     volumes:
       - ./gipod.config.yml:/ldio/application.yml:ro
     depends_on:
-      - spring-boot-backend
+      - demonstrator
       - rdf4j-server
     networks:
       - demonstrator
 
-  spring-boot-backend:
-    container_name: demonstrator-spring-boot-backend
-    image: demonstrator-spring-boot-backend
+  demonstrator:
+    container_name: demonstrator
+    image: vsds-demonstrator
     build:
-      context: spring-boot-backend
+      context: .
       dockerfile: Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/test
@@ -35,19 +35,6 @@ services:
     depends_on:
       - postgresql
       - rdf4j-server
-    networks:
-      - demonstrator
-
-  vue-frontend:
-    container_name: demonstrator-vue-frontend
-    image: demonstrator-vue-frontend
-    build:
-      context: vue-frontend
-      dockerfile: Dockerfile
-    ports:
-      - 8085:80
-    depends_on:
-      - spring-boot-backend
     networks:
       - demonstrator
 
