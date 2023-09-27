@@ -27,3 +27,10 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+node_modules
+/frontend/node/
+/.idea/
+target
+*.iml
+./backend/src/main/resources/public/
