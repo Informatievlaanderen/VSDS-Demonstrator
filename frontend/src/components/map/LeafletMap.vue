@@ -10,7 +10,7 @@
       time = timestamp;
       timePeriod = period;
     }"
-            @realtime-toggled="(isRealTimeEnabled) => {isRealTimeEnabled ? connect() : disconnect}"
+            @realtime-toggled="(isRealTimeEnabled) => isRealTimeEnabled ? connect() : disconnect()"
     />
   </div>
 </template>
@@ -54,6 +54,7 @@ export default {
   },
 
   mounted() {
+    console.log("mounted")
     this.connect()
 
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
@@ -62,7 +63,7 @@ export default {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
-    this.map.on("popupclose", () => this.memberId = null)
+    // this.map.on("popupclose", () => this.memberId = null)
     this.map.on("moveend", () => {
       this.fetchMembers();
     });
@@ -73,7 +74,7 @@ export default {
     fetchMembers() {
       axios({
         method: 'post',
-        url: '/in-rectangle',
+        url: '/api/in-rectangle',
         params: {
           timestamp: new Date(this.time).toISOString().replace("Z", ""),
           timePeriod: this.timePeriod
@@ -99,8 +100,8 @@ export default {
           {},
           frame => {
             this.stompClient.subscribe("/broker/member", (member) => {
-              var body = JSON.parse(member.body)
-              var marker = useMarkers([body]).at(0)
+              let body = JSON.parse(member.body)
+              let marker = useMarkers([body]).at(0)
               marker.setStyle({color: 'red'})
               setTimeout(function () {
                 this.updateMarker(marker)
@@ -130,7 +131,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   color: #05C !important;
@@ -154,7 +155,6 @@ export default {
   border-radius: 3px !important;
   box-shadow: 0 2px 12px 0 rgb(106, 118, 134, 0.35) !important;
 }
-
 
 table {
   font-family: arial, sans-serif;

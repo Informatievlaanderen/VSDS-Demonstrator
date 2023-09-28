@@ -136,9 +136,8 @@ function visualizeTriples(triples) {
 export function useTriplesFetching(memberId) {
     axios({
         method: 'get',
-        url: '/triples/' + memberId,
+        url: 'api/triples/' + memberId,
     }).then((response) => {
-        console.log(response.data)
         visualizeTriples(response.data)
     });
 }

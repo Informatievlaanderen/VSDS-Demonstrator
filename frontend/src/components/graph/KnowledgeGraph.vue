@@ -1,10 +1,10 @@
 <template>
   <div>
-    <svg id="knowledge-graph" class="linked-data-container" v-if="memberId" style="height:500px; min-width:600px; width: 100%"></svg>
-    <div class="linked-data-container" v-else style="height:500px; min-width:600px">
-      <img src="../../assets/svgs/Linked%20data.svg" alt="Linked data" class="linked-data-icon"/>
-      <span>Linked data</span>
-      <span>Klik op een punt op de kaart om de kennisgrafiek te laden</span>
+    <svg id="knowledge-graph" class="linked-data-container" v-if="memberId"></svg>
+    <div class="linked-data-container" v-else>
+        <img src="../../assets/svgs/Linked%20data.svg" alt="Linked data" class="linked-data-icon"/>
+        <h5 class="header5">Linked data</h5>
+        <small class="small-regular">Klik op een punt op de kaart om de kennisgrafiek te laden</small>
     </div>
   </div>
 </template>
@@ -17,14 +17,14 @@ export default {
   },
   watch: {
     memberId: function (newVal) {
-      if(newVal) {
+      if (newVal) {
         useTriplesFetching(newVal)
       }
     }
   },
 };
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .node {
   stroke: #fff;
   fill: #ddd;
@@ -53,8 +53,14 @@ marker {
 }
 
 .linked-data-container {
-  border: 1px solid rgba(207, 213, 221, 0.50);
+  border-top: 0.5px solid #CFD5DD;
+  border-right: 0.5px solid #CFD5DD;
+  border-bottom: 0.5px solid #CFD5DD;
   border-left: 0;
+
+  height: 500px;
+  min-width: 600px;
+  width: 100%;
 }
 
 .linked-data-icon {
@@ -68,6 +74,10 @@ div.linked-data-container {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.header5 {
+  margin: 8px 0;
 }
 
 header {

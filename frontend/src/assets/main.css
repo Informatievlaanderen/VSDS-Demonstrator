@@ -1,0 +1,116 @@
+@font-face {
+    font-family: "Flanders Art Sans";
+    src: url("src/assets/fonts/Flanders Art Sans/FlandersArtSans-Medium.otf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Flanders Art Sans Regular";
+    src: url("src/assets/fonts/Flanders Art Sans/FlandersArtSans-Regular.otf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+}
+
+.container {
+    margin: 24px 110px 64px 110px;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.secondary-btn {
+    width: 116px;
+    height: 38px;
+    padding: 4px 16px;
+    align-items: center;
+    border: none;
+    border-radius: 3px;
+    background: #fff;
+    box-shadow: 0 2px 12px 0 rgba(106, 118, 134, 0.35);
+
+    color: #0055CC;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 150% */
+}
+
+.secondary-btn > span {
+    color: #0055CC;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 150% */
+}
+
+.header1 {
+    color: #333332;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 52px;
+}
+
+.header5 {
+    color: #333332;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 28px;
+}
+
+.body-large-regular {
+    color: #333332;
+    font-family: Flanders Art Sans Regular, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 30px; /* 150% */
+
+}
+
+.small-regular {
+    font-family: Flanders Art Sans Regular, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px; /* 150% */
+
+}
+
+.header-font {
+    color: #333332;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.divider {
+    border: 1px solid #cfd5dd;
+    margin: 0;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    width: 24px;
+    height: 24px;
+}
+
+.icon-btn > img {
+    height: 18px;
+}
