@@ -130,8 +130,7 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   color: #05C !important;
@@ -154,21 +153,5 @@ export default {
   border: none !important;
   border-radius: 3px !important;
   box-shadow: 0 2px 12px 0 rgb(106, 118, 134, 0.35) !important;
-}
-
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid black;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
 }
 </style>
