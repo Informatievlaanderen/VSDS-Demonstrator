@@ -18,8 +18,7 @@ export default defineConfig({
             origin: "*"
         },
         proxy: {
-            '/in-rectangle': 'http://localhost:8084/api',
-            '/triples': 'http://localhost:8084/api'
+            '/api': 'http://localhost:8084/'
         }
     },
     build: {
