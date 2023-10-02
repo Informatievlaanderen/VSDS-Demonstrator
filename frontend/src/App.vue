@@ -2,6 +2,7 @@
 import LeafletMap from './components/map/LeafletMap.vue'
 import GlobalHeader from "@/components/headers/GlobalHeader.vue";
 import MemberCounter from './components/membercounter/MemberCounter.vue'
+import LineChart from "@/components/linechart/LineChart.vue";
 </script>
 
 <template>
@@ -21,6 +22,9 @@ import MemberCounter from './components/membercounter/MemberCounter.vue'
         standaarden en interoperabel via het <b>linked data</b> principe en houdt de eindgebruiker altijd
         <b>up-to-date</b> met de bron.
       </p>
+    </div>
+    <div>
+      <LineChart></LineChart>
     </div>
     <hr class="divider content-separator">
     <div>

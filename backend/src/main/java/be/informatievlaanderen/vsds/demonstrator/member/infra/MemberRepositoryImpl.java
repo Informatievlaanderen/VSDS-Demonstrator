@@ -42,4 +42,13 @@ public class MemberRepositoryImpl implements MemberRepository {
     public long getNumberOfMembers() {
         return memberGeometryJpaRepo.count();
     }
+
+    @Override
+    public List<Member> findMembersAfterLocalDateTime(LocalDateTime localDateTime) {
+        return memberGeometryJpaRepo
+                .findByTimestampAfter(localDateTime)
+                .stream()
+                .map(entity->new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
+                .toList();
+    }
 }
