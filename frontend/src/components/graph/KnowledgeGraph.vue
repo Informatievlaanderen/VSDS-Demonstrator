@@ -58,7 +58,7 @@ marker {
   border-bottom: 0.5px solid #CFD5DD;
   border-left: 0;
 
-  height: 500px;
+  height: 350px;
   min-width: 600px;
   width: 100%;
 }

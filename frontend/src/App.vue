@@ -44,13 +44,4 @@ import GlobalHeader from "@/components/headers/GlobalHeader.vue";
   margin-bottom: 24px;
 }
 
-.body-large-regular b {
-  color: #333332;
-  font-family: Flanders Art Sans Regular, sans-serif;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 30px
-
-}
 </style>

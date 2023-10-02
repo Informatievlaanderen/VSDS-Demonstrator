@@ -95,12 +95,12 @@ function onPauseClick() {
     </button>
   </div>
   <div class="shortcuts-flex-box">
-    <button class="secondary-btn" :class="{'active-btn': sliderValue === maxSeconds - 7 * 24 * 60 * 60}" @click="onShortcutClick(24 * 7)">-7 dagen</button>
-    <button class="secondary-btn" :class="{'active-btn': sliderValue === maxSeconds - 48 * 60 * 60}" @click="onShortcutClick(48)">-48 uur</button>
-    <button class="secondary-btn" :class="{'active-btn': sliderValue === maxSeconds - 24 * 60 * 60}" @click="onShortcutClick(24)">-24 uur</button>
-    <button class="secondary-btn" :class="{'active-btn': sliderValue === maxSeconds - 12 * 60 * 60}" @click="onShortcutClick(12)">-12 uur</button>
-    <button class="secondary-btn" :class="{'active-btn': sliderValue === maxSeconds - 60 * 60}" @click="onShortcutClick(1)">-1 uur</button>
-    <button class="secondary-btn" :class="{'active-btn': isRealtime}" @click="onRealTime()">Realtime</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 7 * 24 * 60 * 60}" @click="onShortcutClick(24 * 7)">-7 dagen</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 48 * 60 * 60}" @click="onShortcutClick(48)">-48 uur</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 24 * 60 * 60}" @click="onShortcutClick(24)">-24 uur</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 12 * 60 * 60}" @click="onShortcutClick(12)">-12 uur</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 60 * 60}" @click="onShortcutClick(1)">-1 uur</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': isRealtime}" @click="onRealTime()">Realtime</button>
   </div>
 </template>
 
@@ -148,10 +148,6 @@ function onPauseClick() {
   height: 24px;
   background: url("src/assets/svgs/range-handle.svg");
   cursor: pointer;
-}
-
-.active-btn {
-  border: 1px solid #0055CC;
 }
 
 </style>
