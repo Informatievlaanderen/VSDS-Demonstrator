@@ -2,7 +2,7 @@
   <div>
     <svg id="knowledge-graph" class="linked-data-container" v-if="memberId"></svg>
     <div class="linked-data-container" v-else>
-        <img src="../../assets/svgs/Linked%20data.svg" alt="Linked data" class="linked-data-icon"/>
+        <img src="../../assets/svgs/Linked_data.svg" alt="Linked data" class="linked-data-icon"/>
         <h5 class="header5">Linked data</h5>
         <small class="small-regular">Klik op een punt op de kaart om de kennisgrafiek te laden</small>
     </div>

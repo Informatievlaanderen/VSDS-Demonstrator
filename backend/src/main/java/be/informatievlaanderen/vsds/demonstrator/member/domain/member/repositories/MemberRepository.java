@@ -11,4 +11,6 @@ public interface MemberRepository {
     void saveMember(Member geometry);
     List<Member> getMembersByGeometry(Geometry geometry, LocalDateTime startTime, LocalDateTime endTime);
     Optional<Member> findByMemberId(String memberId);
+
+    long getNumberOfMembers();
 }
