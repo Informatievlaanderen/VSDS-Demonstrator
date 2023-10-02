@@ -1,8 +1,8 @@
 <template>
 <div>
   <div class="global-header">
-    <img src="../../assets/svgs/global-header/LOGO%20Vlaanderen%20NIV2.svg" alt="Vlaanderen">
-    <img class="small-global-header-divider" src="../../assets/svgs/global-header/divider%20globalheader.svg" alt="divider">
+    <img src="../../assets/svgs/global-header/LOGO_Vlaanderen_NIV2.svg" alt="Vlaanderen">
+    <img class="small-global-header-divider" src="../../assets/svgs/global-header/divider_globalheader.svg" alt="divider">
     <span class="header-title header-font">Vlaamse Smart Data Space</span>
     <span class="spacer"></span>
     <div id="help-needed">
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background-image: url("src/assets/svgs/global-header/hulp nodig.svg");
+  background-image: url("src/assets/svgs/global-header/hulp_nodig.svg");
   width: 144px;
   height: 44px;
 }

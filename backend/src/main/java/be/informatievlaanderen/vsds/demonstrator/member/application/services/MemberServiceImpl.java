@@ -7,8 +7,7 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.MemberExceptionHandler;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.WebSocketConfig;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
@@ -16,12 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -65,5 +62,10 @@ public class MemberServiceImpl implements MemberService {
         return repository.findByMemberId(memberId)
                 .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
                 .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
+    }
+
+    @Override
+    public long getNumberOfMembers() {
+        return repository.getNumberOfMembers();
     }
 }

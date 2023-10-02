@@ -37,4 +37,9 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .findById(memberId)
                 .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()));
     }
+
+    @Override
+    public long getNumberOfMembers() {
+        return memberGeometryJpaRepo.count();
+    }
 }
