@@ -5,8 +5,11 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.I
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.HourCount;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.LineChart;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.operation.TransformException;
@@ -19,6 +22,7 @@ import org.wololo.jts2geojson.GeoJSONWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -67,5 +71,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public long getNumberOfMembers() {
         return repository.getNumberOfMembers();
+    }
+
+    @Override
+    public LineChartDto getLineChartDto() {
+        long numberOfMembers = getNumberOfMembers();
+        LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+        List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(startDate);
+        Map<LocalDateTime, Integer> memberCountByHour = new HourCount(membersAfterLocalDateTime).getMemberCountByHour();
+        long numberOfMembersOutsideTimeFrame = numberOfMembers - membersAfterLocalDateTime.size();
+        LineChart lineChart = new LineChart(startDate,numberOfMembersOutsideTimeFrame,memberCountByHour);
+        return new LineChartDto(lineChart.getLabels(), lineChart.getValues());
     }
 }
