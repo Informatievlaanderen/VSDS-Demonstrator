@@ -1,10 +1,10 @@
 <template>
   <div class="checkbox-tile" :class="{ 'checked': checked }" @click="checked = !checked">
     <div class="checkmark-container">
-      <img v-if="checked" src="../../assets/svgs/checkboxtile/check-checked.svg" alt="checkbox checked"/>
+      <img v-if="checked" class="checkmark-checked" src="../../assets/svgs/checkboxtile/check-checked.svg" alt="checkbox checked"/>
       <span v-else class="checkmark"/>
     </div>
-    <h5 class="header5">{{ label }} {{ checked ? "(Active)" : "" }}</h5>
+    <h5 class="header5">{{ label }}</h5>
   </div>
 </template>
 
@@ -69,7 +69,7 @@ export default {
   background-color: #fff;
 }
 
-.checkmark.checked {
+.checkmark-checked {
   border: #fff solid 1px;
   width: 18px;
   height: 18px;
