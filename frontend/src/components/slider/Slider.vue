@@ -79,18 +79,18 @@ function onPauseClick() {
 
 <template>
   <div class="slider-container">
-    <button class="icon-btn" v-if="!isPlaying" @click="onPlayClick">
+    <button class="icon-btn slider-btn" v-if="!isPlaying" @click="onPlayClick">
       <img src="../../assets/svgs/video/play.svg" alt="Play"/>
     </button>
-    <button class="icon-btn" v-else @click="onPauseClick">
+    <button class="icon-btn slider-btn" v-else @click="onPauseClick">
       <img src="../../assets/svgs/video/pause.svg" alt="Pause"/>
     </button>
-    <button class="icon-btn" @click="onForwardClick(-5)" :disabled="sliderValue <= 0">
+    <button class="icon-btn slider-btn" @click="onForwardClick(-5)" :disabled="sliderValue <= 0">
       <img src="../../assets/svgs/video/back.svg" alt="Back"/>
     </button>
     <input class="slider" type="range" :style="sliderBg" min="0" :max="maxSeconds" v-model="sliderValue" :step="step"
            @input="onChange">
-    <button class="icon-btn" @click="onForwardClick(5)" :disabled="sliderValue >= maxSeconds">
+    <button class="icon-btn slider-btn" @click="onForwardClick(5)" :disabled="sliderValue >= maxSeconds">
       <img src="../../assets/svgs/video/next.svg" alt="Next"/>
     </button>
   </div>
@@ -105,6 +105,10 @@ function onPauseClick() {
 </template>
 
 <style scoped>
+.slider-btn {
+  cursor: pointer;
+}
+
 .shortcuts-flex-box {
   width: 100%;
   padding: 24px 0;

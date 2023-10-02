@@ -18,7 +18,7 @@ export default defineConfig({
             origin: "*"
         },
         proxy: {
-            '/api': 'http://localhost:8084/'
+            '/api': 'http://localhost:8084/',
         }
     },
     build: {

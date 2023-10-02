@@ -7,8 +7,11 @@ import MemberCounter from './components/membercounter/MemberCounter.vue'
 <template>
   <GlobalHeader/>
   <main class="container">
-    <h1 class="header1">VSDS Demonstrator</h1>
-    <div class="body-large-regular">
+    <div class="content-header">
+      <h1 class="header header1">VSDS Demonstrator</h1>
+      <MemberCounter/>
+    </div>
+    <div class="body body-large-regular">
       <p>
         De Vlaamse Smart Data Space helpt bij het <b>duurzame</b> delen van snel en traag veranderende data en hun
         contextinformatie. Hiervoor wordt data gepubliceerd als <b>Linked Data Event Streams</b>.
@@ -18,11 +21,6 @@ import MemberCounter from './components/membercounter/MemberCounter.vue'
         standaarden en interoperabel via het <b>linked data</b> principe en houdt de eindgebruiker altijd
         <b>up-to-date</b> met de bron.
       </p>
-    </div>
-
-    <hr class="divider content-separator">
-    <div>
-      <MemberCounter></MemberCounter>
     </div>
     <hr class="divider content-separator">
     <div>
@@ -34,18 +32,19 @@ import MemberCounter from './components/membercounter/MemberCounter.vue'
 
 
 <style scoped>
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
-
 .content-separator {
   margin: 24px 0;
 }
 
-.header1 {
+.content-header {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 24px;
+  align-items: center;
+}
+
+.content-header > h1 {
+  margin: 0;
 }
 
 </style>

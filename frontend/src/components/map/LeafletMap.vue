@@ -2,6 +2,8 @@
   <div class="z-stack">
     <MapButtons></MapButtons>
     <div class="linked-data-container">
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
       <div style="width: 50%" id="map"></div>
       <div style="width: 50%">
         <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
@@ -34,7 +36,7 @@ export default {
   watch: {
     time: function () {
       this.fetchMembers();
-    }
+    },
   },
   setup() {
     const time = ref(new Date().getTime())
@@ -58,7 +60,6 @@ export default {
   },
 
   mounted() {
-    console.log("mounted")
     this.connect()
 
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
@@ -67,7 +68,6 @@ export default {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
-    // this.map.on("popupclose", () => this.memberId = null)
     this.map.on("moveend", () => {
       this.fetchMembers();
     });
@@ -99,13 +99,13 @@ export default {
     },
     //websocket
     connect() {
-      this.stompClient = new Stomp.client('ws://localhost:8084/update');
+      this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
       this.stompClient.connect(
           {},
           frame => {
             this.stompClient.subscribe("/broker/member", (member) => {
               let body = JSON.parse(member.body)
-              let marker = useMarkers([body]).at(0)
+              let marker = useMarkers([body], (memberId) => this.memberId = memberId).at(0)
               marker.setStyle({color: 'red'})
               setTimeout(function () {
                 this.updateMarker(marker)
@@ -146,7 +146,7 @@ export default {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 350px;
+  height: 450px;
 }
 
 .leaflet-control-zoom-in,
