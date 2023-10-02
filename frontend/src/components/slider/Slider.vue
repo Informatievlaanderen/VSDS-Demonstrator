@@ -4,7 +4,7 @@ import {computed, reactive, ref, watch} from "vue";
 
 const emit = defineEmits(['timestampChanged', 'realtimeToggled'])
 const now = new Date();
-const isRealtime = ref(false)
+const isRealtime = ref(true)
 
 watch(isRealtime, (newVal, oldVal) => {
   if(newVal !== oldVal) {

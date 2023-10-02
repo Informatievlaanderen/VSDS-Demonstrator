@@ -50,6 +50,51 @@ function onMapButtonClicked(button : "layers" | "legend") {
 </template>
 
 <style scoped>
+.map-buttons {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
+  z-index: 10;
+  width: fit-content;
+  margin-right: 12px;
+  right: 50%;
+  bottom: 0;
+  margin-bottom: 30px;
+}
+
+.map-button {
+  width: 74px;
+  height: 60px;
+  border: none;
+  background-color: #fff;
+  border-radius: 3px;
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-button:hover {
+  cursor: pointer;
+}
+
+.map-button > img {
+  width: 24px;
+  height: 24px;
+}
+
+.map-button > span {
+  color: #0055CC;
+  font-family: Flanders Art Sans, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0;
+}
 .modal {
   display: flex;
   flex-direction: column;

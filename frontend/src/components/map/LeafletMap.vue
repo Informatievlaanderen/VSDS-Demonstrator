@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="z-stack">
     <MapButtons></MapButtons>
     <div class="linked-data-container">
       <div style="width: 50%" id="map"></div>
@@ -135,54 +135,18 @@ export default {
 </script>
 
 <style>
-.map-buttons {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: end;
-  z-index: 2;
-  width: 50%;
-  top: 350px;
-  right: 12px;
-  margin-top: -160px;
-  margin-bottom: 30px;
-  gap: 10px;
-}
-
 .linked-data-container {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   width: 100%;
+}
+
+.z-stack {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   height: 350px;
-}
-
-.map-button {
-  width: 74px;
-  height: 60px;
-  border: none;
-  background-color: #fff;
-  border-radius: 3px;
-
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  justify-content: center;
-}
-
-.map-button > img {
-  width: 24px;
-  height: 24px;
-}
-
-.map-button > span {
-  color: #0055CC;
-  font-family: Flanders Art Sans, sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-  letter-spacing: 0;
 }
 
 .leaflet-control-zoom-in,
