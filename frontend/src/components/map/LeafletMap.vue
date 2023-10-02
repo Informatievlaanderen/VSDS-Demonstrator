@@ -1,8 +1,11 @@
 <template>
-  <div style="display: flex; width: 100%">
-    <div style="width: 50%" id="map"></div>
-    <div style="width: 50%">
-      <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
+  <div>
+    <MapButtons></MapButtons>
+    <div class="linked-data-container">
+      <div style="width: 50%" id="map"></div>
+      <div style="width: 50%">
+        <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
+      </div>
     </div>
   </div>
   <div>
@@ -24,9 +27,10 @@ import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
+import MapButtons from "@/components/modal/MapButtons.vue";
 
 export default {
-  components: {KnowledgeGraph, Slider},
+  components: {MapButtons, KnowledgeGraph, Slider},
   watch: {
     time: function () {
       this.fetchMembers();
@@ -131,6 +135,56 @@ export default {
 </script>
 
 <style>
+.map-buttons {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  z-index: 2;
+  width: 50%;
+  top: 350px;
+  right: 12px;
+  margin-top: -160px;
+  margin-bottom: 30px;
+  gap: 10px;
+}
+
+.linked-data-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 350px;
+}
+
+.map-button {
+  width: 74px;
+  height: 60px;
+  border: none;
+  background-color: #fff;
+  border-radius: 3px;
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-button > img {
+  width: 24px;
+  height: 24px;
+}
+
+.map-button > span {
+  color: #0055CC;
+  font-family: Flanders Art Sans, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0;
+}
+
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   color: #05C !important;

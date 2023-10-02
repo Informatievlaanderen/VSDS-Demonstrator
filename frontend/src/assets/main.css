@@ -24,6 +24,26 @@ body {
     flex-grow: 1;
 }
 
+.primary-btn {
+    width: fit-content;
+    padding: 5px 20px 5px 20px;
+    align-items: center;
+    border: none;
+    border-radius: 3px;
+    background: #0055CC;
+
+    color: #ffffff;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 150% */
+}
+
+.primary-btn:hover {
+    background-color: #003bb0;
+}
+
 .secondary-btn {
     width: 116px;
     height: 38px;
@@ -32,7 +52,6 @@ body {
     border: none;
     border-radius: 3px;
     background: #fff;
-    box-shadow: 0 2px 12px 0 rgba(106, 118, 134, 0.35);
 
     color: #0055CC;
     font-family: Flanders Art Sans, sans-serif;
@@ -51,6 +70,14 @@ body {
     line-height: 24px; /* 150% */
 }
 
+.secondary-btn.active, .secondary-btn:hover {
+    border: 1px solid #0055CC;
+}
+
+.shadow-medium {
+    box-shadow: 0 2px 12px 0 rgba(106, 118, 134, 0.35);
+}
+
 .header1 {
     color: #333332;
     font-family: Flanders Art Sans, sans-serif;
@@ -58,6 +85,16 @@ body {
     font-style: normal;
     font-weight: 500;
     line-height: 52px;
+}
+
+.header2 {
+    color: #333332;
+    font-family: Flanders Art Sans, sans-serif;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 41px; /* 128.125% */
+
 }
 
 .header5 {
@@ -76,7 +113,19 @@ body {
     font-style: normal;
     font-weight: 400;
     line-height: 30px; /* 150% */
+}
 
+.body-medium-regular {
+    color: #333332;
+    font-family: Flanders Art Sans Regular, sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 27px; /* 150% */
+}
+
+b {
+    font-weight: 700;
 }
 
 .small-regular {
