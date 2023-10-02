@@ -2,9 +2,9 @@
   <div>
     <svg id="knowledge-graph" class="linked-data-container" v-if="memberId"></svg>
     <div class="linked-data-container" v-else>
-        <img src="../../assets/svgs/Linked_data.svg" alt="Linked data" class="linked-data-icon"/>
-        <h5 class="header5">Linked data</h5>
-        <small class="small-regular">Klik op een punt op de kaart om de kennisgrafiek te laden</small>
+      <img src="../../assets/svgs/Linked_data.svg" alt="Linked data" class="linked-data-icon"/>
+      <h5 class="header header5 margin-vert-8">Linked data</h5>
+      <small class="small-regular">Klik op een punt op de kaart om de kennisgrafiek te laden</small>
     </div>
   </div>
 </template>
@@ -24,41 +24,46 @@ export default {
   },
 };
 </script>
-<style type="text/css" scoped>
-.node {
-  stroke: #fff;
-  fill: #ddd;
-  stroke-width: 1.5px;
-}
 
-.link {
-  stroke: #999;
-  stroke-opacity: 0.6;
+<!--Styling that goes deeper then the component only, in this case is this styling used for the elements in the knowledge graph-->
+<style>
+.node {
+  stroke: #FFE615;
+  fill: #FFA405;
   stroke-width: 1px;
 }
 
-marker {
-  stroke: #999;
-  fill: rgba(124, 240, 10, 0);
+.link {
+  stroke: #993F00;
+  stroke-width: 0.66px;
 }
 
 .node-text {
-  font: 11px sans-serif;
-  fill: black;
+  color: #333332;
+  font-family: Flanders Art Sans Regular, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
 }
 
 .link-text {
-  font: 9px sans-serif;
-  fill: grey;
+  color: #808080;
+  font-family: Flanders Art Sans Regular, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
 }
+</style>
 
+<!--Styling that is related to the component only-->
+<style scoped>
 .linked-data-container {
   border-top: 0.5px solid #CFD5DD;
   border-right: 0.5px solid #CFD5DD;
   border-bottom: 0.5px solid #CFD5DD;
   border-left: 0;
 
-  height: 350px;
+  height: 450px;
   min-width: 600px;
   width: 100%;
 }
@@ -76,7 +81,7 @@ div.linked-data-container {
   align-items: center;
 }
 
-.header5 {
+.margin-vert-8 {
   margin: 8px 0;
 }
 

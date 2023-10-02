@@ -13,11 +13,11 @@ function onMapButtonClicked(button : "layers" | "legend") {
 
 <template>
   <div class="map-buttons">
-    <button class="map-button shadow-medium" @click="onMapButtonClicked('legend')">
+    <button class="map-button shadow-medium" :class="{active : showLegend}" @click="onMapButtonClicked('legend')">
       <img src="../../assets/svgs/location-map.svg" alt="Legende icoon">
       <span>Legende</span>
     </button>
-    <button class="map-button shadow-medium" @click="onMapButtonClicked('layers')">
+    <button class="map-button shadow-medium" :class="{active: showLayers}" @click="onMapButtonClicked('layers')">
       <img src="../../assets/svgs/content-layers-show.svg" alt="Lagen icoon">
       <span>Lagen</span>
     </button>
@@ -28,8 +28,8 @@ function onMapButtonClicked(button : "layers" | "legend") {
       <button class="close-button" @click="showLayers=false">
         <img src="../../assets/svgs/Close_Button.svg" alt="x">
       </button>
-      <h2 class="header2">Lagen</h2>
-      <p class="body-medium-regular">
+      <h2 class="header header2 margin-zero">Lagen</h2>
+      <p class="body body-medium-regular margin-vert-24">
         Als decentrale oplossing maakt de Vlaamse Smart Data Space gebruik van een gezamenlijk <b>ecosysteem</b> met duidelijke spelregels, waardoor we data slim kunnen delen, publiceren en hergebruiken.
       </p>
       <CheckboxTile id="gipod" label="GIPOD" :checked="true"></CheckboxTile>
@@ -43,7 +43,7 @@ function onMapButtonClicked(button : "layers" | "legend") {
       <button class="close-button" @click="showLegend = false">
         <img src="../../assets/svgs/Close_Button.svg" alt="x">
       </button>
-      <h2 class="header2">Legende</h2>
+      <h2 class="header header2">Legende</h2>
       <button class="primary-btn" @click="showLegend = false">Sluiten</button>
     </div>
   </Teleport>
@@ -78,6 +78,10 @@ function onMapButtonClicked(button : "layers" | "legend") {
   justify-content: center;
 }
 
+.map-button.active {
+  border: 1px solid #0055CC;
+}
+
 .map-button:hover {
   cursor: pointer;
 }
@@ -109,11 +113,11 @@ function onMapButtonClicked(button : "layers" | "legend") {
   border-left: 1px solid #cfd5dd;
 }
 
-.header2 {
+.margin-zero {
   margin: 0;
 }
 
-p.body-medium-regular {
+.margin-vert-24 {
   margin: 24px 0;
 }
 

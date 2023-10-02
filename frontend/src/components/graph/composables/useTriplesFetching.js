@@ -3,12 +3,12 @@ import * as d3 from "d3";
 import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 
 function visualizeTriples(triples) {
-    let children = d3.select("svg").selectAll("*")
+    let svg = d3.select("#knowledge-graph");
+    let children = svg.selectAll("*")
     children.remove();
 
-    const width = 600;
-    const height = 500;
-    let svg = d3.select("#knowledge-graph");
+    const width = +svg.style("width").replace("px", "")
+    const height = +svg.style("height").replace("px", "");
     let graph = triplesToGraph(triples);
     let force = d3.forceSimulation(graph.nodes);
 

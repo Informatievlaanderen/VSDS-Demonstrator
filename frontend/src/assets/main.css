@@ -78,49 +78,47 @@ body {
     box-shadow: 0 2px 12px 0 rgba(106, 118, 134, 0.35);
 }
 
-.header1 {
+.header {
     color: #333332;
     font-family: Flanders Art Sans, sans-serif;
-    font-size: 44px;
     font-style: normal;
     font-weight: 500;
+}
+
+.header1 {
+    font-size: 44px;
     line-height: 52px;
 }
 
 .header2 {
-    color: #333332;
-    font-family: Flanders Art Sans, sans-serif;
     font-size: 32px;
-    font-style: normal;
-    font-weight: 500;
     line-height: 41px; /* 128.125% */
-
 }
 
 .header5 {
-    color: #333332;
-    font-family: Flanders Art Sans, sans-serif;
     font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
     line-height: 28px;
 }
 
-.body-large-regular {
+.body {
     color: #333332;
     font-family: Flanders Art Sans Regular, sans-serif;
-    font-size: 20px;
     font-style: normal;
     font-weight: 400;
+}
+
+.body-xxlarge-regular {
+    font-size: 28px;
+    line-height: 36px;
+}
+
+.body-large-regular {
+    font-size: 20px;
     line-height: 30px; /* 150% */
 }
 
 .body-medium-regular {
-    color: #333332;
-    font-family: Flanders Art Sans Regular, sans-serif;
     font-size: 18px;
-    font-style: normal;
-    font-weight: 400;
     line-height: 27px; /* 150% */
 }
 

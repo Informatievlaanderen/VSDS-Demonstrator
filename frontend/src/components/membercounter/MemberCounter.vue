@@ -1,5 +1,8 @@
 <template>
-  <h1 class="header5 centered">Aantal members: {{ memberCounter }}</h1>
+  <div class="member-counter-container">
+    <h2 class="header header2 member-counter">{{ memberCounter }}</h2>
+    <span class="body body-xxlarge-regular">members</span>
+  </div>
 </template>
 
 <script>
@@ -45,9 +48,18 @@ export default {
 };
 </script>
 
-<style>
-
-.centered {
-  text-align: center
+<style scoped>
+.member-counter-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.member-counter {
+  color: #fff;
+  background-color: #d2373c;
+  border-radius: 6px;
+  padding: 4px 16px;
+  width: fit-content;
+  display: inline;
 }
 </style>
