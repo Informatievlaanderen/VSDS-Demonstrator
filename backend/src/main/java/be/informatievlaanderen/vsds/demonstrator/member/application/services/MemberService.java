@@ -13,4 +13,6 @@ public interface MemberService {
     List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, LocalDateTime timestamp, String timePeriod);
 
     MemberDto getMemberById(String memberId);
+
+    long getNumberOfMembers();
 }

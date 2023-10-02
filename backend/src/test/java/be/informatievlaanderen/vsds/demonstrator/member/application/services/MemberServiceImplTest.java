@@ -8,7 +8,6 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.WebSocketConfig;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
@@ -138,6 +137,13 @@ class MemberServiceImplTest {
         service.ingestMember(ingestedMemberDto);
 
         verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
+    }
+
+    @Test
+    void test_getNumberOfMembers() {
+        service.getNumberOfMembers();
+
+        verify(repository).getNumberOfMembers();
     }
 
     private List<Member> initMembers() throws ParseException {

@@ -1,6 +1,7 @@
 <script setup>
 import LeafletMap from './components/map/LeafletMap.vue'
 import GlobalHeader from "@/components/headers/GlobalHeader.vue";
+import MemberCounter from './components/membercounter/MemberCounter.vue'
 </script>
 
 <template>
@@ -20,7 +21,10 @@ import GlobalHeader from "@/components/headers/GlobalHeader.vue";
     </div>
 
     <hr class="divider content-separator">
-
+    <div>
+      <MemberCounter></MemberCounter>
+    </div>
+    <hr class="divider content-separator">
     <div>
       <LeafletMap></LeafletMap>
     </div>

@@ -110,6 +110,13 @@ class MemberRepositoryImplTest {
         verify(jpaRepository).save(argThat(entity -> entity.getMemberId().equals(member.getMemberId())));
     }
 
+    @Test
+    void test_NumberCount(){
+        repository.getNumberOfMembers();
+
+        verify(jpaRepository).count();
+    }
+
     private List<MemberEntity> initMembers() throws ParseException {
         final WKTReader reader = new WKTReader();
         List<MemberEntity> members = new ArrayList<>();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MessageController {
 	private SimpMessagingTemplate template;
-	private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
+	private static final Logger log = LoggerFactory.getLogger(MessageController.class);
 
 	@Autowired
 	public MessageController(SimpMessagingTemplate template) {
