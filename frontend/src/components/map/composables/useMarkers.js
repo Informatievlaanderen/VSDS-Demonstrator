@@ -1,11 +1,13 @@
 import L from "leaflet";
 
-export function useMarkers(memberGeometries, onMarkerClicked) {
+export function useMarkers(memberGeometries, onMarkerClicked, onPopupClosed) {
     let markers = []
 
     function onEachFeature(feature, layer) {
         if (feature.properties && feature.properties.popupContent) {
-            layer.bindPopup(feature.properties.popupContent, {remove: () => console.log("closed")});
+            let popup = L.popup().setContent(feature.properties.popupContent)
+            popup.on("remove", () => onPopupClosed())
+            layer.bindPopup(popup)
         }
         //bind click
         layer.on({
@@ -21,8 +23,9 @@ export function useMarkers(memberGeometries, onMarkerClicked) {
                 "popupContent": feature.memberId
             }
         }
-        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature})
-        markers.push(marker)
+        let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature})
+        geoJson.setStyle({color: '#808080'});
+        markers.push(geoJson)
     })
     return markers;
 }
