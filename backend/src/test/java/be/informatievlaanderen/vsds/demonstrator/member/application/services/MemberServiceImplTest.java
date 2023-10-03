@@ -7,6 +7,8 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.HourCount;
+import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
@@ -29,6 +31,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -144,6 +147,35 @@ class MemberServiceImplTest {
         service.getNumberOfMembers();
 
         verify(repository).getNumberOfMembers();
+    }
+
+
+    @Test
+    void test_getLineChartDto() {
+        when(repository.findMembersAfterLocalDateTime(any())).thenReturn(getMemberList());
+        when(repository.getNumberOfMembers()).thenReturn(8L);
+
+        LineChartDto lineChartDto = service.getLineChartDto();
+
+        verify(repository).getNumberOfMembers();
+        verify(repository).findMembersAfterLocalDateTime(any());
+        assertEquals(1, lineChartDto.getLabels().size());
+        assertEquals(1, lineChartDto.getValues().size());
+        assertEquals(1, lineChartDto.getValues().get(0).size());
+        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).toString(), lineChartDto.getLabels().get(0));
+        assertEquals(8, lineChartDto.getValues().get(0).get(0));
+    }
+
+    private List<Member> getMemberList() {
+        Member id1 = new Member("id1", null, LocalDateTime.now());
+        Member id2 = new Member("id1", null, LocalDateTime.now());
+        Member id3 = new Member("id1", null, LocalDateTime.now());
+        Member id4 = new Member("id1", null, LocalDateTime.now());
+        Member id5 = new Member("id1", null, LocalDateTime.now());
+        Member id6 = new Member("id1", null, LocalDateTime.now());
+        Member id7 = new Member("id1", null, LocalDateTime.now());
+        Member id8 = new Member("id1", null, LocalDateTime.now());
+        return List.of(id1, id2, id3, id4, id5, id6, id7, id8);
     }
 
     private List<Member> initMembers() throws ParseException {

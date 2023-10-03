@@ -111,10 +111,26 @@ class MemberRepositoryImplTest {
     }
 
     @Test
-    void test_NumberCount(){
+    void test_NumberCount() {
         repository.getNumberOfMembers();
 
         verify(jpaRepository).count();
+    }
+
+    @Test
+    void test_findMembersAfterLocalDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, point, timestamp));
+        when(jpaRepository.findByTimestampAfter(now)).thenReturn(memberEntities);
+        List<Member> expectedMembers = memberEntities.stream()
+                .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
+                .toList();
+
+        List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(now);
+
+        verify(jpaRepository).findByTimestampAfter(now);
+        assertEquals(1, membersAfterLocalDateTime.size());
+        assertEquals(expectedMembers, membersAfterLocalDateTime);
     }
 
     private List<MemberEntity> initMembers() throws ParseException {
