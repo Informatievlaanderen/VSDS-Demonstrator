@@ -40,17 +40,6 @@ export default {
         interaction: {
           intersect: false,
         },
-        scales: {
-          yAxes: [{
-            ticks: {
-              min: 0,
-              max: 300,
-              stepSize: 100,
-              reverse: false,
-              beginAtZero: true
-            }
-          }]
-        },
         responsive: true,
         maintainAspectRatio: false
 

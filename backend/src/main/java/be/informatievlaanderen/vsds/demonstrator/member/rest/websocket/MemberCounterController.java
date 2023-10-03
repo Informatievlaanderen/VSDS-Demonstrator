@@ -17,7 +17,7 @@ public class MemberCounterController {
 		this.memberService = memberService;
 	}
 
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 1000)
 	public void send() {
 		long counter = memberService.getNumberOfMembers();
 		this.template.convertAndSend("/broker/membercounter", counter);
