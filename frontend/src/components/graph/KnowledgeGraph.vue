@@ -33,6 +33,10 @@ export default {
   stroke-width: 1px;
 }
 
+#end polyline {
+  fill: #993F00;
+}
+
 .link {
   stroke: #993F00;
   stroke-width: 0.66px;

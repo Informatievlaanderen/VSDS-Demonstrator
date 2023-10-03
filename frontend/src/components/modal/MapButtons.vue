@@ -78,7 +78,8 @@ function onMapButtonClicked(button : "layers" | "legend") {
   justify-content: center;
 }
 
-.map-button.active {
+.map-button.active,
+.map-button:hover {
   border: 1px solid #0055CC;
 }
 

@@ -2,8 +2,6 @@
   <div class="z-stack">
     <MapButtons></MapButtons>
     <div class="linked-data-container">
-      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
       <div style="width: 50%" id="map"></div>
       <div style="width: 50%">
         <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
@@ -75,6 +73,9 @@ export default {
 
   },
   methods: {
+    onPopupClosed() {
+      this.memberId = null;
+    },
     fetchMembers() {
       axios({
         method: 'post',
@@ -94,7 +95,7 @@ export default {
     },
     handleMemberGeometries(memberGeometries) {
       this.markers.forEach(marker => this.map.removeLayer(marker))
-      this.markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId);
+      this.markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed);
       this.markers.forEach(marker => marker.addTo(this.map))
     },
     //websocket
@@ -105,8 +106,10 @@ export default {
           frame => {
             this.stompClient.subscribe("/broker/member", (member) => {
               let body = JSON.parse(member.body)
-              let marker = useMarkers([body], (memberId) => this.memberId = memberId).at(0)
-              marker.setStyle({color: 'red'})
+              let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
+              marker.setStyle({
+                color: '#FFA405',
+              })
               setTimeout(function () {
                 this.updateMarker(marker)
               }.bind(this), 1000)
@@ -126,7 +129,7 @@ export default {
       }
     },
     updateMarker(marker) {
-      marker.setStyle({color: 'blue'})
+      marker.setStyle({color: '#808080'})
     }
   }
 
@@ -152,7 +155,7 @@ export default {
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   color: #05C !important;
-  border: 0 !important;
+  border-width: 0 !important;
   width: 35px !important;
   height: 35px !important;
   line-height: 35px !important;
@@ -171,5 +174,9 @@ export default {
   border: none !important;
   border-radius: 3px !important;
   box-shadow: 0 2px 12px 0 rgb(106, 118, 134, 0.35) !important;
+}
+
+.leaflet-interactive {
+  margin: 12px;
 }
 </style>
