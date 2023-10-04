@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 
 public class Member {
     private final String memberId;
+    private final String collection;
     private final Geometry geometry;
     private final LocalDateTime timestamp;
 
-    public Member(String memberId, Geometry geometry, LocalDateTime timestamp) {
+    public Member(String memberId, String collection, Geometry geometry, LocalDateTime timestamp) {
         this.memberId = memberId;
+        this.collection = collection;
         this.geometry = geometry;
         this.timestamp = timestamp;
     }
@@ -26,6 +28,10 @@ public class Member {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public String getCollection() {
+        return collection;
     }
 
     @Override

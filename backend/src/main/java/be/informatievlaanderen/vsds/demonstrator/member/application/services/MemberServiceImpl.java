@@ -42,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void ingestMember(IngestedMemberDto ingestedMemberDto) {
         try {
-            Member member = ingestedMemberDto.getMemberGeometry(streams.getStreams());
+            Member member = ingestedMemberDto.getMember(streams.getStreams());
             repository.saveMember(member);
             messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()));
 

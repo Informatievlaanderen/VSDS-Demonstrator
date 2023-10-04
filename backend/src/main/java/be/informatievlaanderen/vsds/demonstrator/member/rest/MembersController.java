@@ -33,6 +33,7 @@ public class MembersController {
     @PostMapping(value = "/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void ingestLdesMember(@RequestBody Model model) {
-        service.ingestMember(new IngestedMemberDto(model));
+        //TODO PJ
+        service.ingestMember(new IngestedMemberDto("PJ", model));
     }
 }

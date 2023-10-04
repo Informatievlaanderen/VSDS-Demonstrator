@@ -21,9 +21,11 @@ import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 public class IngestedMemberDto {
+    private final String collection;
     private final Model model;
 
-    public IngestedMemberDto(Model model) {
+    public IngestedMemberDto(String collection, Model model) {
+        this.collection = collection;
         this.model = model;
     }
 
@@ -31,8 +33,8 @@ public class IngestedMemberDto {
         return model;
     }
 
-    public Member getMemberGeometry(List<EventStreamConfig> streams) throws FactoryException, TransformException {
-        Geometry geometry = getMemberGeometry();
+    public Member getMember(List<EventStreamConfig> streams) throws FactoryException, TransformException {
+        Geometry geometry = getMember();
         String memberId = getMemberId(streams);
         String timestampString = (String) getTimestampPath(streams);
         LocalDateTime timestamp;
@@ -41,10 +43,10 @@ public class IngestedMemberDto {
         } else {
             timestamp = LocalDateTime.parse(timestampString);
         }
-        return new Member(memberId, geometry, timestamp);
+        return new Member(memberId, collection, geometry, timestamp);
     }
 
-    private Geometry getMemberGeometry() throws FactoryException, TransformException {
+    private Geometry getMember() throws FactoryException, TransformException {
         List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
         if(wktNodes.isEmpty()) {
             throw new NoGeometryProvidedException();
@@ -74,5 +76,9 @@ public class IngestedMemberDto {
                 .getObject()
                 .asLiteral().getString();
 
+    }
+
+    public String getCollection() {
+        return collection;
     }
 }
