@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import CheckboxTile from "@/components/checkbox/CheckboxTile.vue";
+import Legend from "@/components/legend/Legend.vue";
 
 const showLayers = ref(false);
 const showLegend = ref(false);
@@ -40,16 +41,12 @@ function onMapButtonClicked(button : "layers" | "legend") {
 
   <Teleport to="body">
     <div v-if="showLegend" class="modal">
-      <button class="close-button" @click="showLegend = false">
-        <img src="../../assets/svgs/Close_Button.svg" alt="x">
-      </button>
-      <h2 class="header header2">Legende</h2>
-      <button class="primary-btn" @click="showLegend = false">Sluiten</button>
+     <Legend @on-close-click="showLegend = false"/>
     </div>
   </Teleport>
 </template>
 
-<style scoped>
+<style>
 .map-buttons {
   position: absolute;
   display: flex;
