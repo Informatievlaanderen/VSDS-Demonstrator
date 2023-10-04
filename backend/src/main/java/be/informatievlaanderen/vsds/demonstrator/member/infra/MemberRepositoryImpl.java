@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
@@ -19,7 +20,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public void saveMember(Member member) {
-        memberGeometryJpaRepo.save(new MemberEntity(member.getMemberId(), member.getGeometry(), member.getTimestamp()));
+        memberGeometryJpaRepo.save(new MemberEntity(member.getMemberId(), member.getCollection(), member.getGeometry(), member.getTimestamp()));
     }
 
     @Override
@@ -27,7 +28,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberGeometryJpaRepo
                 .getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(geometry, startTime, endTime)
                 .stream()
-                .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
+                .map(mapEntityToMember())
                 .toList();
     }
 
@@ -35,7 +36,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Optional<Member> findByMemberId(String memberId) {
         return memberGeometryJpaRepo
                 .findById(memberId)
-                .map(entity -> new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()));
+                .map(mapEntityToMember());
     }
 
     @Override
@@ -48,7 +49,11 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberGeometryJpaRepo
                 .findByTimestampAfter(localDateTime)
                 .stream()
-                .map(entity->new Member(entity.getMemberId(), entity.getGeometry(), entity.getTimestamp()))
+                .map(mapEntityToMember())
                 .toList();
+    }
+
+    private Function<MemberEntity, Member> mapEntityToMember() {
+        return entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp());
     }
 }

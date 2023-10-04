@@ -7,7 +7,6 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.HourCount;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
 import org.apache.jena.rdf.model.Model;
@@ -43,6 +42,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
     private static final String TIME_PERIOD = "PT5M";
+    private static final String COLLECTION = "collection";
     private static final Duration duration = Duration.parse(TIME_PERIOD).dividedBy(2);
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = timestamp.minus(duration);
@@ -78,7 +78,7 @@ class MemberServiceImplTest {
             when(repository.getMembersByGeometry(rectangle, startTime, endTime)).thenReturn(members);
 
             final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, timestamp, TIME_PERIOD).stream()
-                    .map(dto -> new Member(dto.getMemberId(), geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp()))
+                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp()))
                     .toList();
             assertEquals(members, retrievedMembers);
             verify(repository).getMembersByGeometry(rectangle, startTime, endTime);
@@ -107,7 +107,7 @@ class MemberServiceImplTest {
 
         @Test
         void when_MemberIsPresent_then_ReturnMember() {
-            Member memberGeometry = new Member(ID, rectangle, timestamp);
+            Member memberGeometry = new Member(ID, COLLECTION, rectangle, timestamp);
 
             when(repository.findByMemberId(ID)).thenReturn(Optional.of(memberGeometry));
 
@@ -136,7 +136,7 @@ class MemberServiceImplTest {
         final String id = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
         Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
         Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
-        IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(model);
+        IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
         service.ingestMember(ingestedMemberDto);
 
         verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
@@ -167,14 +167,14 @@ class MemberServiceImplTest {
     }
 
     private List<Member> getMemberList() {
-        Member id1 = new Member("id1", null, LocalDateTime.now());
-        Member id2 = new Member("id1", null, LocalDateTime.now());
-        Member id3 = new Member("id1", null, LocalDateTime.now());
-        Member id4 = new Member("id1", null, LocalDateTime.now());
-        Member id5 = new Member("id1", null, LocalDateTime.now());
-        Member id6 = new Member("id1", null, LocalDateTime.now());
-        Member id7 = new Member("id1", null, LocalDateTime.now());
-        Member id8 = new Member("id1", null, LocalDateTime.now());
+        Member id1 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id2 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id3 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id4 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id5 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id6 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id7 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id8 = new Member("id1", COLLECTION, null, LocalDateTime.now());
         return List.of(id1, id2, id3, id4, id5, id6, id7, id8);
     }
 
@@ -184,7 +184,7 @@ class MemberServiceImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new Member("id-%d".formatted(i * 6 + j), geometry, timestamp));
+                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp));
             }
         }
         return members;
