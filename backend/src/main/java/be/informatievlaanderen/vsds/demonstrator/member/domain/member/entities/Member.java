@@ -48,4 +48,8 @@ public class Member {
     public int hashCode() {
         return memberId.hashCode();
     }
+
+    public String getCollection() {
+        return collection;
+    }
 }
