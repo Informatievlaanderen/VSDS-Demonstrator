@@ -36,7 +36,7 @@ public class IngestedMemberDto {
         String memberId = getMemberId(streams);
         String timestampString = (String) getTimestampPath(streams);
         LocalDateTime timestamp;
-        if (timestampString.contains("Z")) {
+        if (timestampString.contains("Z") ||timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString);
