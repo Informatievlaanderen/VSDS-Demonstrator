@@ -11,7 +11,7 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js'
 import {Line} from 'vue-chartjs'
 import Stomp from "webstomp-client";
@@ -47,7 +47,14 @@ export default {
     };
   },
   mounted() {
-    this.connect()
+    this.connect();
+    ChartJS.defaults.font = {
+      family: "'Flanders Art Sans Regular', sans-serif",
+      size: 12,
+      style: "normal",
+      weight: 400,
+    }
+
   },
   methods: {
     //websocket
@@ -65,7 +72,7 @@ export default {
                     borderColor: "#FFED00",
                     pointRadius: 0,
                     tension: 0.3,
-                    label: 'Gipod',
+                    label: 'Aantal members GIPOD',
                     backgroundColor: '#FFED00',
                     data: linechart.values[0],
                   }
@@ -81,6 +88,9 @@ export default {
                       maxTicksLimit: 7,
                       maxRotation: 0,
                       minRotation: 0,
+                    },
+                    options: {
+                      text: "Tijd (dagen)"
                     }
                   }
                 },
