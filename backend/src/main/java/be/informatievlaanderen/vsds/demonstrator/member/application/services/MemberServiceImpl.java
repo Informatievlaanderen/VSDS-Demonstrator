@@ -81,6 +81,8 @@ public class MemberServiceImpl implements MemberService {
         Map<LocalDateTime, Integer> memberCountByHour = new HourCount(membersAfterLocalDateTime).getMemberCountByHour();
         long numberOfMembersOutsideTimeFrame = numberOfMembers - membersAfterLocalDateTime.size();
         LineChart lineChart = new LineChart(startDate,numberOfMembersOutsideTimeFrame,memberCountByHour);
-        return new LineChartDto(lineChart.getLabels(), lineChart.getValues());
+//        TODO fix
+//        return new LineChartDto(lineChart.getLabels(), lineChart.getValues());
+        return null;
     }
 }

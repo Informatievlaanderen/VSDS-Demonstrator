@@ -35,8 +35,10 @@ export default {
     return {
       data: {
         labels: [],
-        datasets: []
-      }, options: {
+        datasets: [],
+      },
+      colorCodesFlanders: ["#FFED00", "#443939"],
+      options: {
         interaction: {
           intersect: false,
         },
@@ -65,18 +67,20 @@ export default {
           () => {
             this.stompClient.subscribe("/broker/linechart", (memberCounter) => {
               let linechart = JSON.parse(memberCounter.body)
+              let datasetsOfLineChart = []
+              for (let i = 0; i < linechart.dataSetDtos.length; i++) {
+                datasetsOfLineChart.push({
+                  borderColor: this.colorCodesFlanders[i],
+                  pointRadius: 0,
+                  tension: 0.3,
+                  label: 'Aantal members ' + linechart.dataSetDtos[i].name,
+                  backgroundColor: this.colorCodesFlanders[i],
+                  data: linechart.dataSetDtos[i].values,
+                })
+              }
               this.data = {
                 labels: linechart.labels,
-                datasets: [
-                  {
-                    borderColor: "#FFED00",
-                    pointRadius: 0,
-                    tension: 0.3,
-                    label: 'Aantal members GIPOD',
-                    backgroundColor: '#FFED00',
-                    data: linechart.values[0],
-                  }
-                ]
+                datasets: datasetsOfLineChart
               }
               this.options = {
                 interaction: {

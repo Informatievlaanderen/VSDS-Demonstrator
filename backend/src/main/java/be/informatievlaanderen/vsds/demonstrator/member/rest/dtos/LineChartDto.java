@@ -4,18 +4,18 @@ import java.util.List;
 
 public class LineChartDto {
     private final List<String> labels;
-    private final List<List<Integer>> values;
+    private final List<DataSetDto> dataSetDtos;
 
-    public LineChartDto(List<String> labels, List<List<Integer>> values) {
+    public LineChartDto(List<String> labels, List<DataSetDto> dataSetDtos) {
         this.labels = labels;
-        this.values = values;
+        this.dataSetDtos = dataSetDtos;
     }
 
     public List<String> getLabels() {
         return labels;
     }
 
-    public List<List<Integer>> getValues() {
-        return values;
+    public List<DataSetDto> getDataSetDtos() {
+        return dataSetDtos;
     }
 }
