@@ -10,14 +10,16 @@ import java.time.LocalDateTime;
 public class MemberEntity {
     @Id
     private String memberId;
+    private String collection;
     private Geometry geometry;
     private LocalDateTime timestamp;
 
     public MemberEntity() {
     }
 
-    public MemberEntity(String memberId, Geometry geometry, LocalDateTime timestamp) {
+    public MemberEntity(String memberId, String collection, Geometry geometry, LocalDateTime timestamp) {
         this.memberId = memberId;
+        this.collection = collection;
         this.geometry = geometry;
         this.timestamp = timestamp;
     }
@@ -32,5 +34,9 @@ public class MemberEntity {
 
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public String getCollection() {
+        return collection;
     }
 }
