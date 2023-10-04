@@ -30,10 +30,9 @@ public class MembersController {
         return service.getMembersInRectangle(mapBoundsDto.getGeometry(), timestamp, timePeriod);
     }
 
-    @PostMapping(value = "/members")
+    @PostMapping(value = "/{collectionName}/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public void ingestLdesMember(@RequestBody Model model) {
-        //TODO PJ
-        service.ingestMember(new IngestedMemberDto("PJ", model));
+    public void ingestLdesMember(@PathVariable(name = "collectionName") String collectionName, @RequestBody Model model) {
+        service.ingestMember(new IngestedMemberDto(collectionName, model));
     }
 }
