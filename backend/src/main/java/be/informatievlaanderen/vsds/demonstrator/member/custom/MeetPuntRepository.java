@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.jena.rdf.model.ResourceFactory.*;
@@ -44,8 +45,10 @@ public class MeetPuntRepository {
 
             meetpuntLocaties.put(meetpuntId, createStatement(createResource("http://custom"), createProperty("http://www.opengis.net/ont/geosparql#asWKT"), createTypedLiteral(wkt, TypeMapper.getInstance().getTypeByName("http://www.opengis.net/ont/geosparql#wktLiteral"))));
         }
-        System.out.println();
     }
 
 
+    public List<Statement> get(String s) {
+        return List.of(meetpuntLocaties.get(s));
+    }
 }

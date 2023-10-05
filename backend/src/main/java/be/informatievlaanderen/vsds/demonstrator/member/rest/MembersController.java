@@ -47,6 +47,7 @@ public class MembersController {
     }
 
     private void addMeetpuntLocation(Model model) {
-        System.out.println();
+        String[] split = model.listObjectsOfProperty(model.createProperty("https://data.vlaanderen.be/ns/verkeersmetingen#verkeersmeetpunt")).next().toString().split("/");
+        model.add(meetPuntRepository.get(split[split.length-1]));
     }
 }
