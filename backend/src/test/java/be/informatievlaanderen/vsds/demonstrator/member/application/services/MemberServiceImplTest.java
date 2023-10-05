@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -150,13 +149,13 @@ class MemberServiceImplTest {
     @Test
     @Disabled
     void test_getLineChartDto() {
-        when(repository.findMembersAfterLocalDateTime(any())).thenReturn(getMemberList());
+        when(repository.findMembersByCollectionAfterLocalDateTime(collection, any())).thenReturn(getMemberList());
         when(repository.getNumberOfMembers()).thenReturn(8L);
 
         LineChartDto lineChartDto = service.getLineChartDtos();
 
         verify(repository).getNumberOfMembers();
-        verify(repository).findMembersAfterLocalDateTime(any());
+        verify(repository).findMembersByCollectionAfterLocalDateTime(collection, any());
         assertEquals(1, lineChartDto.getLabels().size());
 //        assertEquals(1, lineChartDto.getValues().size());
 //        assertEquals(1, lineChartDto.getValues().get(0).size());

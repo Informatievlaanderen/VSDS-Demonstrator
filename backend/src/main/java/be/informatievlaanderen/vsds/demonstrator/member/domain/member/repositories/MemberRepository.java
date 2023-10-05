@@ -12,7 +12,7 @@ public interface MemberRepository {
     List<Member> getMembersByGeometry(Geometry geometry, String collectionName, LocalDateTime startTime, LocalDateTime endTime);
     Optional<Member> findByMemberId(String memberId);
     long getNumberOfMembers();
-    List<Member> findMembersAfterLocalDateTime(LocalDateTime localDateTime);
+    List<Member> findMembersByCollectionAfterLocalDateTime(String collection, LocalDateTime localDateTime);
 
     long getNumberOfMembersByCollection(String collection);
 }

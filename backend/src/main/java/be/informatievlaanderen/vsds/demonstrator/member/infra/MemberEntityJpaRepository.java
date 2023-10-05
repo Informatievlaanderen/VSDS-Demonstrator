@@ -13,7 +13,7 @@ public interface MemberEntityJpaRepository extends JpaRepository<MemberEntity, S
     @Query(value = "select l from member_entity l where intersects(l.geometry, :geometry) = true and l.timestamp >= :startTime and l.timestamp <= :endTime and l.collection = :collectionName")
     List<MemberEntity> getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(@Param("geometry") Geometry geometry, @Param("collectionName") String collectionName, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
-    List<MemberEntity> findByTimestampAfter(LocalDateTime localDateTime);
+        List<MemberEntity> findByCollectionAndTimestampAfter(String collection, LocalDateTime localDateTime);
 
     long countAllByCollection(String collection);
 

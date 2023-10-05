@@ -128,7 +128,7 @@ class MemberRepositoryImplTest {
                 .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp()))
                 .toList();
 
-        List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(now);
+        List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection, now);
 
         verify(jpaRepository).findByTimestampAfter(now);
         assertEquals(1, membersAfterLocalDateTime.size());
