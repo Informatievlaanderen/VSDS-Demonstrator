@@ -74,11 +74,16 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public LineChartDto getLineChartDto() {
-        long numberOfMembers = getNumberOfMembers();
-        LocalDateTime startDate = LocalDateTime.now().minusDays(7);
-        List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(startDate);
-        Map<LocalDateTime, Integer> memberCountByHour = new HourCount(membersAfterLocalDateTime).getMemberCountByHour();
+    public LineChartDto getLineChartDtos() {
+        //TODO
+        List<String> collections = List.of("a","b");
+        collections.stream().map(collection->{
+            long numberOfMembers = getNumberOfMembers(collection);
+            LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+            List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(startDate);
+            Map<LocalDateTime, Integer> memberCountByHour = new HourCount(membersAfterLocalDateTime).getMemberCountByHour();
+        })
+
         long numberOfMembersOutsideTimeFrame = numberOfMembers - membersAfterLocalDateTime.size();
         LineChart lineChart = new LineChart(startDate,numberOfMembersOutsideTimeFrame,memberCountByHour);
 //        TODO fix

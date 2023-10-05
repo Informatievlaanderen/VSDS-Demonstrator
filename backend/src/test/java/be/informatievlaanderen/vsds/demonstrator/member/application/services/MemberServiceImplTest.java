@@ -155,7 +155,7 @@ class MemberServiceImplTest {
         when(repository.findMembersAfterLocalDateTime(any())).thenReturn(getMemberList());
         when(repository.getNumberOfMembers()).thenReturn(8L);
 
-        LineChartDto lineChartDto = service.getLineChartDto();
+        LineChartDto lineChartDto = service.getLineChartDtos();
 
         verify(repository).getNumberOfMembers();
         verify(repository).findMembersAfterLocalDateTime(any());

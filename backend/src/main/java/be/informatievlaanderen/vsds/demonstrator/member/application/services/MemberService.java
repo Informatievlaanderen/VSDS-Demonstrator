@@ -17,5 +17,5 @@ public interface MemberService {
 
     long getNumberOfMembers();
 
-    LineChartDto getLineChartDto();
+    LineChartDto getLineChartDtos();
 }
