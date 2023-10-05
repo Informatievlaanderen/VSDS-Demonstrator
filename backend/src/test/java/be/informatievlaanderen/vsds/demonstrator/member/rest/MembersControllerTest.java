@@ -106,7 +106,7 @@ class MembersControllerTest {
 
         when(service.getMembersInRectangle(rectangle, COLLECTION, timestamp, timePeriod)).thenReturn(members);
 
-        mockMvc.perform(post("/api/in-rectangle")
+        mockMvc.perform(post("/api/"+COLLECTION+"/in-rectangle")
                         .param("timestamp", timestamp.toString())
                         .param("timePeriod", timePeriod)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +121,7 @@ class MembersControllerTest {
    class IngestMember {
        @Test
        void when_MemberWithInvalidGeometryIsPosted_then_Status400IsExpected() throws Exception {
-           mockMvc.perform(post("/api/members")
+           mockMvc.perform(post("/api/"+COLLECTION+"/members")
                            .content(readDataFromFile("members/mobility-hindrance-with-invalid-wkt.nq"))
                            .contentType(Lang.NQUADS.getHeaderString()))
                    .andExpect(status().isBadRequest());
@@ -129,7 +129,7 @@ class MembersControllerTest {
 
        @Test
        void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
-           mockMvc.perform(post("/api/members")
+           mockMvc.perform(post("/api/"+COLLECTION+"/members")
                            .content(readDataFromFile("members/mobility-hindrance.nq"))
                            .contentType(Lang.NQUADS.getHeaderString()))
                    .andExpect(status().isOk());
