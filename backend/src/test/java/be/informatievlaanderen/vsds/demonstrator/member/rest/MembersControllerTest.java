@@ -4,6 +4,8 @@ package be.informatievlaanderen.vsds.demonstrator.member.rest;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidator;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidatorImpl;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.converters.ModelHttpConverter;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.GraphDBConfig;
@@ -43,14 +45,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles({"test"})
 @WebMvcTest
-@ContextConfiguration(classes = {MembersController.class, ModelHttpConverter.class, MemberExceptionHandler.class, GraphDBConfig.class, StreamsConfig.class})
+@ContextConfiguration(classes = {MembersController.class, ModelHttpConverter.class, MemberExceptionHandler.class, GraphDBConfig.class, StreamsConfig.class, MemberValidatorImpl.class})
 class MembersControllerTest {
     private static final String ID = "member-id";
+    private static final String COLLECTION = "collection";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static org.wololo.geojson.Geometry geoJSON;
 
     @MockBean
     private MemberService service;
+    @MockBean
+    private MemberValidator validator;
 
     @Autowired
     private MockMvc mockMvc;
@@ -99,7 +104,7 @@ class MembersControllerTest {
                 .map(dto -> transformToJson(dto.getMemberId(), dto.getGeojsonGeometry(), dto.getTimestamp()))
                 .collect(Collectors.joining(", ")) + "]";
 
-        when(service.getMembersInRectangle(rectangle, timestamp, timePeriod)).thenReturn(members);
+        when(service.getMembersInRectangle(rectangle, COLLECTION, timestamp, timePeriod)).thenReturn(members);
 
         mockMvc.perform(post("/api/in-rectangle")
                         .param("timestamp", timestamp.toString())
@@ -109,7 +114,7 @@ class MembersControllerTest {
                 .andExpect(content().json(json))
                 .andExpect(status().isOk());
 
-        verify(service).getMembersInRectangle(rectangle, timestamp, timePeriod);
+        verify(service).getMembersInRectangle(rectangle, COLLECTION, timestamp, timePeriod);
     }
 
    @Nested

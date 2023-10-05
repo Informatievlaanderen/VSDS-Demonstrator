@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface MemberEntityJpaRepository extends JpaRepository<MemberEntity, String> {
 
-    @Query(value = "select l from member_entity l where intersects(l.geometry, :geometry) = true and l.timestamp >= :startTime and l.timestamp <= :endTime")
-    List<MemberEntity> getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(@Param("geometry") Geometry geometry, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+    @Query(value = "select l from member_entity l where intersects(l.geometry, :geometry) = true and l.timestamp >= :startTime and l.timestamp <= :endTime and l.collection = :collectionName")
+    List<MemberEntity> getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(@Param("geometry") Geometry geometry, @Param("collectionName") String collectionName, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     List<MemberEntity> findByTimestampAfter(LocalDateTime localDateTime);
 
