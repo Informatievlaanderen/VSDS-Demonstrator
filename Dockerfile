@@ -16,7 +16,6 @@ RUN mvn clean install -DskipTests
 FROM openjdk:18-ea-bullseye
 RUN apt-get update & apt-get upgrade
 
-ADD backend/target/classes/static ./src/main/resources/static
 COPY --from=app-stage backend/target/vsds-demonstrator.jar ./
 
 RUN useradd -u 2000 vsds-demonstrator
