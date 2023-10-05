@@ -17,8 +17,8 @@ public class MessageController {
 		this.template = template;
 	}
 
-	public void send(MemberDto member) {
+	public void send(MemberDto member, String collection) {
 		log.info("sending member");
-		this.template.convertAndSend("/broker/member", member);
+		this.template.convertAndSend("/broker/member/" + collection, member);
 	}
 }
