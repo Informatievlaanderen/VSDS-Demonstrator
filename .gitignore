@@ -33,5 +33,5 @@ node_modules
 /.idea/
 target
 *.iml
-./backend/src/main/resources/public/
 derby.log
+/backend/src/main/resources/META-INF/
