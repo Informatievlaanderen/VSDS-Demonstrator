@@ -38,7 +38,7 @@ public class IngestedMemberDto {
         String memberId = getMemberId(streams);
         String timestampString = (String) getTimestampPath(streams);
         LocalDateTime timestamp;
-        if (timestampString.contains("Z") ||timestampString.contains("+")) {
+        if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString);
@@ -48,7 +48,7 @@ public class IngestedMemberDto {
 
     private Geometry getMember() throws FactoryException, TransformException {
         List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
-        if(wktNodes.isEmpty()) {
+        if (wktNodes.isEmpty()) {
             throw new NoGeometryProvidedException();
         } else {
             RDFNode wktObject = wktNodes.get(0);
@@ -60,6 +60,7 @@ public class IngestedMemberDto {
     private Statement getMemberProperty(List<EventStreamConfig> streams, Function<EventStreamConfig, Selector> createSelector) {
         return Iterables.getOnlyElement(streams
                 .stream()
+                .filter(stream -> stream.getName().equals(collection))
                 .map(stream -> model.listStatements(createSelector.apply(stream)))
                 .map(StmtIterator::nextStatement)
                 .toList());

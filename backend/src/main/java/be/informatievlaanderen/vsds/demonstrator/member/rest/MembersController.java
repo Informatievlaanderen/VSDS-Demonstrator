@@ -4,6 +4,7 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.services.Mem
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidator;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.custom.MeetPuntRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.MapBoundsDto;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,12 @@ import java.util.List;
 public class MembersController {
     private final MemberService service;
     private final MemberValidator validator;
+    private final MeetPuntRepository meetPuntRepository;
 
-    public MembersController(MemberService service, MemberValidator validator) {
+    public MembersController(MemberService service, MemberValidator validator, MeetPuntRepository meetPuntRepository) {
         this.service = service;
         this.validator = validator;
+        this.meetPuntRepository = meetPuntRepository;
     }
 
     @GetMapping(value = "/geometry/{memberId}")
@@ -37,6 +40,13 @@ public class MembersController {
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     public void ingestLdesMember(@PathVariable(name = "collectionName") String collectionName, @RequestBody Model model) {
         validator.validate(model, collectionName);
+        if (collectionName.equals("verkeersmeting")) {
+            addMeetpuntLocation(model); // CUSTOM CODE
+        }
         service.ingestMember(new IngestedMemberDto(collectionName, model));
+    }
+
+    private void addMeetpuntLocation(Model model) {
+        System.out.println();
     }
 }
