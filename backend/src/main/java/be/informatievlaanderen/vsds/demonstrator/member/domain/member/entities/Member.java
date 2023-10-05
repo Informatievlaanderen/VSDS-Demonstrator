@@ -49,7 +49,4 @@ public class Member {
         return memberId.hashCode();
     }
 
-    public String getCollection() {
-        return collection;
-    }
 }

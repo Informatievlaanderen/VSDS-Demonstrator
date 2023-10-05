@@ -27,6 +27,7 @@ import static org.mockito.Mockito.*;
 class MemberRepositoryImplTest {
     private static final String ID = "member-id";
     private static final String COLLECTION = "collection";
+    private static final String OTHER_COLLECTION = "otherCollection";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = ZonedDateTime.parse("2022-05-20T09:53:15.867Z").toLocalDateTime();
     private static final LocalDateTime endTime = ZonedDateTime.parse("2022-05-20T10:03:15.867Z").toLocalDateTime();
@@ -85,20 +86,35 @@ class MemberRepositoryImplTest {
                     .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), timestamp))
                     .toList();
 
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime)).thenReturn(entities);
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, COLLECTION, startTime, endTime)).thenReturn(entities);
 
-            assertEquals(members, repository.getMembersByGeometry(rectangle, startTime, endTime));
+            assertEquals(members, repository.getMembersByGeometry(rectangle, COLLECTION, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, COLLECTION, startTime, endTime);
         }
 
         @Test
         void when_DbContainsOnlyMembersOutsideRectangle_then_ReturnEmptyList() {
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime)).thenReturn(List.of());
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, COLLECTION, startTime, endTime)).thenReturn(List.of());
 
-            assertEquals(List.of(), repository.getMembersByGeometry(rectangle, startTime, endTime));
+            assertEquals(List.of(), repository.getMembersByGeometry(rectangle, COLLECTION, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, startTime, endTime);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, COLLECTION, startTime, endTime);
+        }
+
+        @Test
+        void when_DbContainsMembersIn2Collections_then_ReturnMembersInRectangle() throws ParseException {
+            final List<MemberEntity> entities = initMembersSecondCollection();
+            final List<Member> expected = entities.stream()
+                    .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), timestamp))
+                    .toList();
+            entities.addAll(initMembers());
+
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, OTHER_COLLECTION, startTime, endTime)).thenReturn(entities);
+
+            assertEquals(expected, repository.getMembersByGeometry(rectangle, OTHER_COLLECTION, startTime, endTime));
+
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriod(rectangle, OTHER_COLLECTION, startTime, endTime);
         }
     }
 
@@ -141,6 +157,18 @@ class MemberRepositoryImplTest {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
                 members.add(new MemberEntity("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp));
+            }
+        }
+        return members;
+    }
+
+    private List<MemberEntity> initMembersSecondCollection() throws ParseException {
+        final WKTReader reader = new WKTReader();
+        List<MemberEntity> members = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
+                members.add(new MemberEntity("id-%d".formatted(i * 6 + j), OTHER_COLLECTION, geometry, timestamp));
             }
         }
         return members;

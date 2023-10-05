@@ -4,8 +4,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class EventStreamConfig {
+    private String name;
     private String memberType;
     private String timestampPath;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getMemberType() {
         return memberType;
