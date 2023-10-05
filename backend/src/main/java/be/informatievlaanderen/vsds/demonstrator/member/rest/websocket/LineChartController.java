@@ -23,13 +23,13 @@ public class LineChartController {
 
     @Scheduled(fixedDelay = 1000)
     public void send() {
-                memberService.getLineChartDtos();
-        List<String> labels = List.of("Januari", "Februari", "Maart", "April", "Mei", "Juni");
-        DataSetDto gipod = new DataSetDto("GIPOD", List.of((int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100)));
-        DataSetDto verkeer = new DataSetDto("VERKEER", List.of((int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100)));
+//                memberService.getLineChartDtos();
+//        List<String> labels = List.of("Januari", "Februari", "Maart", "April", "Mei", "Juni");
+//        DataSetDto gipod = new DataSetDto("GIPOD", List.of((int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100)));
+//        DataSetDto verkeer = new DataSetDto("VERKEER", List.of((int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100), (int) (Math.random() * 100)));
+//
+//        List<DataSetDto> dataSetDtos = List.of(gipod, verkeer);
 
-        List<DataSetDto> dataSetDtos = List.of(gipod, verkeer);
-
-        this.template.convertAndSend("/broker/linechart", new LineChartDto(labels, dataSetDtos));
+        this.template.convertAndSend("/broker/linechart", memberService.getLineChartDtos());
     }
 }

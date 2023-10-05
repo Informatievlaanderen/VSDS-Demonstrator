@@ -16,6 +16,7 @@ public interface MemberService {
     MemberDto getMemberById(String memberId);
 
     long getNumberOfMembers();
+    long getNumberOfMembersByCollection(String collection);
 
     LineChartDto getLineChartDtos();
 }

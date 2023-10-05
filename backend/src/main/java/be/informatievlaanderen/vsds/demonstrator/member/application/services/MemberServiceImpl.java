@@ -1,10 +1,12 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 
+import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.Dataset;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.HourCount;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.LineChart;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
@@ -22,7 +24,6 @@ import org.wololo.jts2geojson.GeoJSONWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -74,20 +75,26 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public LineChartDto getLineChartDtos() {
-        //TODO
-        List<String> collections = List.of("a","b");
-        collections.stream().map(collection->{
-            long numberOfMembers = getNumberOfMembers(collection);
-            LocalDateTime startDate = LocalDateTime.now().minusDays(7);
-            List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(startDate);
-            Map<LocalDateTime, Integer> memberCountByHour = new HourCount(membersAfterLocalDateTime).getMemberCountByHour();
-        })
+    public long getNumberOfMembersByCollection(String collection) {
+        return repository.getNumberOfMembersByCollection(collection);
+    }
 
-        long numberOfMembersOutsideTimeFrame = numberOfMembers - membersAfterLocalDateTime.size();
-        LineChart lineChart = new LineChart(startDate,numberOfMembersOutsideTimeFrame,memberCountByHour);
-//        TODO fix
-//        return new LineChartDto(lineChart.getLabels(), lineChart.getValues());
-        return null;
+    @Override
+    public LineChartDto getLineChartDtos() {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+        LineChart lineChart = new LineChart(startDate);
+
+        streams
+                .getStreams()
+                .stream()
+                .map(EventStreamConfig::getName)
+                .map(collection -> {
+                    long numberOfMembers = getNumberOfMembersByCollection(collection);
+
+                    List<Member> membersAfterLocalDateTime = repository.findMembersAfterLocalDateTime(startDate);
+                    return new Dataset(collection, numberOfMembers - membersAfterLocalDateTime.size(), new HourCount(membersAfterLocalDateTime));
+                }).forEach(lineChart::addDataSet);
+
+        return new LineChartDto(lineChart.getLabels(), lineChart.getDatasetDtos());
     }
 }

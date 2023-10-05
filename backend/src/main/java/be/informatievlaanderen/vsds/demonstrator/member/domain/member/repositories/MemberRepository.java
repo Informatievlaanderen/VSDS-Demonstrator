@@ -13,4 +13,6 @@ public interface MemberRepository {
     Optional<Member> findByMemberId(String memberId);
     long getNumberOfMembers();
     List<Member> findMembersAfterLocalDateTime(LocalDateTime localDateTime);
+
+    long getNumberOfMembersByCollection(String collection);
 }

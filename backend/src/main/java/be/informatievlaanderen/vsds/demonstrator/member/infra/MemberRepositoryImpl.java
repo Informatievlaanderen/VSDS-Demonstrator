@@ -53,6 +53,11 @@ public class MemberRepositoryImpl implements MemberRepository {
                 .toList();
     }
 
+    @Override
+    public long getNumberOfMembersByCollection(String collection) {
+        return memberGeometryJpaRepo.countAllByCollection(collection);
+    }
+
     private Function<MemberEntity, Member> mapEntityToMember() {
         return entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp());
     }

@@ -15,4 +15,6 @@ public interface MemberEntityJpaRepository extends JpaRepository<MemberEntity, S
 
     List<MemberEntity> findByTimestampAfter(LocalDateTime localDateTime);
 
+    long countAllByCollection(String collection);
+
 }
