@@ -79,7 +79,7 @@ export default {
     fetchMembers() {
       axios({
         method: 'post',
-        url: '/api/in-rectangle',
+        url: '/api/gipod/in-rectangle',
         params: {
           timestamp: new Date(this.time).toISOString().replace("Z", ""),
           timePeriod: this.timePeriod
