@@ -47,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
             EventStreamConfig eventStreamConfig = streams.getStream(collection).orElseThrow(() -> new MissingCollectionException(collection));
             Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()), collection);
+            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getProperties()), collection);
 
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {
@@ -60,14 +60,14 @@ public class MemberServiceImpl implements MemberService {
         var duration = Duration.parse(timePeriod).dividedBy(2);
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, timestamp.minus(duration), timestamp.plus(duration))
                 .stream()
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
                 .toList();
     }
 
     @Override
     public MemberDto getMemberById(String memberId) {
         return repository.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
                 .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
     }
 

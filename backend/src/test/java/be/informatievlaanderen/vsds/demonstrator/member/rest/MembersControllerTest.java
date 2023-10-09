@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -75,7 +76,7 @@ class MembersControllerTest {
         @Test
         void when_MemberGeometryPresent_then_MemberGeomtryIsReturned_and_StatusIs200() throws Exception {
             final String json = transformToJson(ID, geoJSON, timestamp);
-            MemberDto dto = new MemberDto(ID, geoJSON, timestamp);
+            MemberDto dto = new MemberDto(ID, geoJSON, timestamp, Map.of());
 
             when(service.getMemberById(ID)).thenReturn(dto);
 
@@ -153,7 +154,7 @@ class MembersControllerTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp));
+                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp, Map.of()));
             }
         }
         return members;
