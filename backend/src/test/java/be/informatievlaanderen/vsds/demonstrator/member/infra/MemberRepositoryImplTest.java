@@ -123,14 +123,14 @@ class MemberRepositoryImplTest {
     void test_findMembersAfterLocalDateTime() {
         LocalDateTime now = LocalDateTime.now();
         List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, COLLECTION, point, timestamp));
-        when(jpaRepository.findByTimestampAfter(now)).thenReturn(memberEntities);
+        when(jpaRepository.findByCollectionAndTimestampAfter(COLLECTION, now)).thenReturn(memberEntities);
         List<Member> expectedMembers = memberEntities.stream()
                 .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp()))
                 .toList();
 
-        List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection, now);
+        List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, now);
 
-        verify(jpaRepository).findByTimestampAfter(now);
+        verify(jpaRepository).findByCollectionAndTimestampAfter(COLLECTION, now);
         assertEquals(1, membersAfterLocalDateTime.size());
         assertEquals(expectedMembers, membersAfterLocalDateTime);
     }

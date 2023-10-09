@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
     private static final String TIME_PERIOD = "PT5M";
-    private static final String COLLECTION = "collection";
+    private static final String COLLECTION = "gipod";
     private static final Duration duration = Duration.parse(TIME_PERIOD).dividedBy(2);
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = timestamp.minus(duration);
@@ -58,6 +58,7 @@ class MemberServiceImplTest {
     @BeforeEach
     void setUp() {
         EventStreamConfig eventStreamConfig = new EventStreamConfig();
+        eventStreamConfig.setName(COLLECTION);
         eventStreamConfig.setMemberType("https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder");
         eventStreamConfig.setTimestampPath("http://www.w3.org/ns/prov#generatedAtTime");
         StreamsConfig streams = new StreamsConfig();
@@ -149,13 +150,13 @@ class MemberServiceImplTest {
     @Test
     @Disabled
     void test_getLineChartDto() {
-        when(repository.findMembersByCollectionAfterLocalDateTime(collection, any())).thenReturn(getMemberList());
+        when(repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, any())).thenReturn(getMemberList());
         when(repository.getNumberOfMembers()).thenReturn(8L);
 
         LineChartDto lineChartDto = service.getLineChartDtos();
 
         verify(repository).getNumberOfMembers();
-        verify(repository).findMembersByCollectionAfterLocalDateTime(collection, any());
+        verify(repository).findMembersByCollectionAfterLocalDateTime(COLLECTION, any());
         assertEquals(1, lineChartDto.getLabels().size());
 //        assertEquals(1, lineChartDto.getValues().size());
 //        assertEquals(1, lineChartDto.getValues().get(0).size());
