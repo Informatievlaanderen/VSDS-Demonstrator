@@ -155,20 +155,7 @@ export default {
       this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
       this.stompClient.connect(
           {},
-          frame => {
-            this.stompClient.subscribe("/broker/member", (member) => {
-              let body = JSON.parse(member.body)
-              let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
-              marker.setStyle({
-                color: '#FFA405',
-              })
-              setTimeout(function () {
-                this.updateMarker(marker)
-              }.bind(this), decolouringTimeout)
-              this.markers.push(marker)
-              marker.addTo(this.map)
-            });
-          },
+          frame => this.subscribe("mobility-hindrances"),
           error => {
             console.log(error);
             this.connect()
@@ -179,6 +166,26 @@ export default {
       if (this.stompClient) {
         this.stompClient.disconnect();
       }
+    },
+    subscribe(ldesName) {
+      for (const sub in this.stompClient.subscriptions) {
+        if (this.stompClient.subscriptions.hasOwnProperty(sub)) {
+          this.stompClient.unsubscribe(sub);
+        }
+      }
+
+      this.stompClient.subscribe("/broker/member/" + ldesName, (member) => {
+        let body = JSON.parse(member.body)
+        let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
+        marker.setStyle({
+          color: '#FFA405',
+        })
+        setTimeout(function () {
+          this.updateMarker(marker)
+        }.bind(this), 1000)
+        this.markers.push(marker)
+        marker.addTo(this.map)
+      });
     },
     updateMarker(marker) {
       marker.setStyle({color: '#808080'})
