@@ -1,13 +1,13 @@
 @font-face {
     font-family: "Flanders Art Sans";
-    src: url("src/assets/fonts/Flanders Art Sans/FlandersArtSans-Medium.otf");
+    src: url("Flanders-Art-Sans/FlandersArtSans-Medium.otf");
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: "Flanders Art Sans Regular";
-    src: url("src/assets/fonts/Flanders Art Sans/FlandersArtSans-Regular.otf");
+    src: url("Flanders-Art-Sans/FlandersArtSans-Regular.otf");
     font-weight: normal;
     font-style: normal;
 }

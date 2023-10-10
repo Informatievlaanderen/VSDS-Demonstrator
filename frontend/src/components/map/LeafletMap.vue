@@ -155,7 +155,7 @@ export default {
       this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
       this.stompClient.connect(
           {},
-          frame => this.subscribe("gipod"),
+          frame => this.subscribe(),
           error => {
             console.log(error);
             this.connect()
@@ -167,25 +167,22 @@ export default {
         this.stompClient.disconnect();
       }
     },
-    subscribe(ldesName) {
-      for (const sub in this.stompClient.subscriptions) {
-        if (this.stompClient.subscriptions.hasOwnProperty(sub)) {
-          this.stompClient.unsubscribe(sub);
-        }
+    subscribe() {
+      for (let [key, value] of this.layersToShow.entries()) {
+        this.stompClient.subscribe("/broker/member/" + key, (member) => {
+          let body = JSON.parse(member.body)
+          let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
+          marker.setStyle({
+            color: '#FFA405',
+          })
+          if (key === "gipod") {
+            setTimeout(function () {
+              this.updateMarker(marker)
+            }.bind(this), 1000)
+          }
+          this.layers.get(key).addLayer(marker)
+        });
       }
-
-      this.stompClient.subscribe("/broker/member/" + ldesName, (member) => {
-        let body = JSON.parse(member.body)
-        let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
-        marker.setStyle({
-          color: '#FFA405',
-        })
-        setTimeout(function () {
-          this.updateMarker(marker)
-        }.bind(this), 1000)
-        this.markers.push(marker)
-        marker.addTo(this.map)
-      });
     },
     updateMarker(marker) {
       marker.setStyle({color: '#808080'})

@@ -10,7 +10,7 @@ services:
       - ./rml:/ldio/rml:ro
       - ./sparql:/ldio/sparql:ro
     depends_on:
-#      - demonstrator
+      - demonstrator
       - rdf4j-server
     networks:
       - demonstrator
@@ -27,13 +27,18 @@ services:
       - SPRING_DATASOURCE_PASSWORD=test
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_HIBERNATE_DDLAUTO=update
-      - LDES_STREAMS_0_MEMBER_TYPE=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
-      - LDES_STREAMS_0_TIMESTAMP_PATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_0_NAME=gipod
+      - LDES_STREAMS_0_MEMBERTYPE=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
+      - LDES_STREAMS_0_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_1_NAME=verkeersmeting
+      - LDES_STREAMS_1_MEMBERTYPE=https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
+      - LDES_STREAMS_1_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
       - SERVER_PORT=8080
     ports:
       - 8084:8080
+      - 8085:5173
     depends_on:
       - postgresql
       - rdf4j-server

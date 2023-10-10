@@ -1,26 +1,26 @@
 <template>
   <div class="checkbox-tile" :class="{ 'checked': checked }" @click="checkClicked()">
     <div class="checkmark-container">
-      <img v-if="checked" class="checkmark-checked" src="../../assets/svgs/checkboxtile/check-checked.svg" alt="checkbox checked"/>
+      <img v-if="checked" class="checkmark-checked" :src="checkMarkChecked" alt="v"/>
       <span v-else class="checkmark"/>
     </div>
     <h5 class="header header5">{{ label }}</h5>
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    id: String,
-    label: String,
-    checked: Boolean
-  },
-  emits: ["onChecked"],
-  methods: {
-    checkClicked() {
-      this.$emit('onChecked', !this.checked)
-    }
-  }
+<script setup>
+import checkMarkChecked from "../../assets/svgs/check-checked.svg"
+
+const props = defineProps({
+  id: String,
+  label: String,
+  checked: Boolean
+});
+
+const emit = defineEmits(["onChecked"])
+
+function checkClicked() {
+  this.$emit('onChecked', !this.checked)
 }
 </script>
 
