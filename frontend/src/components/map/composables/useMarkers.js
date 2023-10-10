@@ -18,7 +18,7 @@ export function useMarkers(memberGeometries, onMarkerClicked, onPopupClosed) {
         if (feature.properties && feature.properties.popupContent) {
             let popup = L.popup().setContent(feature.properties.popupContent)
             popup.on("remove", () => {
-                if(layer.getIcon()) {
+                if(layer.defaultOptions.icon) {
                     layer.setIcon(icon)
                 }
                 onPopupClosed();
@@ -28,7 +28,7 @@ export function useMarkers(memberGeometries, onMarkerClicked, onPopupClosed) {
         //bind click
         layer.on({
             click: (event) => {
-                if(layer.getIcon()) {
+                if(layer.defaultOptions.icon) {
                     layer.setIcon(selectedIcon)
                 }
                 onMarkerClicked(event.sourceTarget._popup._content);

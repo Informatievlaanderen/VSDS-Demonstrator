@@ -1,6 +1,6 @@
 <template>
   <div class="z-stack">
-    <MapButtons></MapButtons>
+    <MapButtons :layers-to-show="layersToShow"></MapButtons>
     <div class="linked-data-container">
       <div style="width: 50%" id="map"></div>
       <div style="width: 50%">
@@ -53,7 +53,9 @@ export default {
       markers: [],
       memberId: null,
       simulation: null,
-      stompClient: null
+      stompClient: null,
+      layersToShow: new Map([["gipod", true], ["verkeersmeting", true]]),
+      layers: new Map([["gipod", {}], ["verkeersmeting", {}]])
     };
   },
 
@@ -77,29 +79,35 @@ export default {
       this.memberId = null;
     },
     fetchMembers() {
-      axios({
-        method: 'post',
-        url: '/api/gipod/in-rectangle',
-        params: {
-          timestamp: new Date(this.time).toISOString().replace("Z", ""),
-          timePeriod: this.timePeriod
-        },
-        data: this.map.getBounds(),
-        headers: {
-          'Content-type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+      for(let [key, value] of this.layersToShow.entries()) {
+        if(value) {
+          axios({
+            method: 'post',
+            url: `/api/${key}/in-rectangle`,
+            params: {
+              timestamp: new Date(this.time).toISOString().replace("Z", ""),
+              timePeriod: this.timePeriod
+            },
+            data: this.map.getBounds(),
+            headers: {
+              'Content-type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            }
+          }).then((response) => {
+            this.handleMemberGeometries(key, response.data)
+          });
         }
-      }).then((response) => {
-        this.handleMemberGeometries(response.data)
-      });
+      }
     },
-    handleMemberGeometries(memberGeometries) {
-      this.markers.forEach(marker => this.map.removeLayer(marker))
-      this.markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed);
-      this.markers.forEach(marker => marker.addTo(this.map))
+    handleMemberGeometries(key, memberGeometries) {
+      let layer = this.layers.get(key)
+      this.map.removeLayer(layer)
+      layer = L.layerGroup(useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed))
+      this.map.addLayer(layer)
     },
     //websocket
     connect() {
+      const decolouringTimeout = 1000;
       this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
       this.stompClient.connect(
           {},
@@ -112,7 +120,7 @@ export default {
               })
               setTimeout(function () {
                 this.updateMarker(marker)
-              }.bind(this), 1000)
+              }.bind(this), decolouringTimeout)
               this.markers.push(marker)
               marker.addTo(this.map)
             });

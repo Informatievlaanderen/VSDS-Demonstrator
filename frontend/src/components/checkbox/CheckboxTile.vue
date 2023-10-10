@@ -1,5 +1,5 @@
 <template>
-  <div class="checkbox-tile" :class="{ 'checked': checked }" @click="checked = !checked">
+  <div class="checkbox-tile" :class="{ 'checked': checked }" @click="checkClicked()">
     <div class="checkmark-container">
       <img v-if="checked" class="checkmark-checked" src="../../assets/svgs/checkboxtile/check-checked.svg" alt="checkbox checked"/>
       <span v-else class="checkmark"/>
@@ -16,8 +16,10 @@ export default {
     checked: Boolean
   },
   emits: ["onChecked"],
-  mounted() {
-    console.log(typeof this.checked)
+  methods: {
+    checkClicked() {
+      this.$emit('onChecked', !this.checked)
+    }
   }
 }
 </script>
