@@ -155,7 +155,7 @@ export default {
       this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
       this.stompClient.connect(
           {},
-          frame => this.subscribe("mobility-hindrances"),
+          frame => this.subscribe("gipod"),
           error => {
             console.log(error);
             this.connect()
