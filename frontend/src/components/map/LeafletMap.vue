@@ -26,11 +26,32 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import "leaflet.markercluster/dist/leaflet.markercluster"
 import axios from 'axios'
 import {useMarkers} from "@/components/map/composables/useMarkers";
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
 import MapButtons from "@/components/modal/MapButtons.vue";
+
+const iconCreateFunction = (cluster) => {
+  const count = cluster.getChildCount();
+  let clusterSize = "";
+
+  if (count < 21) {
+    clusterSize = "small";
+  } else if (count < 61) {
+    clusterSize = "medium";
+  } else {
+    clusterSize = "large";
+  }
+
+  const className = `marker-cluster-${clusterSize}`;
+  const iconUrl = `src/assets/svgs/legend/maps.marker.cluster-${clusterSize}.svg`;
+
+  return L.divIcon({
+    html: `<div><img src="${iconUrl}"></div>`,
+    className,
+  })
+}
 
 export default {
   components: {MapButtons, KnowledgeGraph, Slider},
@@ -45,7 +66,7 @@ export default {
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
-    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup()]))
+    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({})]))
 
     return {
       time,
@@ -87,7 +108,7 @@ export default {
   },
   methods: {
     updateLayers(key) {
-      if(this.layersToShow.get(key)) {
+      if (this.layersToShow.get(key)) {
         this.map.addLayer(this.layers.get(key))
       } else {
         this.map.removeLayer(this.layers.get(key))
