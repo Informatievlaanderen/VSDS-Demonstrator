@@ -22,7 +22,7 @@
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css"
 import "leaflet.markercluster/dist/MarkerCluster.css"
-import "leaflet.markercluster/dist/MarkerCluster.Default.css"
+// import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import "leaflet.markercluster/dist/leaflet.markercluster"
 import axios from 'axios'
 import {useMarkers} from "@/components/map/composables/useMarkers";
@@ -35,21 +35,26 @@ import MapButtons from "@/components/modal/MapButtons.vue";
 const iconCreateFunction = (cluster) => {
   const count = cluster.getChildCount();
   let clusterSize = "";
+  let iconAnchor = [];
 
   if (count < 21) {
     clusterSize = "small";
+    iconAnchor = [23, 23]
   } else if (count < 61) {
     clusterSize = "medium";
+    iconAnchor = [33, 33]
   } else {
     clusterSize = "large";
+    iconAnchor = [40.5, 40.5]
   }
 
   const className = `marker-cluster-${clusterSize}`;
   const iconUrl = `src/assets/svgs/legend/maps.marker.cluster-${clusterSize}.svg`;
 
   return L.divIcon({
-    html: `<div><img src="${iconUrl}"></div>`,
+    html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span>${count}</span></div>`,
     className,
+    iconAnchor,
   })
 }
 
@@ -66,7 +71,7 @@ export default {
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
-    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({})]))
+    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({iconCreateFunction})]))
 
     return {
       time,
@@ -223,5 +228,19 @@ export default {
 
 .leaflet-interactive {
   margin: 12px;
+}
+
+.marker-cluster-flanders {
+  position: relative;
+  color: #fff;
+  justify-content: center;
+  display: inline-flex;
+}
+
+.marker-cluster-flanders > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
