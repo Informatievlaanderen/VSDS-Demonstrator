@@ -6,6 +6,7 @@ import Legend from "@/components/legend/Legend.vue";
 const showLayers = ref(false);
 const showLegend = ref(false);
 const props = defineProps({"layersToShow": Map})
+const emit = defineEmits(["onLayersUpdated"])
 
 function onMapButtonClicked(button : "layers" | "legend") {
   showLayers.value = button === "layers"
@@ -14,6 +15,7 @@ function onMapButtonClicked(button : "layers" | "legend") {
 
 function onCheckboxClicked(key: string, isChecked: boolean) {
   props.layersToShow.set(key, isChecked);
+  emit("onLayersUpdated", key)
 }
 </script>
 

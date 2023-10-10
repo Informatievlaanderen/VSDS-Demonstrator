@@ -1,6 +1,6 @@
 <template>
   <div class="z-stack">
-    <MapButtons :layers-to-show="layersToShow"></MapButtons>
+    <MapButtons :layers-to-show="layersToShow" @on-layers-updated="(name) => this.updateLayers(name)"></MapButtons>
     <div class="linked-data-container">
       <div style="width: 50%" id="map"></div>
       <div style="width: 50%">
@@ -19,11 +19,14 @@
 </template>
 
 <script>
-import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
+import "leaflet/dist/leaflet.css"
+import "leaflet.markercluster/dist/MarkerCluster.css"
+import "leaflet.markercluster/dist/MarkerCluster.Default.css"
+import "leaflet.markercluster/dist/leaflet.markercluster"
 import axios from 'axios'
 import {useMarkers} from "@/components/map/composables/useMarkers";
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
@@ -37,12 +40,18 @@ export default {
     },
   },
   setup() {
+    const layerNames = ["gipod", "verkeersmeting"]
+
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
+    const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
+    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup()]))
 
     return {
       time,
-      timePeriod
+      timePeriod,
+      layersToShow,
+      layers
     }
   },
   name: "ConnectionState",
@@ -54,56 +63,63 @@ export default {
       memberId: null,
       simulation: null,
       stompClient: null,
-      layersToShow: new Map([["gipod", true], ["verkeersmeting", true]]),
-      layers: new Map([["gipod", {}], ["verkeersmeting", {}]])
     };
   },
 
   mounted() {
     this.connect()
-
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
+    //TODO: delete this and hard code the bounds of Flanders/Belgium for performance reasons
     this.map.on("moveend", () => {
       this.fetchMembers();
     });
     this.fetchMembers();
-
+    for (let [key, value] of this.layersToShow.entries()) {
+      if (value) {
+        this.layers.get(key).addTo(this.map)
+      }
+    }
   },
   methods: {
+    updateLayers(key) {
+      if(this.layersToShow.get(key)) {
+        this.map.addLayer(this.layers.get(key))
+      } else {
+        this.map.removeLayer(this.layers.get(key))
+      }
+    },
     onPopupClosed() {
       this.memberId = null;
     },
     fetchMembers() {
-      for(let [key, value] of this.layersToShow.entries()) {
-        if(value) {
-          axios({
-            method: 'post',
-            url: `/api/${key}/in-rectangle`,
-            params: {
-              timestamp: new Date(this.time).toISOString().replace("Z", ""),
-              timePeriod: this.timePeriod
-            },
-            data: this.map.getBounds(),
-            headers: {
-              'Content-type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            }
-          }).then((response) => {
-            this.handleMemberGeometries(key, response.data)
-          });
-        }
+      for (let [key, layer] of this.layers.entries()) {
+        axios({
+          method: 'post',
+          url: `/api/${key}/in-rectangle`,
+          params: {
+            timestamp: new Date(this.time).toISOString().replace("Z", ""),
+            timePeriod: this.timePeriod
+          },
+          data: this.map.getBounds(),
+          headers: {
+            'Content-type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }).then((response) => {
+          this.handleMemberGeometries(layer, response.data)
+        });
+
       }
     },
-    handleMemberGeometries(key, memberGeometries) {
-      let layer = this.layers.get(key)
-      this.map.removeLayer(layer)
-      layer = L.layerGroup(useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed))
-      this.map.addLayer(layer)
+    handleMemberGeometries(layer, memberGeometries) {
+      layer.clearLayers();
+      let markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed)
+      layer.addLayers(markers)
     },
     //websocket
     connect() {
