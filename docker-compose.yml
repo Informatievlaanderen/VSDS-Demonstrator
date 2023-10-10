@@ -10,7 +10,7 @@ services:
       - ./rml:/ldio/rml:ro
       - ./sparql:/ldio/sparql:ro
     depends_on:
-      - demonstrator
+#      - demonstrator
       - rdf4j-server
     networks:
       - demonstrator
