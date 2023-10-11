@@ -28,22 +28,26 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
 
     public TripleRepositoryRDF4JImpl(GraphDBConfig graphDBConfig) {
         this.graphDBConfig = graphDBConfig;
-        String url = graphDBConfig.getUrl().substring(0, graphDBConfig.getUrl().length() - 14);
+        String url = graphDBConfig.getUrl().substring(0, graphDBConfig.getUrl().length() - 13);
         initRepo(new RemoteRepositoryManager(url));
     }
 
     protected void initRepo(RepositoryManager manager) {
         repositoryManager = manager;
         repositoryManager.init();
-        if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
-            MemoryStoreConfig storeConfig = new MemoryStoreConfig();
-            RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
-            RepositoryConfig config = new RepositoryConfig(graphDBConfig.getRepositoryId(), repositoryImplConfig);
-            repositoryManager.addRepositoryConfig(config);
-        }
-        repository = repositoryManager.getRepository(graphDBConfig.getRepositoryId());
-        log.info("Created repository with id: " + graphDBConfig.getRepositoryId());
+        try {
+            if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
+                MemoryStoreConfig storeConfig = new MemoryStoreConfig(true);
+                RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
+                RepositoryConfig config = new RepositoryConfig(graphDBConfig.getRepositoryId(), repositoryImplConfig);
+                repositoryManager.addRepositoryConfig(config);
+                log.info("Created repository with id: " + graphDBConfig.getRepositoryId());
+            }
+            repository = repositoryManager.getRepository(graphDBConfig.getRepositoryId());
 
+        } catch (Exception e) {
+            log.error("Could not create repository. Reason: " + e.getMessage());
+        }
     }
 
     @Override
