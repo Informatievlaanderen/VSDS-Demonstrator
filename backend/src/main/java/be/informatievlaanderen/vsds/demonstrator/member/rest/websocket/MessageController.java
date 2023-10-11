@@ -10,15 +10,15 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MessageController {
 	private SimpMessagingTemplate template;
-	private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
+	private static final Logger log = LoggerFactory.getLogger(MessageController.class);
 
 	@Autowired
 	public MessageController(SimpMessagingTemplate template) {
 		this.template = template;
 	}
 
-	public void send(MemberDto member) {
+	public void send(MemberDto member, String collection) {
 		log.info("sending member");
-		this.template.convertAndSend("/broker/member", member);
+		this.template.convertAndSend("/broker/member/" + collection, member);
 	}
 }

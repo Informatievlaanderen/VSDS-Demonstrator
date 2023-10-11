@@ -21,9 +21,11 @@ import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 public class IngestedMemberDto {
+    private final String collection;
     private final Model model;
 
-    public IngestedMemberDto(Model model) {
+    public IngestedMemberDto(String collection, Model model) {
+        this.collection = collection;
         this.model = model;
     }
 
@@ -31,22 +33,22 @@ public class IngestedMemberDto {
         return model;
     }
 
-    public Member getMemberGeometry(List<EventStreamConfig> streams) throws FactoryException, TransformException {
-        Geometry geometry = getMemberGeometry();
+    public Member getMember(List<EventStreamConfig> streams) throws FactoryException, TransformException {
+        Geometry geometry = getMember();
         String memberId = getMemberId(streams);
         String timestampString = (String) getTimestampPath(streams);
         LocalDateTime timestamp;
-        if (timestampString.contains("Z")) {
+        if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString);
         }
-        return new Member(memberId, geometry, timestamp);
+        return new Member(memberId, collection, geometry, timestamp);
     }
 
-    private Geometry getMemberGeometry() throws FactoryException, TransformException {
+    private Geometry getMember() throws FactoryException, TransformException {
         List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
-        if(wktNodes.isEmpty()) {
+        if (wktNodes.isEmpty()) {
             throw new NoGeometryProvidedException();
         } else {
             RDFNode wktObject = wktNodes.get(0);
@@ -58,6 +60,7 @@ public class IngestedMemberDto {
     private Statement getMemberProperty(List<EventStreamConfig> streams, Function<EventStreamConfig, Selector> createSelector) {
         return Iterables.getOnlyElement(streams
                 .stream()
+                .filter(stream -> stream.getName().equals(collection))
                 .map(stream -> model.listStatements(createSelector.apply(stream)))
                 .map(StmtIterator::nextStatement)
                 .toList());
@@ -74,5 +77,9 @@ public class IngestedMemberDto {
                 .getObject()
                 .asLiteral().getString();
 
+    }
+
+    public String getCollection() {
+        return collection;
     }
 }

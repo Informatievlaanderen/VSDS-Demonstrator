@@ -1,16 +1,45 @@
 import L from "leaflet";
+import marker from "../../../assets/svgs/legend/maps.marker.svg"
+import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
 
-export function useMarkers(memberGeometries, onMarkerClicked) {
+export function useMarkers(memberGeometries, onMarkerClicked, onPopupClosed) {
+    let icon = L.icon({
+        iconUrl: marker,
+        iconAnchor: [10, 28],
+        popupAnchor: [0, -25]
+
+    });
+    let selectedIcon = L.icon({
+        iconUrl: selectedMarker,
+        iconAnchor: [14, 40],
+        popupAnchor: [0, -25]
+    })
     let markers = []
 
     function onEachFeature(feature, layer) {
         if (feature.properties && feature.properties.popupContent) {
-            layer.bindPopup(feature.properties.popupContent);
+            let popup = L.popup().setContent(feature.properties.popupContent)
+            popup.on("remove", () => {
+                if(layer.defaultOptions.icon) {
+                    layer.setIcon(icon)
+                }
+                onPopupClosed();
+            })
+            layer.bindPopup(popup)
         }
         //bind click
         layer.on({
-            click: (event) => onMarkerClicked(event.sourceTarget._popup._content)
+            click: (event) => {
+                if(layer.defaultOptions.icon) {
+                    layer.setIcon(selectedIcon)
+                }
+                onMarkerClicked(event.sourceTarget._popup._content);
+            }
         });
+    }
+
+    function pointToLayer(feature, latLng) {
+        return L.marker(latLng, {icon})
     }
 
     memberGeometries.forEach(feature => {
@@ -21,8 +50,9 @@ export function useMarkers(memberGeometries, onMarkerClicked) {
                 "popupContent": feature.memberId
             }
         }
-        let marker = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature})
-        markers.push(marker)
+        let geoJson = L.geoJson(geoJsonFeature, {onEachFeature, pointToLayer: pointToLayer})
+        geoJson.setStyle({color: '#808080'});
+        markers.push(geoJson)
     })
     return markers;
 }

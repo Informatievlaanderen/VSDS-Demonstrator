@@ -1,5 +1,5 @@
 ldes:
   streams:
-    -
+    - name: gipod
       member-type: "https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder"
       timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"

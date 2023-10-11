@@ -4,7 +4,10 @@ package be.informatievlaanderen.vsds.demonstrator.member.rest;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidator;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidatorImpl;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.custom.MeetPuntRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.rest.converters.ModelHttpConverter;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.GraphDBConfig;
 import org.apache.jena.riot.Lang;
@@ -43,14 +46,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ActiveProfiles({"test"})
 @WebMvcTest
-@ContextConfiguration(classes = {MembersController.class, ModelHttpConverter.class, MemberExceptionHandler.class, GraphDBConfig.class, StreamsConfig.class})
+@ContextConfiguration(classes = {MembersController.class, ModelHttpConverter.class, MemberExceptionHandler.class, GraphDBConfig.class, StreamsConfig.class, MemberValidatorImpl.class, MeetPuntRepository.class})
 class MembersControllerTest {
     private static final String ID = "member-id";
+    private static final String COLLECTION = "collection";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static org.wololo.geojson.Geometry geoJSON;
 
     @MockBean
     private MemberService service;
+    @MockBean
+    private MemberValidator validator;
 
     @Autowired
     private MockMvc mockMvc;
@@ -99,9 +105,9 @@ class MembersControllerTest {
                 .map(dto -> transformToJson(dto.getMemberId(), dto.getGeojsonGeometry(), dto.getTimestamp()))
                 .collect(Collectors.joining(", ")) + "]";
 
-        when(service.getMembersInRectangle(rectangle, timestamp, timePeriod)).thenReturn(members);
+        when(service.getMembersInRectangle(rectangle, COLLECTION, timestamp, timePeriod)).thenReturn(members);
 
-        mockMvc.perform(post("/api/in-rectangle")
+        mockMvc.perform(post("/api/" + COLLECTION + "/in-rectangle")
                         .param("timestamp", timestamp.toString())
                         .param("timePeriod", timePeriod)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,29 +115,29 @@ class MembersControllerTest {
                 .andExpect(content().json(json))
                 .andExpect(status().isOk());
 
-        verify(service).getMembersInRectangle(rectangle, timestamp, timePeriod);
+        verify(service).getMembersInRectangle(rectangle, COLLECTION, timestamp, timePeriod);
     }
 
-   @Nested
-   class IngestMember {
-       @Test
-       void when_MemberWithInvalidGeometryIsPosted_then_Status400IsExpected() throws Exception {
-           mockMvc.perform(post("/api/members")
-                           .content(readDataFromFile("members/mobility-hindrance-with-invalid-wkt.nq"))
-                           .contentType(Lang.NQUADS.getHeaderString()))
-                   .andExpect(status().isBadRequest());
-       }
+    @Nested
+    class IngestMember {
+        @Test
+        void when_MemberWithInvalidGeometryIsPosted_then_Status400IsExpected() throws Exception {
+            mockMvc.perform(post("/api/" + COLLECTION + "/members")
+                            .content(readDataFromFile("members/mobility-hindrance-with-invalid-wkt.nq"))
+                            .contentType(Lang.NQUADS.getHeaderString()))
+                    .andExpect(status().isBadRequest());
+        }
 
-       @Test
-       void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
-           mockMvc.perform(post("/api/members")
-                           .content(readDataFromFile("members/mobility-hindrance.nq"))
-                           .contentType(Lang.NQUADS.getHeaderString()))
-                   .andExpect(status().isOk());
+        @Test
+        void when_MemberIsPosted_then_IngestMemberInService() throws Exception {
+            mockMvc.perform(post("/api/" + COLLECTION + "/members")
+                            .content(readDataFromFile("members/mobility-hindrance.nq"))
+                            .contentType(Lang.NQUADS.getHeaderString()))
+                    .andExpect(status().isOk());
 
-           verify(service).ingestMember(any());
-       }
-   }
+            verify(service).ingestMember(any());
+        }
+    }
 
     private byte[] readDataFromFile(String filename) throws IOException {
         Path path = ResourceUtils.getFile("classpath:" + filename).toPath();

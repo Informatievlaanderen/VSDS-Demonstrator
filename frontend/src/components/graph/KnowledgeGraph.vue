@@ -1,6 +1,11 @@
 <template>
   <div>
-    <svg style="height:500px; width:600px"></svg>
+    <svg id="knowledge-graph" class="linked-data-container" v-if="memberId"></svg>
+    <div class="linked-data-container" v-else>
+      <img src="../../assets/svgs/Linked_data.svg" alt="Linked data" class="linked-data-icon"/>
+      <h5 class="header header5 margin-vert-8">Linked data</h5>
+      <small class="small-regular">Klik op een punt op de kaart om de kennisgrafiek te laden</small>
+    </div>
   </div>
 </template>
 <script>
@@ -12,41 +17,76 @@ export default {
   },
   watch: {
     memberId: function (newVal) {
-      useTriplesFetching(newVal)
+      if (newVal) {
+        useTriplesFetching(newVal)
+      }
     }
   },
 };
 </script>
-<style type="text/css">
-.node {
-  stroke: #fff;
-  fill: #ddd;
-  stroke-width: 1.5px;
-}
 
-.link {
-  stroke: #999;
-  stroke-opacity: 0.6;
+<!--Styling that goes deeper then the component only, in this case is this styling used for the elements in the knowledge graph-->
+<style>
+.node {
+  stroke: #FFE615;
+  fill: #FFA405;
   stroke-width: 1px;
 }
 
-marker {
-  stroke: #999;
-  fill: rgba(124, 240, 10, 0);
+#end polyline {
+  fill: #993F00;
+}
+
+.link {
+  stroke: #993F00;
+  stroke-width: 0.66px;
 }
 
 .node-text {
-  font: 11px sans-serif;
-  fill: black;
+  color: #333332;
+  font-family: Flanders Art Sans Regular, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
 }
 
 .link-text {
-  font: 9px sans-serif;
-  fill: grey;
+  color: #808080;
+  font-family: Flanders Art Sans Regular, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
+}
+</style>
+
+<!--Styling that is related to the component only-->
+<style scoped>
+.linked-data-container {
+  border-top: 0.5px solid #CFD5DD;
+  border-right: 0.5px solid #CFD5DD;
+  border-bottom: 0.5px solid #CFD5DD;
+  border-left: 0;
+
+  height: 450px;
+  min-width: 600px;
+  width: 100%;
 }
 
-svg {
-  border: 1px solid black;
+.linked-data-icon {
+  width: 21px;
+  height: 25px;
+  rotation: 225deg;
+}
+
+div.linked-data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.margin-vert-8 {
+  margin: 8px 0;
 }
 
 header {
