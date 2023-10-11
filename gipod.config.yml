@@ -9,10 +9,10 @@ orchestrator:
           url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2023-10-05T10:28:37.923Z
           sourceFormat: application/ld+json
       outputs:
-        #        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
-        #          config:
-        #            sparql-host: http://localhost:8080/rdf4j-server
-        #            repository-id: test
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://host.docker.internal:8080/rdf4j-server
+            repository-id: test
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             content-type: application/n-quads
@@ -40,6 +40,10 @@ orchestrator:
             generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
             versionOf-property: http://purl.org/dc/terms/isVersionOf
       outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://host.docker.internal:8080/rdf4j-server
+            repository-id: test
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/verkeersmeting/members

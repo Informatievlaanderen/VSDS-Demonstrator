@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background-image: url("src/assets/svgs/global-header/hulp_nodig.svg");
+  background-image: url("../../assets/svgs/hulp_nodig.svg");
   width: 144px;
   height: 44px;
 }

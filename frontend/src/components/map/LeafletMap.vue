@@ -19,10 +19,12 @@
 </template>
 
 <script>
+import clusterSmall from "../../assets/svgs/legend/maps.marker.cluster-small.svg"
+import clusterMedium from "../../assets/svgs/legend/maps.marker.cluster-medium.svg"
+import clusterLarge from "../../assets/svgs/legend/maps.marker.cluster-large.svg"
 import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
 import "leaflet.markercluster/dist/MarkerCluster.css"
-// import "leaflet.markercluster/dist/MarkerCluster.Default.css"
 import "leaflet.markercluster/dist/leaflet.markercluster"
 import axios from 'axios'
 import {useMarkers} from "@/components/map/composables/useMarkers";
@@ -36,20 +38,23 @@ const iconCreateFunction = (cluster) => {
   const count = cluster.getChildCount();
   let clusterSize = "";
   let iconAnchor = [];
+  let iconUrl;
 
   if (count < 21) {
     clusterSize = "small";
     iconAnchor = [23, 23]
+    iconUrl = clusterSmall
   } else if (count < 61) {
     clusterSize = "medium";
-    iconAnchor = [33, 33]
+    iconAnchor = [33, 33];
+    iconUrl = clusterMedium;
   } else {
     clusterSize = "large";
     iconAnchor = [40.5, 40.5]
+    iconUrl = clusterLarge;
   }
 
   const className = `marker-cluster-${clusterSize}`;
-  const iconUrl = `src/assets/svgs/legend/maps.marker.cluster-${clusterSize}.svg`;
 
   return L.divIcon({
     html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span>${count}</span></div>`,
@@ -85,7 +90,6 @@ export default {
     return {
       data: [],
       map: {},
-      markers: [],
       memberId: null,
       simulation: null,
       stompClient: null

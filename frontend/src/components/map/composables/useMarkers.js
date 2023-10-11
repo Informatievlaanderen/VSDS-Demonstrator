@@ -1,14 +1,16 @@
 import L from "leaflet";
+import marker from "../../../assets/svgs/legend/maps.marker.svg"
+import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
 
 export function useMarkers(memberGeometries, onMarkerClicked, onPopupClosed) {
     let icon = L.icon({
-        iconUrl: 'src/assets/svgs/legend/maps.marker.svg',
+        iconUrl: marker,
         iconAnchor: [10, 28],
         popupAnchor: [0, -25]
 
     });
     let selectedIcon = L.icon({
-        iconUrl: 'src/assets/svgs/legend/maps.marker-1.svg',
+        iconUrl: selectedMarker,
         iconAnchor: [14, 40],
         popupAnchor: [0, -25]
     })

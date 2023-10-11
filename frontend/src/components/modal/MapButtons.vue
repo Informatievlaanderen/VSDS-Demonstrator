@@ -116,6 +116,7 @@ function onCheckboxClicked(key: string, isChecked: boolean) {
   background-color: #fff;
   padding: 32px;
   border-left: 1px solid #cfd5dd;
+  overflow: auto;
 }
 
 .margin-zero {

@@ -242,6 +242,7 @@
                                         <directory>../frontend/target/dist</directory>
                                         <includes>
                                             <include>assets/</include>
+                                            <include>assets/svgs/</include>
                                             <include>index.html</include>
                                             <include>favicon.ico</include>
                                         </includes>

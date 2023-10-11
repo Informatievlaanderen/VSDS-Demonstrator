@@ -1,6 +1,9 @@
 <script setup>
-
-import {computed, reactive, ref, watch} from "vue";
+import next from "../../assets/svgs/video/next.svg"
+import back from "../../assets/svgs/video/back.svg"
+import play from "../../assets/svgs/video/play.svg"
+import pause from "../../assets/svgs/video/pause.svg"
+import {computed, ref, watch} from "vue";
 
 const emit = defineEmits(['timestampChanged', 'realtimeToggled'])
 const now = new Date();
@@ -80,18 +83,18 @@ function onPauseClick() {
 <template>
   <div class="slider-container">
     <button class="icon-btn slider-btn" v-if="!isPlaying" @click="onPlayClick">
-      <img src="../../assets/svgs/video/play.svg" alt="Play"/>
+      <img :src="play" alt="Play"/>
     </button>
     <button class="icon-btn slider-btn" v-else @click="onPauseClick">
-      <img src="../../assets/svgs/video/pause.svg" alt="Pause"/>
+      <img :src="pause" alt="Pause"/>
     </button>
     <button class="icon-btn slider-btn" @click="onForwardClick(-5)" :disabled="sliderValue <= 0">
-      <img src="../../assets/svgs/video/back.svg" alt="Back"/>
+      <img :src="back" alt="Back"/>
     </button>
     <input class="slider" type="range" :style="sliderBg" min="0" :max="maxSeconds" v-model="sliderValue" :step="step"
            @input="onChange">
     <button class="icon-btn slider-btn" @click="onForwardClick(5)" :disabled="sliderValue >= maxSeconds">
-      <img src="../../assets/svgs/video/next.svg" alt="Next"/>
+      <img :src="next" alt="Next"/>
     </button>
   </div>
   <div class="shortcuts-flex-box">
@@ -141,7 +144,7 @@ function onPauseClick() {
   border-radius: 3px;
   width: 15px;
   height: 24px;
-  background: url("src/assets/svgs/range-handle.svg");
+  background: url("../../assets/svgs/range-handle.svg");
   cursor: pointer;
 }
 
@@ -150,7 +153,7 @@ function onPauseClick() {
   border-radius: 3px;
   width: 15px;
   height: 24px;
-  background: url("src/assets/svgs/range-handle.svg");
+  background: url("../../assets/svgs/range-handle.svg");
   cursor: pointer;
 }
 

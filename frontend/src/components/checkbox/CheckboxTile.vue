@@ -20,7 +20,7 @@ const props = defineProps({
 const emit = defineEmits(["onChecked"])
 
 function checkClicked() {
-  this.$emit('onChecked', !this.checked)
+  emit('onChecked', !props.checked)
 }
 </script>
 
