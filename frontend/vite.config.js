@@ -23,7 +23,7 @@ export default defineConfig(({command, mode}) => {
                 origin: "*"
             },
             proxy: {
-                '/api': `http://demonstrator.smartdataspace.dev-vlaanderen.be`,
+                '/api': `https://demonstrator.smartdataspace.dev-vlaanderen.be`,
             },
 
         },
