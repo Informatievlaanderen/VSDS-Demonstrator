@@ -23,8 +23,9 @@ export default defineConfig(({command, mode}) => {
                 origin: "*"
             },
             proxy: {
-                '/api': `http://${env.VITE_HOST}:${env.VITE_PORT}/`,
-            }
+                '/api': `http://demonstrator.smartdataspace.dev-vlaanderen.be`,
+            },
+
         },
         build: {
             outDir: 'target/dist'
