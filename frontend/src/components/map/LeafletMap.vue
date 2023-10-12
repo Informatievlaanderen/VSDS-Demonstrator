@@ -155,9 +155,9 @@ export default {
     },
     //websocket
     connect() {
-      console.log(process.env.VUE_HOST)
+      console.log(process.env.VITE_HOST)
       const decolouringTimeout = 1000;
-      this.stompClient = new Stomp.client(`ws://${process.env.VUE_HOST}:${process.env.VUE_PORT}/update`, {debug: false});
+      this.stompClient = new Stomp.client(`ws://${process.env.VITE_HOST}:${process.env.VITE_PORT}/update`, {debug: false});
       this.stompClient.connect(
           {},
           frame => this.subscribe(),
