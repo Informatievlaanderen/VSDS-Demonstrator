@@ -156,7 +156,7 @@ export default {
     //websocket
     connect() {
       const decolouringTimeout = 1000;
-      this.stompClient = new Stomp.client(`ws://demonstrator.smartdataspace.dev-vlaanderen.be/update`, {debug: false});
+      this.stompClient = new Stomp.client(`wss://demonstrator.smartdataspace.dev-vlaanderen.be/update`, {debug: false});
       this.stompClient.connect(
           {},
           frame => this.subscribe(),
