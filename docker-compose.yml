@@ -21,9 +21,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        - VITE_HOST=host.docker.internal
-        - VITE_PORT=8084
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/test
       - SPRING_DATASOURCE_USERNAME=postgres
