@@ -156,7 +156,7 @@ export default {
     //websocket
     connect() {
       const decolouringTimeout = 1000;
-      this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
+      this.stompClient = new Stomp.client(`ws://${import.meta.env.VITE_HOST}:${import.meta.env.VITE_PORT}/update`, {debug: false});
       this.stompClient.connect(
           {},
           frame => this.subscribe(),
@@ -172,7 +172,7 @@ export default {
       }
     },
     subscribe() {
-      for (let [key, value] of this.layersToShow.entries()) {
+      for (let key of this.layersToShow.keys()) {
         this.stompClient.subscribe("/broker/member/" + key, (member) => {
           let body = JSON.parse(member.body)
           let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
