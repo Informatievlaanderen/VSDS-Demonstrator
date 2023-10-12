@@ -8,6 +8,10 @@ FROM maven:3.8.5-openjdk-18 AS builder
 # MAVEN: application
 FROM builder AS app-stage
 COPY . /
+ARG VITE_HOST
+ARG VITE_PORT
+ENV VITE_HOST=$VITE_HOST
+ENV VITE_PORT=$VITE_PORT
 RUN mvn clean install -DskipTests
 
 #

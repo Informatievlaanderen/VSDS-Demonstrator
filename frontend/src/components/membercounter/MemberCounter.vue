@@ -24,7 +24,8 @@ export default {
   methods: {
     //websocket
     connect() {
-      this.stompClient = new Stomp.client('ws://localhost:8084/update', {debug: false});
+      this.stompClient = new Stomp.client(`ws://${import.meta.env.VITE_HOST}:${import.meta.env.VITE_PORT}/update`, {debug: false});
+      // this.stompClient = new Stomp.client(`ws://localhost:8084/update`, {debug: false});
       this.stompClient.connect(
           {},
           () => {

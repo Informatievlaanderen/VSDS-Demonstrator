@@ -135,6 +135,7 @@ function onCheckboxClicked(key: string, isChecked: boolean) {
   position: fixed;
   right: 8px;
   top: 0;
+  cursor: pointer;
 }
 
 </style>

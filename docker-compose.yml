@@ -21,6 +21,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_HOST=host.docker.internal
+        - VITE_PORT=8084
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/test
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -36,6 +39,8 @@ services:
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
       - SERVER_PORT=8080
+      - VITE_HOST=demonstrator
+      - VITE_PORT=8080
     ports:
       - 8084:8080
     depends_on:

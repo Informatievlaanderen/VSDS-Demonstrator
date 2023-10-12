@@ -45,5 +45,6 @@ const emit = defineEmits(['onCloseClick'])
   grid-template-columns: 81px auto;
   gap: 24px 36px;
   margin-bottom: 24px;
+  align-items: center;
 }
 </style>
