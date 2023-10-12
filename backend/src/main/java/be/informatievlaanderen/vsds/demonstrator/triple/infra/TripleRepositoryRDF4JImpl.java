@@ -10,19 +10,40 @@ import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.config.RepositoryConfig;
+import org.eclipse.rdf4j.repository.config.RepositoryImplConfig;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
+import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @org.springframework.stereotype.Repository
 public class TripleRepositoryRDF4JImpl implements TripleRepository {
     private final GraphDBConfig graphDBConfig;
-    private final RepositoryManager repositoryManager;
-    private final Repository repository;
+    private RepositoryManager repositoryManager;
+    private Repository repository;
+    private static final Logger log = LoggerFactory.getLogger(TripleRepositoryRDF4JImpl.class);
 
     public TripleRepositoryRDF4JImpl(GraphDBConfig graphDBConfig) {
         this.graphDBConfig = graphDBConfig;
-        repositoryManager = new RemoteRepositoryManager(graphDBConfig.getUrl().substring(0, graphDBConfig.getUrl().length() - 13));
+        String url = graphDBConfig.getUrl().substring(0, graphDBConfig.getUrl().length() - 14);
+        initRepo(new RemoteRepositoryManager(url));
+    }
+
+    protected void initRepo(RepositoryManager manager) {
+        repositoryManager = manager;
+        repositoryManager.init();
+        if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
+            MemoryStoreConfig storeConfig = new MemoryStoreConfig();
+            RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
+            RepositoryConfig config = new RepositoryConfig(graphDBConfig.getRepositoryId(), repositoryImplConfig);
+            repositoryManager.addRepositoryConfig(config);
+        }
         repository = repositoryManager.getRepository(graphDBConfig.getRepositoryId());
+        log.info("Created repository with id: " + graphDBConfig.getRepositoryId());
+
     }
 
     @Override
@@ -35,6 +56,7 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
             GraphQueryResult result = dbConnection.prepareGraphQuery(queryString).evaluate();
             Model model = new DynamicModel(new DynamicModelFactory());
             result.forEach(model::add);
+            dbConnection.commit();
 
             return new MemberDescription(id, model);
         } catch (Exception e) {
