@@ -36,8 +36,8 @@ import MapButtons from "@/components/modal/MapButtons.vue";
 
 const iconCreateFunction = (cluster) => {
   const count = cluster.getChildCount();
-  let clusterSize = "";
-  let iconAnchor = [];
+  let clusterSize;
+  let iconAnchor;
   let iconUrl;
 
   if (count < 21) {
@@ -155,11 +155,10 @@ export default {
     },
     //websocket
     connect() {
-      const decolouringTimeout = 1000;
       this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
-          frame => this.subscribe(),
+          () => this.subscribe(),
           error => {
             console.log(error);
             this.connect()

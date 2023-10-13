@@ -7,9 +7,6 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.M
 import org.apache.jena.rdf.model.Model;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
-
 @Service
 public class MemberValidatorImpl implements MemberValidator {
 

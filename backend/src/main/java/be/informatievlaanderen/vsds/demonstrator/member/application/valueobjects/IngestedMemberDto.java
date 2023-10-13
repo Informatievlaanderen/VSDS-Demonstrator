@@ -3,7 +3,6 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.valueobject
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.NoGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
-import org.apache.jena.ext.com.google.common.collect.Iterables;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
 import org.apache.jena.geosparql.implementation.vocabulary.SRS_URI;
 import org.apache.jena.rdf.model.*;
@@ -15,7 +14,6 @@ import org.opengis.util.FactoryException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
