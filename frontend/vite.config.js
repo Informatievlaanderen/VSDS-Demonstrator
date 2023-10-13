@@ -7,9 +7,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '')
     return {
-        define: {
-            "process.env": env,
-        },
         plugins: [
             vue(),
         ],
@@ -23,7 +20,7 @@ export default defineConfig(({command, mode}) => {
                 origin: "*"
             },
             proxy: {
-                '/api': `https://demonstrator.smartdataspace.dev-vlaanderen.be`,
+                '/api': env.VITE_API_BASE_URL,
             },
 
         },

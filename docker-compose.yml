@@ -1,8 +1,8 @@
 services:
 
-  gipod-data-provider:
+  data-provider:
     image: ghcr.io/informatievlaanderen/ldi-orchestrator:20230927142432
-    container_name: demonstrator_gipod-data-provider
+    container_name: demonstrator-data-provider
     ports:
       - 8082:8080
     volumes:
@@ -10,8 +10,8 @@ services:
       - ./rml:/ldio/rml:ro
       - ./sparql:/ldio/sparql:ro
     depends_on:
-      - demonstrator
-      - rdf4j-server
+      rdf4j-server:
+        condition: service_healthy
     networks:
       - demonstrator
 
@@ -51,6 +51,10 @@ services:
       - "JAVA_OPTS=-Xms1g -Xmx4g"
     ports:
       - 8080:8080
+    restart: on-failure
+    healthcheck:
+      test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/test/summary || exit 1"
+      interval: 15s
     networks:
       - demonstrator
 

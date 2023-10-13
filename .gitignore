@@ -35,3 +35,4 @@ target
 *.iml
 derby.log
 /backend/src/main/resources/META-INF/
+/frontend/.env.local
