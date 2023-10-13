@@ -98,7 +98,7 @@ export default {
 
   mounted() {
     this.connect()
-
+    console.log(import.meta.env.VITE_WS_BASE_URL);
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -156,7 +156,7 @@ export default {
     //websocket
     connect() {
       const decolouringTimeout = 1000;
-      this.stompClient = new Stomp.client(`wss://demonstrator.smartdataspace.dev-vlaanderen.be/update`, {debug: false});
+      this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
           frame => this.subscribe(),

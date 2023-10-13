@@ -3,6 +3,8 @@ import LeafletMap from './components/map/LeafletMap.vue'
 import GlobalHeader from "@/components/headers/GlobalHeader.vue";
 import MemberCounter from './components/membercounter/MemberCounter.vue'
 import LineChart from "@/components/linechart/LineChart.vue";
+
+console.log(import.meta.env)
 </script>
 
 <template>

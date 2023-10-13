@@ -62,7 +62,7 @@ export default {
   methods: {
     //websocket
     connect() {
-      this.stompClient = new Stomp.client(`wss://demonstrator.smartdataspace.dev-vlaanderen.be/update`, {debug: false});
+      this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
           () => {
