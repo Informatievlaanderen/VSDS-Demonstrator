@@ -12,10 +12,10 @@
 #
 #ldes:
 #  streams:
-#    - name: gipod
+#    gipod:
 #      member-type: "https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder"
 #      timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
-#    - name: verkeersmeting
+#    verkeersmeting:
 #      member-type: "https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting"
 #      timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
 #graphdb:

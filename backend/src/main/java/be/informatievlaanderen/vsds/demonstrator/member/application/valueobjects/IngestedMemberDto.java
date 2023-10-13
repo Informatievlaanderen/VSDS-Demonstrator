@@ -15,6 +15,7 @@ import org.opengis.util.FactoryException;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
@@ -33,10 +34,10 @@ public class IngestedMemberDto {
         return model;
     }
 
-    public Member getMember(List<EventStreamConfig> streams) throws FactoryException, TransformException {
+    public Member getMember(EventStreamConfig eventStreamConfig) throws FactoryException, TransformException {
         Geometry geometry = getMember();
-        String memberId = getMemberId(streams);
-        String timestampString = (String) getTimestampPath(streams);
+        String memberId = getMemberId(eventStreamConfig);
+        String timestampString = (String) getTimestampPath(eventStreamConfig);
         LocalDateTime timestamp;
         if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
@@ -57,26 +58,20 @@ public class IngestedMemberDto {
         }
     }
 
-    private Statement getMemberProperty(List<EventStreamConfig> streams, Function<EventStreamConfig, Selector> createSelector) {
-        return Iterables.getOnlyElement(streams
-                .stream()
-                .filter(stream -> stream.getName().equals(collection))
-                .map(stream -> model.listStatements(createSelector.apply(stream)))
-                .map(StmtIterator::nextStatement)
-                .toList());
+    private Statement getMemberProperty(EventStreamConfig config, Function<EventStreamConfig, Selector> createSelector) {
+        return model.listStatements(createSelector.apply(config)).nextStatement();
     }
 
-    private String getMemberId(List<EventStreamConfig> streams) {
-        return getMemberProperty(streams, stream -> new SelectorImpl(null, null, createResource(stream.getMemberType())))
+    private String getMemberId(EventStreamConfig config) {
+        return getMemberProperty(config, stream -> new SelectorImpl(null, null, createResource(stream.getMemberType())))
                 .getSubject()
                 .getURI();
     }
 
-    private Object getTimestampPath(List<EventStreamConfig> streams) {
-        return getMemberProperty(streams, stream -> new SelectorImpl(null, createProperty(stream.getTimestampPath()), (Resource) null))
+    private Object getTimestampPath(EventStreamConfig config) {
+        return getMemberProperty(config, stream -> new SelectorImpl(null, createProperty(stream.getTimestampPath()), (Resource) null))
                 .getObject()
                 .asLiteral().getString();
-
     }
 
     public String getCollection() {

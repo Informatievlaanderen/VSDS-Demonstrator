@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,11 +59,10 @@ class MemberServiceImplTest {
     @BeforeEach
     void setUp() {
         EventStreamConfig eventStreamConfig = new EventStreamConfig();
-        eventStreamConfig.setName(COLLECTION);
         eventStreamConfig.setMemberType("https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder");
         eventStreamConfig.setTimestampPath("http://www.w3.org/ns/prov#generatedAtTime");
         StreamsConfig streams = new StreamsConfig();
-        streams.setStreams(List.of(eventStreamConfig));
+        streams.setStreams(Map.of(COLLECTION, eventStreamConfig));
         service = new MemberServiceImpl(repository, streams, mock(MessageController.class));
     }
 
@@ -134,7 +134,7 @@ class MemberServiceImplTest {
         Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
         Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
         IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
-        service.ingestMember(ingestedMemberDto);
+        service.ingestMember(COLLECTION, ingestedMemberDto);
 
         verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
     }

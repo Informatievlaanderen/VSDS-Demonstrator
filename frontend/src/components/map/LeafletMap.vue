@@ -107,9 +107,9 @@ export default {
     }).addTo(this.map);
     //TODO: delete this and hard code the bounds of Flanders/Belgium for performance reasons
     this.map.on("popupclose", () => this.memberId = null)
-    this.map.on("moveend", () => {
-      this.fetchMembers();
-    });
+    // this.map.on("moveend", () => {
+    //   this.fetchMembers();
+    // });
     this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
       if (value) {

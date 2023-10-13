@@ -3,6 +3,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MissingCollectionException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
@@ -41,11 +42,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void ingestMember(IngestedMemberDto ingestedMemberDto) {
+    public void ingestMember(String collection, IngestedMemberDto ingestedMemberDto) {
         try {
-            Member member = ingestedMemberDto.getMember(streams.getStreams());
+            EventStreamConfig eventStreamConfig = streams.getStream(collection).orElseThrow(() -> new MissingCollectionException(collection));
+            Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()), ingestedMemberDto.getCollection());
+            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()), collection);
 
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {
@@ -86,8 +88,8 @@ public class MemberServiceImpl implements MemberService {
 
         streams
                 .getStreams()
+                .keySet()
                 .stream()
-                .map(EventStreamConfig::getName)
                 .map(collection -> {
                     long numberOfMembers = getNumberOfMembersByCollection(collection);
 
