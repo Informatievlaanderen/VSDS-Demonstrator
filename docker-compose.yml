@@ -12,6 +12,8 @@ services:
     depends_on:
       rdf4j-server:
         condition: service_healthy
+      demonstrator:
+        condition: service_started
     networks:
       - demonstrator
 
@@ -51,8 +53,7 @@ services:
       - 8080:8080
     restart: on-failure
     healthcheck:
-      test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/test/summary || exit 1"
-      interval: 15s
+      test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/NONE/repositories || exit 1"
     networks:
       - demonstrator
 

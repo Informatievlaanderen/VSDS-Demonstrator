@@ -78,9 +78,10 @@ public class IngestedMemberDto {
 
     private Map<String, String> getProperties(EventStreamConfig streamConfig) {
         final Map<String, String> properties = new HashMap<>();
-        for(Map.Entry<String, String> propertyPredicateEntry : streamConfig.getPropertyPredicates().entrySet()) {
-            Statement statement = model.listStatements(null, createProperty(propertyPredicateEntry.getValue()), (Resource) null).nextStatement();
-            properties.put(propertyPredicateEntry.getKey(), statement.getLiteral().getString());
+        for (Map.Entry<String, String> propertyPredicateEntry : streamConfig.getPropertyPredicates().entrySet()) {
+            model.listStatements(null, createProperty(propertyPredicateEntry.getValue()), (Resource) null)
+                    .nextOptional()
+                    .ifPresent(statement -> properties.put(propertyPredicateEntry.getKey(), statement.getLiteral().getString()));
         }
         return properties;
     }

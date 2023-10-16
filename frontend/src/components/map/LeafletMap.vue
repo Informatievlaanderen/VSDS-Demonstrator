@@ -129,10 +129,10 @@ export default {
       this.memberId = null;
     },
     fetchMembers() {
-      for (let [key, layer] of this.layers.entries()) {
+      for (let [collection, layer] of this.layers.entries()) {
         axios({
           method: 'post',
-          url: `/api/${key}/in-rectangle`,
+          url: `/api/${collection}/in-rectangle`,
           params: {
             timestamp: new Date(this.time).toISOString().replace("Z", ""),
             timePeriod: this.timePeriod
@@ -143,14 +143,14 @@ export default {
             'Access-Control-Allow-Origin': '*'
           }
         }).then((response) => {
-          this.handleMemberGeometries(layer, response.data)
+          this.handleMemberGeometries(collection, layer, response.data)
         });
 
       }
     },
-    handleMemberGeometries(layer, memberGeometries) {
+    handleMemberGeometries(collection, layer, memberGeometries) {
       layer.clearLayers();
-      let markers = useMarkers(memberGeometries, (memberId) => this.memberId = memberId, this.onPopupClosed)
+      let markers = useMarkers(memberGeometries, collection, (memberId) => this.memberId = memberId, this.onPopupClosed)
       layer.addLayers(markers)
     },
     //websocket
@@ -171,19 +171,19 @@ export default {
       }
     },
     subscribe() {
-      for (let key of this.layersToShow.keys()) {
-        this.stompClient.subscribe("/broker/member/" + key, (member) => {
+      for (let collection of this.layersToShow.keys()) {
+        this.stompClient.subscribe("/broker/member/" + collection, (member) => {
           let body = JSON.parse(member.body)
-          let marker = useMarkers([body], (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
+          let marker = useMarkers([body], collection, (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
           marker.setStyle({
             color: '#FFA405',
           })
-          if (key === "gipod") {
+          if (collection === "gipod") {
             setTimeout(function () {
               this.updateMarker(marker)
             }.bind(this), 1000)
           }
-          this.layers.get(key).addLayer(marker)
+          this.layers.get(collection).addLayer(marker)
         });
       }
     },
@@ -251,5 +251,34 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.popup-verkeersmeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.popup-verkeersmeting-map-marker {
+  width: 16px;
+  height: 16px;
+}
+
+.popup-verkeersmeting-counting-row {
+  display: inline-flex;
+  align-items: end;
+  gap: 6px;
+  margin-top: -6px;
+}
+
+.popup-verkeersmeting-car-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.popup-verkeersmeting-counting-result {
+  font-size: 14px;
+  line-height: 17px;
 }
 </style>
