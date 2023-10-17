@@ -42,12 +42,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void ingestMember(String collection, IngestedMemberDto ingestedMemberDto) {
+    public void ingestMember(IngestedMemberDto ingestedMemberDto) {
         try {
-            EventStreamConfig eventStreamConfig = streams.getStream(collection).orElseThrow(() -> new MissingCollectionException(collection));
+            EventStreamConfig eventStreamConfig = streams.getStream(ingestedMemberDto.getCollection())
+                    .orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
             Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getProperties()), collection);
+            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getProperties());
+            messageController.send(memberDto, ingestedMemberDto.getCollection());
 
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {

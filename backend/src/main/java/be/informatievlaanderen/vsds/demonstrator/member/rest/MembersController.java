@@ -43,7 +43,7 @@ public class MembersController {
         if (collectionName.equals("verkeersmeting")) {
             addMeetpuntLocation(model); // CUSTOM CODE
         }
-        service.ingestMember(collectionName, new IngestedMemberDto(collectionName, model));
+        service.ingestMember(new IngestedMemberDto(collectionName, model));
     }
 
     private void addMeetpuntLocation(Model model) {

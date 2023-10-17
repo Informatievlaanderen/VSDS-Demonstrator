@@ -137,7 +137,7 @@ class MembersControllerTest {
                             .contentType(Lang.NQUADS.getHeaderString()))
                     .andExpect(status().isOk());
 
-            verify(service).ingestMember(anyString(), any());
+            verify(service).ingestMember(any());
         }
     }
 

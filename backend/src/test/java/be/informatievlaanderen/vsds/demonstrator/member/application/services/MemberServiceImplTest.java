@@ -134,7 +134,7 @@ class MemberServiceImplTest {
         Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
         Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
         IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
-        service.ingestMember(COLLECTION, ingestedMemberDto);
+        service.ingestMember(ingestedMemberDto);
 
         verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
     }

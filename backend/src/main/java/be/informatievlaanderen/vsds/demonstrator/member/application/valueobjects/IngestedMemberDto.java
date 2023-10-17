@@ -31,6 +31,10 @@ public class IngestedMemberDto {
         this.model = model;
     }
 
+    public String getCollection() {
+        return collection;
+    }
+
     public Model getModel() {
         return model;
     }
