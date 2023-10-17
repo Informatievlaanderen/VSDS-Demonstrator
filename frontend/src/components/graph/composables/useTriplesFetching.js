@@ -2,15 +2,19 @@ import axios from "axios";
 import * as d3 from "d3";
 import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 
+const NODE_RADIUS = 8;
+const NODE_TEXT_FONT_SIZE = 11;
+const LINK_TEXT_FONT_SIZE = 9;
+
 function visualizeTriples(triples) {
-    let svg = d3.select("#knowledge-graph");
-    let children = svg.selectAll("*")
-    children.remove();
+    const svg = d3.select("#knowledge-graph");
+    svg.selectAll("*").remove();
+    const g = svg.append("g");
 
     const width = +svg.style("width").replace("px", "")
     const height = +svg.style("height").replace("px", "");
-    let graph = triplesToGraph(triples);
-    let force = d3.forceSimulation(graph.nodes);
+    const graph = triplesToGraph(triples);
+    const force = d3.forceSimulation(graph.nodes);
 
     function dragstart() {
         d3.select(this).classed("fixed", true);
@@ -28,8 +32,7 @@ function visualizeTriples(triples) {
 
     const drag = d3.drag().on("start", dragstart).on("drag", dragged);
 
-    svg
-        .append("svg:defs")
+    g
         .selectAll("marker")
         .data(["end"])
         .enter()
@@ -44,7 +47,7 @@ function visualizeTriples(triples) {
         .append("svg:polyline")
         .attr("points", "0,-5 10,0 0,5");
 
-    let links = svg
+    const links = g
         .selectAll(".link")
         .data(graph.links)
         .enter()
@@ -53,34 +56,45 @@ function visualizeTriples(triples) {
         .attr("class", "link")
         .attr("stroke-width", 1); //links
     // ==================== Add Link Names =====================
-    let linkTexts = svg
+    const linkTexts = g
         .selectAll(".link-text")
         .data(graph.links)
         .enter()
         .append("text")
         .attr("class", "link-text")
+        .style("font-size", `${LINK_TEXT_FONT_SIZE}px`)
         .text(function (d) {
             return d.predicate;
         });
     // ==================== Add Link Names =====================
-    let nodeTexts = svg
+    const nodeTexts = g
         .selectAll(".node-text")
         .data(graph.nodes)
         .enter()
         .append("text")
         .attr("class", "node-text")
+        .style("font-size", `${NODE_TEXT_FONT_SIZE}px`)
         .text(function (d) {
             return d.label;
         });
     // ==================== Add Node =====================
-    let nodes = svg
+    const nodes = g
         .selectAll(".node")
         .data(graph.nodes)
         .enter()
         .append("circle")
         .attr("class", "node")
-        .attr("r", 8)
+        .attr("r", NODE_RADIUS)
         .call(drag);
+
+    let transform;
+
+    const zoom = d3.zoom().on("zoom", e => {
+        g.attr("transform", () => transform = e.transform);
+        nodes.attr("r", NODE_RADIUS / Math.sqrt(transform.k))
+        nodeTexts.style("font-size", `${11 / Math.sqrt(transform.k)}px`)
+        linkTexts.style("font-size", `${9 / Math.sqrt(transform.k)}px`)
+    })
 
     function ticked() {
         nodes
@@ -123,6 +137,9 @@ function visualizeTriples(triples) {
     }
 
     force.on("tick", ticked);
+    svg
+        .call(zoom)
+        .call(zoom.transform, d3.zoomIdentity)
 
     return force
         .force(
