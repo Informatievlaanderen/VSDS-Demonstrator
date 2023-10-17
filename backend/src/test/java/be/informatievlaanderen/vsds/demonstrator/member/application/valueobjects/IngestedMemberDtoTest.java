@@ -11,12 +11,13 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class IngestedMemberDtoTest {
     private static final String ID = "https://data.vlaanderen.be/id/verkeersmetingen/Verkeersmeting/3774/aantal/5/2023-10-16T09:01:43.861Z";
-    private static final String STREAM = "verkeersmeting";
+    private static final String COLLECTION = "verkeersmeting";
     private static EventStreamConfig eventStreamConfig;
 
     @BeforeAll
@@ -34,11 +35,16 @@ class IngestedMemberDtoTest {
     @Test
     void test_ingestion() throws FactoryException, TransformException {
         Model model = RDFParser.source("members/traffic-count.nq").lang(Lang.NQUADS).toModel();
-        IngestedMemberDto ingestedMember = new IngestedMemberDto("verkeersmeting", model);
+        IngestedMemberDto ingestedMember = new IngestedMemberDto(COLLECTION, model);
+        Map<String, String> properties = Map.of(
+                "fullName", "Kennedy snede 3",
+                "countObservationResult", "4",
+                "observationResult", "4"
+        );
 
         Member member = ingestedMember.getMember(eventStreamConfig);
 
         assertEquals(ID, member.getMemberId());
-        assertEquals("Kennedy snede 3", member.getProperties().get("fullName"));
+        assertEquals(properties, member.getProperties());
     }
 }
