@@ -2,6 +2,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.config;
 
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
@@ -26,6 +27,9 @@ public class EventStreamConfig {
     }
 
     public Map<String, String> getPropertyPredicates() {
+        if(propertyPredicates == null) {
+            propertyPredicates = new HashMap<>();
+        }
         return propertyPredicates;
     }
 
