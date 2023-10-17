@@ -20,7 +20,7 @@ public class MemberRepositoryImpl implements MemberRepository {
 
     @Override
     public void saveMember(Member member) {
-        memberGeometryJpaRepo.save(new MemberEntity(member.getMemberId(), member.getCollection(), member.getGeometry(), member.getTimestamp()));
+        memberGeometryJpaRepo.save(MemberEntity.fromDomainObject(member));
     }
 
     @Override
@@ -28,7 +28,7 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberGeometryJpaRepo
                 .getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(geometry, collectionName, startTime, endTime)
                 .stream()
-                .map(mapEntityToMember())
+                .map(MemberEntity::toDomainObject)
                 .toList();
     }
 
@@ -36,7 +36,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     public Optional<Member> findByMemberId(String memberId) {
         return memberGeometryJpaRepo
                 .findById(memberId)
-                .map(mapEntityToMember());
+                .map(MemberEntity::toDomainObject);
     }
 
     @Override
@@ -49,16 +49,12 @@ public class MemberRepositoryImpl implements MemberRepository {
         return memberGeometryJpaRepo
                 .findByCollectionAndTimestampAfter(collection,localDateTime)
                 .stream()
-                .map(mapEntityToMember())
+                .map(MemberEntity::toDomainObject)
                 .toList();
     }
 
     @Override
     public long getNumberOfMembersByCollection(String collection) {
         return memberGeometryJpaRepo.countAllByCollection(collection);
-    }
-
-    private Function<MemberEntity, Member> mapEntityToMember() {
-        return entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp());
     }
 }

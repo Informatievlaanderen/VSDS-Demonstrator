@@ -41,12 +41,12 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
                 RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
                 RepositoryConfig config = new RepositoryConfig(graphDBConfig.getRepositoryId(), repositoryImplConfig);
                 repositoryManager.addRepositoryConfig(config);
-                log.info("Created repository with id: " + graphDBConfig.getRepositoryId());
+                log.info("Created repository with id: {}", graphDBConfig.getRepositoryId());
             }
             repository = repositoryManager.getRepository(graphDBConfig.getRepositoryId());
 
         } catch (Exception e) {
-            log.error("Could not create repository. Reason: " + e.getMessage());
+            log.error("Could not create repository. Reason: {}", e.getMessage());
         }
     }
 

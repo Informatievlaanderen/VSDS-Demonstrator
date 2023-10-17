@@ -47,7 +47,6 @@ export default {
   font-family: Flanders Art Sans Regular, sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 11px;
 }
 
 .link-text {
@@ -55,7 +54,6 @@ export default {
   font-family: Flanders Art Sans Regular, sans-serif;
   font-style: normal;
   font-weight: 400;
-  font-size: 9px;
 }
 </style>
 

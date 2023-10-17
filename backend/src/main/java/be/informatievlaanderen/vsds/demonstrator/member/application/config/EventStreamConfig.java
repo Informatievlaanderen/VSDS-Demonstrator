@@ -2,20 +2,14 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.config;
 
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class EventStreamConfig {
-    private String name;
     private String memberType;
     private String timestampPath;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    private Map<String, String> propertyPredicates;
     public String getMemberType() {
         return memberType;
     }
@@ -30,5 +24,16 @@ public class EventStreamConfig {
 
     public void setTimestampPath(String timestampPath) {
         this.timestampPath = timestampPath;
+    }
+
+    public Map<String, String> getPropertyPredicates() {
+        if(propertyPredicates == null) {
+            propertyPredicates = new HashMap<>();
+        }
+        return propertyPredicates;
+    }
+
+    public void setPropertyPredicates(Map<String, String> propertyPredicates) {
+        this.propertyPredicates = propertyPredicates;
     }
 }

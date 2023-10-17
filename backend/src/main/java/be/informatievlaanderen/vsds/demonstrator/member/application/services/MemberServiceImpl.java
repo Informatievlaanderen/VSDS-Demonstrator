@@ -3,6 +3,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MissingCollectionException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
@@ -43,9 +44,12 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void ingestMember(IngestedMemberDto ingestedMemberDto) {
         try {
-            Member member = ingestedMemberDto.getMember(streams.getStreams());
+            EventStreamConfig eventStreamConfig = streams.getStream(ingestedMemberDto.getCollection())
+                    .orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
+            Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            messageController.send(new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp()), ingestedMemberDto.getCollection());
+            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getProperties());
+            messageController.send(memberDto, ingestedMemberDto.getCollection());
 
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {
@@ -58,14 +62,14 @@ public class MemberServiceImpl implements MemberService {
         var duration = Duration.parse(timePeriod).dividedBy(2);
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, timestamp.minus(duration), timestamp.plus(duration))
                 .stream()
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
                 .toList();
     }
 
     @Override
     public MemberDto getMemberById(String memberId) {
         return repository.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
                 .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
     }
 
@@ -86,8 +90,8 @@ public class MemberServiceImpl implements MemberService {
 
         streams
                 .getStreams()
+                .keySet()
                 .stream()
-                .map(EventStreamConfig::getName)
                 .map(collection -> {
                     long numberOfMembers = getNumberOfMembersByCollection(collection);
 

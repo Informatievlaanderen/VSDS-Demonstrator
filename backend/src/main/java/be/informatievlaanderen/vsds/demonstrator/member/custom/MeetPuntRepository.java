@@ -24,7 +24,7 @@ import static org.apache.jena.rdf.model.ResourceFactory.*;
 @Component
 public class MeetPuntRepository {
 
-    private final Map<String, Statement> meetpuntLocaties;
+    private final Map<String, List<Statement>> meetpuntLocaties;
 
     public MeetPuntRepository() {
         this.meetpuntLocaties = new HashMap<>();
@@ -42,13 +42,18 @@ public class MeetPuntRepository {
         for (Element e : doc.select("meetpunt")) {
             String meetpuntId = e.attr("unieke_id");
             String wkt = "POINT (" + e.select("lengtegraad_EPSG_4326").get(0).text().replace(",", ".") + " " + e.select("breedtegraad_EPSG_4326").get(0).text().replace(",", ".") + ")";
+            String fullName = e.select("volledige_naam").get(0).text();
+            var statements = List.of(
+                    createStatement(createResource("http://custom/meetpunt"), createProperty("http://www.opengis.net/ont/geosparql#asWKT"), createTypedLiteral(wkt, TypeMapper.getInstance().getTypeByName("http://www.opengis.net/ont/geosparql#wktLiteral"))),
+                    createStatement(createResource("http://custom/meetpunt"), createProperty("http://custom/meetpunt#VolledigeNaam"), createStringLiteral(fullName))
+            );
 
-            meetpuntLocaties.put(meetpuntId, createStatement(createResource("http://custom"), createProperty("http://www.opengis.net/ont/geosparql#asWKT"), createTypedLiteral(wkt, TypeMapper.getInstance().getTypeByName("http://www.opengis.net/ont/geosparql#wktLiteral"))));
+            meetpuntLocaties.put(meetpuntId, statements);
         }
     }
 
 
     public List<Statement> get(String s) {
-        return List.of(meetpuntLocaties.get(s));
+        return meetpuntLocaties.get(s);
     }
 }

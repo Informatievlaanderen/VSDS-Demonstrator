@@ -16,7 +16,7 @@ orchestrator:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             content-type: application/n-quads
-            endpoint: http://demonstrator:8080/api/gipod/members
+            endpoint: http://host.docker.internal:8084/api/gipod/members
     - name: verkeersmetingen-pipeline
       description: "Simple http in, version creation, http out pipeline allowing to pause output."
       input:
@@ -46,5 +46,5 @@ orchestrator:
             repository-id: test
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
-            endpoint: http://demonstrator:8080/api/verkeersmeting/members
+            endpoint: http://host.docker.internal:8084/api/verkeersmeting/members
             content-type: application/n-quads

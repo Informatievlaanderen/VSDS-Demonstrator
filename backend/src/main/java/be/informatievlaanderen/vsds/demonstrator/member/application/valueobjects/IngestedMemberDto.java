@@ -3,7 +3,6 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.valueobject
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.NoGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
-import org.apache.jena.ext.com.google.common.collect.Iterables;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
 import org.apache.jena.geosparql.implementation.vocabulary.SRS_URI;
 import org.apache.jena.rdf.model.*;
@@ -14,13 +13,16 @@ import org.opengis.util.FactoryException;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
 import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 public class IngestedMemberDto {
+    private static final Property RDF_SYNTAX_TYPE = createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     private final String collection;
     private final Model model;
 
@@ -29,24 +31,29 @@ public class IngestedMemberDto {
         this.model = model;
     }
 
+    public String getCollection() {
+        return collection;
+    }
+
     public Model getModel() {
         return model;
     }
 
-    public Member getMember(List<EventStreamConfig> streams) throws FactoryException, TransformException {
-        Geometry geometry = getMember();
-        String memberId = getMemberId(streams);
-        String timestampString = (String) getTimestampPath(streams);
+    public Member getMember(EventStreamConfig eventStreamConfig) throws FactoryException, TransformException {
+        Geometry geometry = getGeometry();
+        String memberId = getMemberId(eventStreamConfig);
+        String timestampString = getTimestampPath(eventStreamConfig, memberId);
+        Map<String, String> properties = getProperties(eventStreamConfig);
         LocalDateTime timestamp;
         if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString);
         }
-        return new Member(memberId, collection, geometry, timestamp);
+        return new Member(memberId, collection, geometry, timestamp, properties);
     }
 
-    private Geometry getMember() throws FactoryException, TransformException {
+    private Geometry getGeometry() throws FactoryException, TransformException {
         List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
         if (wktNodes.isEmpty()) {
             throw new NoGeometryProvidedException();
@@ -57,29 +64,29 @@ public class IngestedMemberDto {
         }
     }
 
-    private Statement getMemberProperty(List<EventStreamConfig> streams, Function<EventStreamConfig, Selector> createSelector) {
-        return Iterables.getOnlyElement(streams
-                .stream()
-                .filter(stream -> stream.getName().equals(collection))
-                .map(stream -> model.listStatements(createSelector.apply(stream)))
-                .map(StmtIterator::nextStatement)
-                .toList());
+    private Statement getMemberProperty(EventStreamConfig config, Function<EventStreamConfig, Selector> createSelector) {
+        return model.listStatements(createSelector.apply(config)).nextStatement();
     }
 
-    private String getMemberId(List<EventStreamConfig> streams) {
-        return getMemberProperty(streams, stream -> new SelectorImpl(null, null, createResource(stream.getMemberType())))
+    private String getMemberId(EventStreamConfig streamConfig) {
+        return getMemberProperty(streamConfig, stream -> new SelectorImpl(null, RDF_SYNTAX_TYPE, createResource(stream.getMemberType())))
                 .getSubject()
                 .getURI();
     }
 
-    private Object getTimestampPath(List<EventStreamConfig> streams) {
-        return getMemberProperty(streams, stream -> new SelectorImpl(null, createProperty(stream.getTimestampPath()), (Resource) null))
+    private String getTimestampPath(EventStreamConfig streamConfig, String memberId) {
+        return getMemberProperty(streamConfig, stream -> new SelectorImpl(createResource(memberId), createProperty(stream.getTimestampPath()), (Resource) null))
                 .getObject()
                 .asLiteral().getString();
-
     }
 
-    public String getCollection() {
-        return collection;
+    private Map<String, String> getProperties(EventStreamConfig streamConfig) {
+        final Map<String, String> properties = new HashMap<>();
+        for (Map.Entry<String, String> propertyPredicateEntry : streamConfig.getPropertyPredicates().entrySet()) {
+            model.listStatements(null, createProperty(propertyPredicateEntry.getValue()), (Resource) null)
+                    .nextOptional()
+                    .ifPresent(statement -> properties.put(propertyPredicateEntry.getKey(), statement.getLiteral().getString()));
+        }
+        return properties;
     }
 }

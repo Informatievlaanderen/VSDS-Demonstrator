@@ -12,6 +12,8 @@ services:
     depends_on:
       rdf4j-server:
         condition: service_healthy
+      demonstrator:
+        condition: service_started
     networks:
       - demonstrator
 
@@ -27,12 +29,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=test
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_HIBERNATE_DDLAUTO=update
-      - LDES_STREAMS_0_NAME=gipod
-      - LDES_STREAMS_0_MEMBERTYPE=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
-      - LDES_STREAMS_0_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
-      - LDES_STREAMS_1_NAME=verkeersmeting
-      - LDES_STREAMS_1_MEMBERTYPE=https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
-      - LDES_STREAMS_1_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_GIPOD_MEMBERTYPE=https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder
+      - LDES_STREAMS_GIPOD_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_VERKEERSMETING_MEMBERTYPE=https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
+      - LDES_STREAMS_VERKEERSMETING_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
       - SERVER_PORT=8080
@@ -53,8 +53,7 @@ services:
       - 8080:8080
     restart: on-failure
     healthcheck:
-      test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/test/summary || exit 1"
-      interval: 15s
+      test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/NONE/repositories || exit 1"
     networks:
       - demonstrator
 

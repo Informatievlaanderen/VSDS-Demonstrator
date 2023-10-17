@@ -4,18 +4,21 @@ package be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities;
 import org.locationtech.jts.geom.Geometry;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class Member {
     private final String memberId;
     private final String collection;
     private final Geometry geometry;
     private final LocalDateTime timestamp;
+    private final Map<String, String> properties;
 
-    public Member(String memberId, String collection, Geometry geometry, LocalDateTime timestamp) {
+    public Member(String memberId, String collection, Geometry geometry, LocalDateTime timestamp, Map<String, String> properties) {
         this.memberId = memberId;
         this.collection = collection;
         this.geometry = geometry;
         this.timestamp = timestamp;
+        this.properties = properties;
     }
 
     public String getMemberId() {
@@ -32,6 +35,10 @@ public class Member {
 
     public String getCollection() {
         return collection;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     @Override

@@ -7,9 +7,6 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.M
 import org.apache.jena.rdf.model.Model;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
-
 @Service
 public class MemberValidatorImpl implements MemberValidator {
 
@@ -21,13 +18,11 @@ public class MemberValidatorImpl implements MemberValidator {
 
     @Override
     public void validate(Model member, String collectionName) {
-        Optional<EventStreamConfig> streamConfig = streams.getStreams().stream().filter(streams -> Objects.equals(streams.getName(), collectionName)).findFirst();
-        if(streamConfig.isEmpty()) {
-            throw new MissingCollectionException(collectionName);
-        } else if (!testMembertype(member, streamConfig.get().getMemberType())) {
-            throw new MembertypeException("todo", streamConfig.get().getMemberType());
+        EventStreamConfig streamConfig = streams.getStream(collectionName)
+                .orElseThrow(() -> new MissingCollectionException(collectionName));
+        if (!testMembertype(member, streamConfig.getMemberType())) {
+            throw new MembertypeException("todo", streamConfig.getMemberType());
         }
-
     }
 
     private boolean testMembertype(Model member, String memberType) {
