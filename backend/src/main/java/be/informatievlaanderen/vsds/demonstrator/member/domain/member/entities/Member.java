@@ -4,7 +4,6 @@ package be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities;
 import org.locationtech.jts.geom.Geometry;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Member {
@@ -13,14 +12,6 @@ public class Member {
     private final Geometry geometry;
     private final LocalDateTime timestamp;
     private final Map<String, String> properties;
-
-    public Member(String memberId, String collection, Geometry geometry, LocalDateTime timestamp) {
-        this.memberId = memberId;
-        this.collection = collection;
-        this.geometry = geometry;
-        this.timestamp = timestamp;
-        properties = new HashMap<>();
-    }
 
     public Member(String memberId, String collection, Geometry geometry, LocalDateTime timestamp, Map<String, String> properties) {
         this.memberId = memberId;

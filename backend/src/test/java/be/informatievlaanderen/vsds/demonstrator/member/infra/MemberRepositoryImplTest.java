@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,8 +54,8 @@ class MemberRepositoryImplTest {
     class RetrievalById {
         @Test
         void when_DbContainsMember_then_ReturnMemberInOptional() {
-            final MemberEntity entity = new MemberEntity(ID, COLLECTION, point, timestamp);
-            final Member member = new Member(ID, COLLECTION, point, timestamp);
+            final MemberEntity entity = new MemberEntity(ID, COLLECTION, point, timestamp, Map.of());
+            final Member member = new Member(ID, COLLECTION, point, timestamp, Map.of());
 
             when(jpaRepository.findById(ID)).thenReturn(Optional.of(entity));
 
@@ -83,7 +84,7 @@ class MemberRepositoryImplTest {
         void when_DbDoesContainMembers_then_ReturnMembersInRectangle() throws ParseException {
             final List<MemberEntity> entities = initMembers();
             final List<Member> members = entities.stream()
-                    .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), timestamp))
+                    .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), timestamp, Map.of()))
                     .toList();
 
             when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime)).thenReturn(entities);
@@ -105,7 +106,7 @@ class MemberRepositoryImplTest {
 
     @Test
     void test_Saving() {
-        Member member = new Member(ID, COLLECTION, point, timestamp);
+        Member member = new Member(ID, COLLECTION, point, timestamp, Map.of());
 
         repository.saveMember(member);
 
@@ -122,10 +123,10 @@ class MemberRepositoryImplTest {
     @Test
     void test_findMembersAfterLocalDateTime() {
         LocalDateTime now = LocalDateTime.now();
-        List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, COLLECTION, point, timestamp));
+        List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, COLLECTION, point, timestamp, Map.of()));
         when(jpaRepository.findByCollectionAndTimestampAfter(COLLECTION, now)).thenReturn(memberEntities);
         List<Member> expectedMembers = memberEntities.stream()
-                .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp()))
+                .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp(), Map.of()))
                 .toList();
 
         List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, now);
@@ -141,7 +142,7 @@ class MemberRepositoryImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberEntity("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp));
+                members.add(new MemberEntity("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp, Map.of()));
             }
         }
         return members;

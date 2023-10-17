@@ -13,6 +13,7 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,7 +33,7 @@ class MemberTest {
         final WKTReader reader = new WKTReader();
         geometry = reader.read("POINT(5 5)");
         otherGeometry = reader.read("POINT(10 20)");
-        member = new Member(ID, COLLECTION, geometry, timestamp);
+        member = new Member(ID, COLLECTION, geometry, timestamp, Map.of());
     }
 
     @ParameterizedTest(name = "{0}")
@@ -46,8 +47,8 @@ class MemberTest {
 
     @Test
     void test_equality() {
-        Member other = new Member(ID, COLLECTION, geometry, timestamp);
-        Member other2 = new Member(ID, COLLECTION, otherGeometry, timestamp);
+        Member other = new Member(ID, COLLECTION, geometry, timestamp, Map.of());
+        Member other2 = new Member(ID, COLLECTION, otherGeometry, timestamp, Map.of());
 
         assertEquals(member, member);
         assertEquals(member, other);
@@ -61,10 +62,10 @@ class MemberTest {
         public Stream<Arguments> provideArguments(ExtensionContext extensionContext) {
             return Stream.of(
                     Arguments.of("null", null),
-                    Arguments.of("Other id, same geometry, same timestamp", new Member("other", COLLECTION, geometry, timestamp)),
-                    Arguments.of("Other id, other geometry, same timestamp", new Member("not-the-same", COLLECTION, otherGeometry, timestamp)),
-                    Arguments.of("Other id, same geometry, other timestamp", new Member("no-equal-id", COLLECTION, geometry, otherTimestamp)),
-                    Arguments.of("Other id, other geometry, other timestamp", new Member("random-id-that-differs", COLLECTION, otherGeometry, otherTimestamp)),
+                    Arguments.of("Other id, same geometry, same timestamp", new Member("other", COLLECTION, geometry, timestamp, Map.of())),
+                    Arguments.of("Other id, other geometry, same timestamp", new Member("not-the-same", COLLECTION, otherGeometry, timestamp, Map.of())),
+                    Arguments.of("Other id, same geometry, other timestamp", new Member("no-equal-id", COLLECTION, geometry, otherTimestamp, Map.of())),
+                    Arguments.of("Other id, other geometry, other timestamp", new Member("random-id-that-differs", COLLECTION, otherGeometry, otherTimestamp, Map.of())),
                     Arguments.of("Not a member geometry", "Not a member geometry")
             );
         }

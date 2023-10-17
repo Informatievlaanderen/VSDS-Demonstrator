@@ -25,13 +25,6 @@ public class MemberEntity {
     public MemberEntity() {
     }
 
-    public MemberEntity(String memberId, String collection, Geometry geometry, LocalDateTime timestamp) {
-        this.memberId = memberId;
-        this.collection = collection;
-        this.geometry = geometry;
-        this.timestamp = timestamp;
-    }
-
     public MemberEntity(String memberId, String collection, Geometry geometry, LocalDateTime timestamp, Map<String, String> properties) {
         this.memberId = memberId;
         this.collection = collection;

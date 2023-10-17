@@ -75,7 +75,7 @@ class MemberServiceImplTest {
             when(repository.getMembersByGeometry(rectangle, COLLECTION, startTime, endTime)).thenReturn(members);
 
             final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp, TIME_PERIOD).stream()
-                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp()))
+                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp(), Map.of()))
                     .toList();
             assertEquals(members, retrievedMembers);
             verify(repository).getMembersByGeometry(rectangle, COLLECTION, startTime, endTime);
@@ -104,7 +104,7 @@ class MemberServiceImplTest {
 
         @Test
         void when_MemberIsPresent_then_ReturnMember() {
-            Member memberGeometry = new Member(ID, COLLECTION, rectangle, timestamp);
+            Member memberGeometry = new Member(ID, COLLECTION, rectangle, timestamp, Map.of());
 
             when(repository.findByMemberId(ID)).thenReturn(Optional.of(memberGeometry));
 
@@ -165,14 +165,14 @@ class MemberServiceImplTest {
     }
 
     private List<Member> getMemberList() {
-        Member id1 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id2 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id3 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id4 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id5 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id6 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id7 = new Member("id1", COLLECTION, null, LocalDateTime.now());
-        Member id8 = new Member("id1", COLLECTION, null, LocalDateTime.now());
+        Member id1 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id2 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id3 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id4 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id5 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id6 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id7 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id8 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
         return List.of(id1, id2, id3, id4, id5, id6, id7, id8);
     }
 
@@ -182,7 +182,7 @@ class MemberServiceImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp));
+                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp, Map.of()));
             }
         }
         return members;
