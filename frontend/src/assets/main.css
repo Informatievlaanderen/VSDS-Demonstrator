@@ -122,11 +122,15 @@ body {
     line-height: 27px; /* 150% */
 }
 
+.body-small-regular {
+    font-size: 16px;
+    line-height: 16px;
+}
+
 .body-xxsmall-regular {
     font-size: 12px;
     line-height: 16px;
 }
-
 
 b {
     font-weight: 700;

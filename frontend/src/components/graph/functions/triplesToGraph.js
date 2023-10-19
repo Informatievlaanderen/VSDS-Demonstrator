@@ -1,33 +1,40 @@
-function filterNodesById(nodes,id){
-    return nodes.filter(function(n) { return n.id === id; });
+function filterNodesById(nodes, id) {
+    return nodes.filter(function (n) {
+        return n.id === id;
+    });
 }
 
-export function triplesToGraph(triples){
+export function triplesToGraph(triples) {
 
     //Graph
-    var graph={nodes:[], links:[]};
+    var graph = {nodes: [], links: []};
 
     //Initial Graph from triples
-    triples.forEach(function(triple){
-        var subjId = triple.subject;
-        var predId = triple.predicate;
-        var objId = triple.object;
+    triples.forEach(function (triple) {
+        var subject = triple.subject;
+        var predicate = triple.predicate;
+        var object = triple.object;
 
-        var subjNode = filterNodesById(graph.nodes, subjId)[0];
-        var objNode  = filterNodesById(graph.nodes, objId)[0];
+        var subjNode = filterNodesById(graph.nodes, subject.value)[0];
+        var objNode = filterNodesById(graph.nodes, object.value)[0];
 
-        if(subjNode==null){
-            subjNode = {id:subjId, label:subjId, weight:1};
+        if (subjNode == null) {
+            subjNode = {id: subject.value, label: subject.prefixedValue, weight: 1};
             graph.nodes.push(subjNode);
         }
 
-        if(objNode==null){
-            objNode = {id:objId, label:objId, weight:1};
+        if (objNode == null) {
+            objNode = {id: object.value, label: object.prefixedValue, weight: 1};
             graph.nodes.push(objNode);
         }
 
 
-        graph.links.push({source:subjNode, target:objNode, predicate:predId, weight:1});
+        graph.links.push({
+            source: subjNode,
+            target: objNode,
+            predicate: {label: predicate.prefixedValue, id: predicate.value},
+            weight: 1
+        });
     });
 
     return graph;

@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.application.services;
 
-import be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects.Triple;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +16,6 @@ public class TripleServiceImpl implements TripleService {
 
     @Override
     public List<Triple> getTriplesById(String id) {
-        return  repository.getById(id).getModel().stream()
-                .map(statement -> new Triple(statement.getSubject().stringValue(), statement.getPredicate().stringValue(), statement.getObject().stringValue()))
-                .toList();
-
+        return repository.getById(id);
     }
 }

@@ -1,13 +1,13 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.infra;
 
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.entities.MemberDescription;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.services.TriplesFactory;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.exceptions.TripleFetchFailedException;
 import org.eclipse.rdf4j.common.transaction.IsolationLevels;
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.impl.DynamicModel;
-import org.eclipse.rdf4j.model.impl.DynamicModelFactory;
 import org.eclipse.rdf4j.query.GraphQueryResult;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
@@ -16,13 +16,15 @@ import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 @org.springframework.stereotype.Repository
 public class TripleRepositoryRDF4JImpl implements TripleRepository {
     private final GraphDBConfig graphDBConfig;
-    private RepositoryManager repositoryManager;
     private Repository repository;
     private static final Logger log = LoggerFactory.getLogger(TripleRepositoryRDF4JImpl.class);
 
@@ -32,8 +34,7 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
         initRepo(new RemoteRepositoryManager(url));
     }
 
-    protected void initRepo(RepositoryManager manager) {
-        repositoryManager = manager;
+    protected void initRepo(RepositoryManager repositoryManager) {
         repositoryManager.init();
         try {
             if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
@@ -51,18 +52,17 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
     }
 
     @Override
-    public MemberDescription getById(String id) {
+    public List<Triple> getById(@NotNull String id) {
         try (RepositoryConnection dbConnection = repository.getConnection()) {
             dbConnection.setIsolationLevel(IsolationLevels.NONE);
             dbConnection.begin();
 
             String queryString = "Describe<" + id + ">";
             GraphQueryResult result = dbConnection.prepareGraphQuery(queryString).evaluate();
-            Model model = new DynamicModel(new DynamicModelFactory());
-            result.forEach(model::add);
+            Model model = QueryResults.asModel(result);
             dbConnection.commit();
 
-            return new MemberDescription(id, model);
+            return TriplesFactory.fromModel(model).withNamespaces(result.getNamespaces()).getTriples();
         } catch (Exception e) {
             throw new TripleFetchFailedException(id, e);
         }

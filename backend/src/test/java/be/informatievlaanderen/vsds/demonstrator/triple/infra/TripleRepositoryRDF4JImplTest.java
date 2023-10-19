@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.infra;
 
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.entities.MemberDescription;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
@@ -20,8 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TripleRepositoryRDF4JImplTest {
 
@@ -61,18 +62,16 @@ class TripleRepositoryRDF4JImplTest {
     void when_ExistingTriplesAreRequested_then_MemberDescriptionIsExpected() throws IOException {
         populateRepository();
 
-        MemberDescription memberDescription = repo.getById(MEMBER_ID);
+        List<Triple> triples = repo.getById(MEMBER_ID);
 
-        assertEquals(MEMBER_ID, memberDescription.getMemberId());
-        assertFalse(memberDescription.getModel().isEmpty());
+        assertThat(triples).isNotEmpty();
     }
 
     @Test
     void when_MemberNotPresent_then_EmptyModelIsExpected() {
-        MemberDescription memberDescription = repo.getById(MEMBER_ID);
+        List<Triple> triples = repo.getById(MEMBER_ID);
 
-        assertEquals(MEMBER_ID, memberDescription.getMemberId());
-        assertTrue(memberDescription.getModel().isEmpty());
+        assertThat(triples).isEmpty();
     }
 
     void populateRepository() throws IOException {

@@ -4,6 +4,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.rest.converters;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -31,7 +32,7 @@ public class ModelHttpConverter extends AbstractHttpMessageConverter<Model> {
 	}
 
 	@Override
-	protected Model readInternal(Class<? extends Model> clazz, HttpInputMessage inputMessage)
+	protected Model readInternal(@NotNull Class<? extends Model> clazz, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException {
 		MediaType contentType = Objects.requireNonNull(inputMessage.getHeaders().getContentType());
 		Lang lang =
@@ -42,7 +43,7 @@ public class ModelHttpConverter extends AbstractHttpMessageConverter<Model> {
 	}
 
 	@Override
-	protected void writeInternal(Model model, HttpOutputMessage outputMessage)
+	protected void writeInternal(@NotNull Model model, @NotNull HttpOutputMessage outputMessage)
 			throws UnsupportedOperationException, HttpMessageNotWritableException {
 		throw new UnsupportedOperationException();
 	}

@@ -1,7 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.triple.application.services.TripleService;
-import be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects.Triple;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

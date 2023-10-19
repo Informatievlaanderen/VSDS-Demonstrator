@@ -1,11 +1,15 @@
 import mapsMarker from "../../../assets/svgs/legend/maps.marker.svg"
 import carIcon from "../../../assets/svgs/legend/car.svg"
 import bikeIcon from "../../../assets/svgs/legend/bike.svg"
+import alertIcon from "../../../assets/svgs/legend/alert-triangle-filled.svg"
 export function usePopup(collection, properties) {
-    console.log(collection)
     switch (collection) {
         case "gipod":
-            return `<p>${properties.startTime}</p>`
+            return `<div class="popup-gipod-grid body body-xxsmall-regular">
+<img class="popup-gipod-icon" src="${alertIcon}">
+<b class="popup-gipod-start-label">Vanaf</b><span class="popup-gipod-start-date">${properties.startTime}</span>
+<b class="popup-gipod-end-label">Tot</b><span class="popup-gipod-end-date">${properties.endTime}</span>
+</div>`
         case "verkeersmeting":
             return `<div class="popup-verkeersmeting">
 <img class="popup-verkeersmeting-map-marker" src="${mapsMarker}">
@@ -26,9 +30,3 @@ export function usePopup(collection, properties) {
 
     }
 }
-
-/**
- * box-shadow: 0px 2px 12px 0px #6A768659;
- *
- * box-shadow: 0px 0px 1px 0px #CFD5DD;
- */
