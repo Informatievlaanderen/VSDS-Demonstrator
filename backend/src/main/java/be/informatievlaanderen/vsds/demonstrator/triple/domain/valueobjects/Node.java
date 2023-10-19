@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Node {
     private final String value;
@@ -36,11 +37,14 @@ public class Node {
 
         Node node = (Node) o;
 
-        return value.equals(node.value);
+        if (!value.equals(node.value)) return false;
+        return Objects.equals(namespace, node.namespace);
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        int result = value.hashCode();
+        result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
+        return result;
     }
 }
