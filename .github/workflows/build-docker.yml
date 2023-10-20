@@ -21,7 +21,7 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -f ./pom.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=informatievlaanderen_vsds-demonstrator -Pcoverage
+        run: mvn -f ./pom.xml -B verify -Dsonar.projectKey=informatievlaanderen_vsds-demonstrator -Pcoverage
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
