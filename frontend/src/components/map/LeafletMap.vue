@@ -22,6 +22,9 @@
 import clusterSmall from "../../assets/svgs/legend/maps.marker.cluster-small.svg"
 import clusterMedium from "../../assets/svgs/legend/maps.marker.cluster-medium.svg"
 import clusterLarge from "../../assets/svgs/legend/maps.marker.cluster-large.svg"
+import clusterSmallAlt from "../../assets/svgs/legend/maps.marker.cluster-small-alt.svg"
+import clusterMediumAlt from "../../assets/svgs/legend/maps.marker.cluster-medium-alt.svg"
+import clusterLargeAlt from "../../assets/svgs/legend/maps.marker.cluster-large-alt.svg"
 import "leaflet/dist/leaflet.css"
 import L from 'leaflet';
 import "leaflet.markercluster/dist/MarkerCluster.css"
@@ -34,7 +37,7 @@ import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
 import MapButtons from "@/components/modal/MapButtons.vue";
 
-const iconCreateFunction = (cluster) => {
+const iconCreateFunction = (cluster, name) => {
   const count = cluster.getChildCount();
   let clusterSize;
   let iconAnchor;
@@ -42,8 +45,8 @@ const iconCreateFunction = (cluster) => {
 
   if (count < 21) {
     clusterSize = "small";
-    iconAnchor = [23, 23]
-    iconUrl = clusterSmall
+    iconAnchor = [23, 23];
+    iconUrl = name === "bluebikes" ? clusterSmall : clusterSmallAlt;
   } else if (count < 61) {
     clusterSize = "medium";
     iconAnchor = [33, 33];
@@ -78,7 +81,37 @@ export default {
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
-    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({iconCreateFunction})]))
+    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup(
+        {
+          iconCreateFunction: function (cluster) {
+            const count = cluster.getChildCount();
+            let clusterSize;
+            let iconAnchor;
+            let iconUrl;
+
+            if (count < 21) {
+              clusterSize = "small";
+              iconAnchor = [23, 23];
+              iconUrl = name === "bluebikes" ? clusterSmall : clusterSmallAlt
+            } else if (count < 61) {
+              clusterSize = "medium";
+              iconAnchor = [33, 33];
+              iconUrl = name === "bluebikes" ? clusterMedium : clusterMediumAlt
+            } else {
+              clusterSize = "large";
+              iconAnchor = [40.5, 40.5];
+              iconUrl = name === "bluebikes" ? clusterLarge : clusterLargeAlt
+            }
+
+            const className = `marker-cluster-${clusterSize}`;
+
+            return L.divIcon({
+              html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span>${count}</span></div>`,
+              className,
+              iconAnchor,
+            })
+          }
+        })]))
 
     return {
       time,
