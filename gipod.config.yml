@@ -58,19 +58,7 @@ orchestrator:
         adapter:
           name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
           config:
-            mapping: ./rml/stations.ttl
-      transformers:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
-          config:
-            query: ./sparql/station.add-props.rq
-            infer: true
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
-          config:
-            member-type: https://w3id.org/gbfs#Station
-            delimiter: "/"
-            date-observed-property:
-            generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
-            versionOf-property: http://purl.org/dc/terms/isVersionOf
+            mapping: /ldio/rml/stations.ttl
       outputs:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
           config:
@@ -78,5 +66,5 @@ orchestrator:
             repository-id: test
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
-            content-type: application/n-quads
             endpoint: http://host.docker.internal:8084/api/bluebikes/members
+            content-type: application/n-quads

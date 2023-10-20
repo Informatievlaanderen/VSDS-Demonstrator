@@ -46,21 +46,21 @@ const iconCreateFunction = (cluster, name) => {
   if (count < 21) {
     clusterSize = "small";
     iconAnchor = [23, 23];
-    iconUrl = name === "bluebikes" ? clusterSmall : clusterSmallAlt;
+    iconUrl = name === "bluebikes" ? clusterSmall : clusterSmallAlt
   } else if (count < 61) {
     clusterSize = "medium";
     iconAnchor = [33, 33];
-    iconUrl = clusterMedium;
+    iconUrl = name === "bluebikes" ? clusterMedium : clusterMediumAlt
   } else {
     clusterSize = "large";
-    iconAnchor = [40.5, 40.5]
-    iconUrl = clusterLarge;
+    iconAnchor = [40.5, 40.5];
+    iconUrl = name === "bluebikes" ? clusterLarge : clusterLargeAlt
   }
 
   const className = `marker-cluster-${clusterSize}`;
-
+  const color = name === "bluebikes" ? "#ffffff" : "#333332";
   return L.divIcon({
-    html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span>${count}</span></div>`,
+    html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span class="body body-xxsmall-regular" style="color: ${color}">${count}</span></div>`,
     className,
     iconAnchor,
   })
@@ -70,6 +70,7 @@ export default {
   components: {MapButtons, KnowledgeGraph, Slider},
   watch: {
     time: function () {
+      this.map.closePopup();
       this.fetchMembers();
     },
   },
@@ -81,37 +82,9 @@ export default {
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
-    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup(
-        {
-          iconCreateFunction: function (cluster) {
-            const count = cluster.getChildCount();
-            let clusterSize;
-            let iconAnchor;
-            let iconUrl;
-
-            if (count < 21) {
-              clusterSize = "small";
-              iconAnchor = [23, 23];
-              iconUrl = name === "bluebikes" ? clusterSmall : clusterSmallAlt
-            } else if (count < 61) {
-              clusterSize = "medium";
-              iconAnchor = [33, 33];
-              iconUrl = name === "bluebikes" ? clusterMedium : clusterMediumAlt
-            } else {
-              clusterSize = "large";
-              iconAnchor = [40.5, 40.5];
-              iconUrl = name === "bluebikes" ? clusterLarge : clusterLargeAlt
-            }
-
-            const className = `marker-cluster-${clusterSize}`;
-
-            return L.divIcon({
-              html: `<div class="marker-cluster-flanders"><img src="${iconUrl}"><span>${count}</span></div>`,
-              className,
-              iconAnchor,
-            })
-          }
-        })]))
+    const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({
+      iconCreateFunction: (cluster) => iconCreateFunction(cluster, name)
+    })]))
 
     return {
       time,

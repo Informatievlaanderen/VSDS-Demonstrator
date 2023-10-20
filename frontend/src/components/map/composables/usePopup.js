@@ -1,4 +1,4 @@
-import mapsMarker from "../../../assets/svgs/legend/maps.marker.svg"
+import mapsMarkerAlt from "../../../assets/svgs/legend/maps.marker-alt.svg"
 import carIcon from "../../../assets/svgs/legend/car.svg"
 import bikeIcon from "../../../assets/svgs/legend/bike.svg"
 import alertIcon from "../../../assets/svgs/legend/alert-triangle-filled.svg"
@@ -17,7 +17,7 @@ export function usePopup(collection, properties) {
 </div>`
         case "verkeersmeting":
             return `<div class="popup-verkeersmeting">
-<img class="popup-verkeersmeting-map-marker" src="${mapsMarker}">
+<img class="popup-verkeersmeting-map-marker" src="${mapsMarkerAlt}">
 <span class="popup-verkeersmeting-fullname body body-xxsmall-regular">${properties.fullname}</span>
 <div class="popup-verkeersmeting-counting-row">
 <img class="popup-verkeersmeting-car-icon" src="${carIcon}">
