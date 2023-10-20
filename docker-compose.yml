@@ -33,6 +33,12 @@ services:
       - LDES_STREAMS_GIPOD_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
       - LDES_STREAMS_VERKEERSMETING_MEMBERTYPE=https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
       - LDES_STREAMS_VERKEERSMETING_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_BLUEBIKES_MEMBERTYPE=https://w3id.org/gbfs#Station
+      - LDES_STREAMS_BLUEBIKES_TIMESTAMPPATH=http://www.w3.org/ns/prov#generatedAtTime
+      - LDES_STREAMS_BLUEBIKES_PROPERTYPREDICATES_FULLNAME=http://schema.org/name
+      - LDES_STREAMS_BLUEBIKES_PROPERTYPREDICATES_CAPACITY=https://blue-bike.be/ns#capacity
+      - LDES_STREAMS_BLUEBIKES_PROPERTYPREDICATES_AVAILABLE=https://w3id.org/gbfs#bikes_available
+      - LDES_STREAMS_BLUEBIKES_PROPERTYPREDICATES_USED=https://w3id.org/gbfs#bikes_in_use
       - GRAPHDB_URL=http://rdf4j-server:8080/rdf4j-server/repositories/
       - GRAPHDB_REPOSITORYID=test
       - SERVER_PORT=8080

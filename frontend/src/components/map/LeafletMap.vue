@@ -71,7 +71,9 @@ export default {
     },
   },
   setup() {
-    const layerNames = ["gipod", "verkeersmeting"]
+    const layerNames = Array.from(import.meta.env.VITE_STREAMS.streams, (stream) => {
+      return stream.id
+    }) //["gipod", "verkeersmeting", "bluebikes"]
 
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")

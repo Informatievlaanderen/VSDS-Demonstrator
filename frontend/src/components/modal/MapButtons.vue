@@ -7,6 +7,7 @@ const showLayers = ref(false);
 const showLegend = ref(false);
 const props = defineProps({"layersToShow": Map})
 const emit = defineEmits(["onLayersUpdated"])
+const streams = import.meta.env.VITE_STREAMS.streams
 
 function onMapButtonClicked(button : "layers" | "legend") {
   showLayers.value = button === "layers"
@@ -40,8 +41,12 @@ function onCheckboxClicked(key: string, isChecked: boolean) {
       <p class="body body-medium-regular margin-vert-24">
         Als decentrale oplossing maakt de Vlaamse Smart Data Space gebruik van een gezamenlijk <b>ecosysteem</b> met duidelijke spelregels, waardoor we data slim kunnen delen, publiceren en hergebruiken.
       </p>
-      <CheckboxTile id="gipod" label="GIPOD" @on-checked="isChecked => onCheckboxClicked('gipod', isChecked)" :checked="layersToShow.get('gipod')"></CheckboxTile>
-      <CheckboxTile id="verkeersmeting" label="Verkeersmetingen Verkeerscentrum LDES" @on-checked="isChecked => onCheckboxClicked('verkeersmeting', isChecked)" :checked="layersToShow.get('verkeersmeting')"></CheckboxTile>
+      <CheckboxTile v-for="stream in streams" :id="stream.id" :label="stream.fullName" @on-checked="isChecked => onCheckboxClicked(stream.id, isChecked)" :checked="layersToShow.get(stream.id)"></CheckboxTile>
+      <!--
+            <CheckboxTile id="gipod" label="GIPOD" @on-checked="isChecked => onCheckboxClicked('gipod', isChecked)" :checked="layersToShow.get('gipod')"></CheckboxTile>
+            <CheckboxTile id="verkeersmeting" label="Verkeersmetingen Verkeerscentrum LDES" @on-checked="isChecked => onCheckboxClicked('verkeersmeting', isChecked)" :checked="layersToShow.get('verkeersmeting')"></CheckboxTile>
+            <CheckboxTile id="bluebikes" label="Blue Bikes" @on-checked="isChecked => onCheckboxClicked('bluebikes', isChecked)" :checked="layersToShow.get('bluebikes')"></CheckboxTile>
+            -->
       <button class="primary-btn" @click="showLayers = false">Sluiten</button>
     </div>
   </Teleport>

@@ -1,0 +1,53 @@
+@prefix rml:        <http://semweb.mmlab.be/ns/rml#> .
+@prefix rr:         <http://www.w3.org/ns/r2rml#> .
+@prefix ql:         <http://semweb.mmlab.be/ns/ql#> .
+@prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+@prefix xsd:        <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms:    <http://purl.org/dc/terms/> .
+@prefix carml:      <http://carml.taxonic.com/carml/> .
+@prefix rules:      <https://blue-bike.be/rules/> .
+@prefix wgs:        <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+@prefix gbfs:       <https://w3id.org/gbfs#> .
+@prefix schema:     <http://schema.org/> .
+
+@prefix :           <https://blue-bike.be/ns#> .
+
+rules:FlowMap a rr:TriplesMap;
+  rml:logicalSource [
+    rml:source [ a carml:Stream ];
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.*"
+  ];
+  rr:subjectMap [ 
+    rr:graphMap [ rr:template "https://blue-bike.be/id/station/{id}" ];
+    rr:template "https://blue-bike.be/id/station/{id}" ;
+    rr:class gbfs:Station
+  ];
+  rr:predicateObjectMap 
+  [
+    rr:predicate :id;
+    rr:objectMap [ rml:reference "id"; rr:datatype xsd:int ]
+  ], [
+    rr:predicate :type;
+    rr:objectMap [ rml:reference "type"; rr:datatype xsd:int ]
+  ], [
+    rr:predicate :last_seen;
+    rr:objectMap [ rml:reference "last_seen"; rr:datatype xsd:DateTime ]
+  ], [
+    rr:predicate schema:name;
+    rr:objectMap [ rml:reference "name" ]
+  ], [
+    rr:predicate wgs:latitude;
+    rr:objectMap [ rml:reference "latitude"; rr:datatype xsd:double ]
+  ], [
+    rr:predicate wgs:longitude;
+    rr:objectMap [ rml:reference "longitude"; rr:datatype xsd:double ]
+  ], [
+    rr:predicate gbfs:bikes_available;
+    rr:objectMap [ rml:reference "bikes_available"; rr:datatype xsd:int ]
+  ], [
+    rr:predicate gbfs:bikes_in_use;
+    rr:objectMap [ rml:reference "bikes_in_use"; rr:datatype xsd:int ]
+  ].

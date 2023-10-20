@@ -44,6 +44,7 @@ public class IngestedMemberDto {
         String memberId = getMemberId(eventStreamConfig);
         String timestampString = getTimestampPath(eventStreamConfig, memberId);
         Map<String, String> properties = getProperties(eventStreamConfig);
+        System.out.println(properties);
         LocalDateTime timestamp;
         if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
