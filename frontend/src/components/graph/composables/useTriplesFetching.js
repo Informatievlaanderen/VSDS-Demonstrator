@@ -3,17 +3,27 @@ import * as d3 from "d3";
 import {triplesToGraph} from "@/components/graph/functions/triplesToGraph";
 
 const NODE_RADIUS = 8;
+const NODE_STROKE_WIDTH = 1.5;
 const NODE_TEXT_FONT_SIZE = 11;
 const LINK_TEXT_FONT_SIZE = 9;
 
 function visualizeTriples(triples) {
-    const svg = d3.select("#knowledge-graph");
+    const div = d3.select("#knowledge-graph")
+    div.select("svg").remove();
+    const svg = div.append("svg")
     svg.selectAll("*").remove();
     const g = svg.append("g");
+
+    const tooltip = div.append("div")
+        .attr("id", "tooltip")
+        .attr("class", "shadow-medium body body-xxsmall-regular")
+        .style("display", "none")
 
     const width = +svg.style("width").replace("px", "")
     const height = +svg.style("height").replace("px", "");
     const graph = triplesToGraph(triples);
+    d3.select("#knowledge-graph-loading").remove();
+    d3.select("#knowledge-graph-zoom-buttons").style("opacity", "1")
     const force = d3.forceSimulation(graph.nodes);
 
     function dragstart() {
@@ -22,6 +32,19 @@ function visualizeTriples(triples) {
 
     function clamp(x, lo, hi) {
         return x < lo ? lo : x > hi ? hi : x;
+    }
+
+    function onMouseOver(event, text) {
+        tooltip.style("display", "block").text(text)
+    }
+
+    function onMouseOut() {
+        tooltip.style("display", "none");
+    }
+
+    function onMouseMove(event, marginBottom) {
+        let width = +tooltip.style("width").replace("px", "");
+        tooltip.style("left", `${event.layerX - width / 2}px`).style("top", `${event.layerY - marginBottom}px`)
     }
 
     function dragged(event, d) {
@@ -63,9 +86,10 @@ function visualizeTriples(triples) {
         .append("text")
         .attr("class", "link-text")
         .style("font-size", `${LINK_TEXT_FONT_SIZE}px`)
-        .text(function (d) {
-            return d.predicate;
-        });
+        .on("mouseover", (event, d) => onMouseOver(event, d.predicate.id))
+        .on("mouseout", onMouseOut)
+        .on("mousemove", event => onMouseMove(event, 42))
+        .text(d => d.predicate.label);
     // ==================== Add Link Names =====================
     const nodeTexts = g
         .selectAll(".node-text")
@@ -74,9 +98,10 @@ function visualizeTriples(triples) {
         .append("text")
         .attr("class", "node-text")
         .style("font-size", `${NODE_TEXT_FONT_SIZE}px`)
-        .text(function (d) {
-            return d.label;
-        });
+        .on("mouseover", (event, d) => onMouseOver(event, d.id))
+        .on("mouseout", onMouseOut)
+        .on("mousemove", event => onMouseMove(event, 42))
+        .text(d => d.label);
     // ==================== Add Node =====================
     const nodes = g
         .selectAll(".node")
@@ -85,6 +110,7 @@ function visualizeTriples(triples) {
         .append("circle")
         .attr("class", "node")
         .attr("r", NODE_RADIUS)
+        .style("stroke-width", `${NODE_STROKE_WIDTH}px`)
         .call(drag);
 
     let transform;
@@ -92,47 +118,54 @@ function visualizeTriples(triples) {
     const zoom = d3.zoom().on("zoom", e => {
         g.attr("transform", () => transform = e.transform);
         nodes.attr("r", NODE_RADIUS / Math.sqrt(transform.k))
-        nodeTexts.style("font-size", `${11 / Math.sqrt(transform.k)}px`)
-        linkTexts.style("font-size", `${9 / Math.sqrt(transform.k)}px`)
+        nodes.style("stroke-width", `${NODE_STROKE_WIDTH / Math.sqrt(transform.k)}px`)
+        nodeTexts.style("font-size", `${NODE_TEXT_FONT_SIZE / Math.sqrt(transform.k)}px`)
+        linkTexts.style("font-size", `${LINK_TEXT_FONT_SIZE / Math.sqrt(transform.k)}px`)
     })
 
+    const zoomInBtn = d3.select("#knowledge-graph-zoom-in-btn")
+        .on("click", () => zoom.scaleBy(svg.transition().duration(350), 1.5))
+    const zoomOutBtn = d3.select("#knowledge-graph-zoom-out-btn")
+        .on("click", () => zoom.scaleBy(svg.transition().duration(350), 0.75))
+
     function ticked() {
+        const DISTANCE_FACTOR = 2.5;
         nodes
             .attr("cx", function (d) {
-                return 2 * d.x;
+                return DISTANCE_FACTOR * d.x;
             })
             .attr("cy", function (d) {
-                return 2 * d.y;
+                return DISTANCE_FACTOR * d.y;
             });
 
         links
             .attr("x1", function (d) {
-                return 2 * d.source.x;
+                return DISTANCE_FACTOR * d.source.x;
             })
             .attr("y1", function (d) {
-                return 2 * d.source.y;
+                return DISTANCE_FACTOR * d.source.y;
             })
             .attr("x2", function (d) {
-                return 2 * d.target.x;
+                return DISTANCE_FACTOR * d.target.x;
             })
             .attr("y2", function (d) {
-                return 2 * d.target.y;
+                return DISTANCE_FACTOR * d.target.y;
             });
 
         nodeTexts
             .attr("x", function (d) {
-                return 2 * d.x + 12;
+                return DISTANCE_FACTOR * d.x + 12;
             })
             .attr("y", function (d) {
-                return 2 * d.y + 3;
+                return DISTANCE_FACTOR * d.y + 3;
             });
 
         linkTexts
             .attr("x", function (d) {
-                return 4 + 2 * (d.source.x + d.target.x) / 2;
+                return 4 + DISTANCE_FACTOR * (d.source.x + d.target.x) / 2;
             })
             .attr("y", function (d) {
-                return 4 + 2 * (d.source.y + d.target.y) / 2;
+                return 4 + DISTANCE_FACTOR * (d.source.y + d.target.y) / 2;
             });
     }
 

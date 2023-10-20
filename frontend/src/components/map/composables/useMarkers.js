@@ -54,7 +54,7 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
             }
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})
-        geoJson.setStyle({color: '#808080'});
+        geoJson.setStyle({color: '#A813F7'});
         markers.push(geoJson)
     })
     return markers;

@@ -1,11 +1,13 @@
-package be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects;
+package be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects;
+
+import org.jetbrains.annotations.NotNull;
 
 public class Triple {
-    private final String subject;
-    private final String predicate;
-    private final String object;
+    private final Node subject;
+    private final Node predicate;
+    private final Node object;
 
-    public Triple(String subject, String predicate, String object) {
+    public Triple(@NotNull Node subject, @NotNull Node predicate, @NotNull Node object) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
@@ -31,15 +33,24 @@ public class Triple {
         return result;
     }
 
-    public String getSubject() {
+    @Override
+    public String toString() {
+        return "Triple{" +
+                "subject=" + subject.getValue() +
+                ", predicate=" + predicate.getValue() +
+                ", object=" + object.getValue() +
+                '}';
+    }
+
+    public Node getSubject() {
         return subject;
     }
 
-    public String getPredicate() {
+    public Node getPredicate() {
         return predicate;
     }
 
-    public String getObject() {
+    public Node getObject() {
         return object;
     }
 }

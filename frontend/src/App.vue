@@ -59,6 +59,8 @@ import LineChart from "@/components/linechart/LineChart.vue";
 }
 
 .line-chart {
+  width: 40%;
+  height: 250px;
   min-width: 40%;
   min-height: 250px;
 }

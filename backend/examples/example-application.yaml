@@ -16,14 +16,22 @@ ldes:
       member-type: "https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder"
       timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
       property-predicates:
-        startTime: "http://data.europa.eu/m8g/startTime"
-        endTime: "http://data.europa.eu/m8g/endTime"
+        starttime: "http://data.europa.eu/m8g/startTime"
+        endtime: "http://data.europa.eu/m8g/endTime"
     verkeersmeting:
       member-type: "https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting"
       timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
       property-predicates:
-        fullName: "http://custom/meetpunt#VolledigeNaam"
+        fullname: "http://custom/meetpunt#VolledigeNaam"
         countObservationResult: "http://def.isotc211.org/iso19156/2011/CountObservation#OM_CountObservation.result"
+    bluebikes:
+      member-type: "https://w3id.org/gbfs#Station"
+      timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
+      property-predicates:
+        fullname: "http://schema.org/name"
+        capacity: "https://blue-bike.be/ns#capacity"
+        available: "https://w3id.org/gbfs#bikes_available"
+        used: "https://w3id.org/gbfs#bikes_in_use"
 graphdb:
   url: "http://localhost:8080/rdf4j-server/repositories/"
   repositoryId: "test"

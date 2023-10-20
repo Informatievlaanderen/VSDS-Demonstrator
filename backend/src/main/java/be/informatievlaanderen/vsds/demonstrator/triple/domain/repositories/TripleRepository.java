@@ -1,7 +1,9 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories;
 
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.entities.MemberDescription;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
+
+import java.util.List;
 
 public interface TripleRepository {
-    MemberDescription getById(String id);
+    List<Triple> getById(String id);
 }

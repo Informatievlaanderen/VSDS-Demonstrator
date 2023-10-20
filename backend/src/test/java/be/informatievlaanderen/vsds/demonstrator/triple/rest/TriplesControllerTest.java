@@ -1,7 +1,8 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.triple.application.services.TripleService;
-import be.informatievlaanderen.vsds.demonstrator.triple.application.valueobjects.Triple;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Node;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.exceptions.TripleFetchFailedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -66,8 +67,8 @@ class TriplesControllerTest {
 
         return Files.readAllLines(path).stream()
                 .map(str -> str.split(" "))
-                .map(strings -> Arrays.stream(strings).map(transformer).toList())
-                .map(strings -> new Triple(strings.get(0), strings.get(1), strings.get(2)))
+                .map(strings -> Arrays.stream(strings).map(transformer).map(Node::new).toList())
+                .map(nodes -> new Triple(nodes.get(0), nodes.get(1), nodes.get(2)))
                 .toList();
     }
 }

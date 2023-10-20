@@ -13,7 +13,7 @@
       time = timestamp;
       timePeriod = period;
     }"
-            @realtime-toggled="(isRealTimeEnabled) => isRealTimeEnabled ? connect() : disconnect()"
+            @realtime-toggled="isRealTimeEnabled => isRealTimeEnabled ? connect() : disconnect()"
     />
   </div>
 </template>
@@ -100,18 +100,13 @@ export default {
 
   mounted() {
     this.connect()
-    console.log(import.meta.env.VITE_WS_BASE_URL);
-    this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.7747, 4.4852], 8)
+    this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.9, 4.15], 8)
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
-    //TODO: delete this and hard code the bounds of Flanders/Belgium for performance reasons
     this.map.on("popupclose", () => this.memberId = null)
-    // this.map.on("moveend", () => {
-    //   this.fetchMembers();
-    // });
     this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
       if (value) {
@@ -139,7 +134,10 @@ export default {
             timestamp: new Date(this.time).toISOString().replace("Z", ""),
             timePeriod: this.timePeriod
           },
-          data: this.map.getBounds(),
+          data: {
+            _northEast: {lat: 51.61113728, lng: 6.60827637},
+            _southWest: {lat: 49.37098431, lng: 2.38952637}
+          },
           headers: {
             'Content-type': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -157,12 +155,13 @@ export default {
     },
     //websocket
     connect() {
+      this.layers.forEach(layer => layer.clearLayers())
       this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
           () => this.subscribe(),
           error => {
-            console.log(error);
+            console.error(error);
             this.connect()
           }
       );
@@ -190,7 +189,7 @@ export default {
       }
     },
     updateMarker(marker) {
-      marker.setStyle({color: '#808080'})
+      marker.setStyle({color: '#A813F7'})
     }
   }
 
@@ -241,6 +240,10 @@ export default {
   margin: 12px;
 }
 
+.leaflet-popup-content-wrapper {
+  border-radius: 3px !important;
+}
+
 .marker-cluster-flanders {
   position: relative;
   color: #fff;
@@ -260,6 +263,37 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 6px;
+}
+
+.popup-grid {
+  display: grid;
+  row-gap: 6px;
+  column-gap: 12px;
+  grid-template-columns: auto auto;
+}
+
+.popup-gipod-icon {
+  width: 11px;
+  height: 16px;
+}
+
+.popup-bluebike-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.popup-grid-icon {
+  grid-column-start: span 2;
+  justify-self: center;
+}
+
+.popup-title {
+  grid-column-start: span 2;
+  justify-self: center;
+}
+
+.popup-grid-end {
+  justify-self: end;
 }
 
 .popup-verkeersmeting-map-marker {

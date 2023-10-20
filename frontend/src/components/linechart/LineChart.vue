@@ -108,7 +108,7 @@ export default {
             });
           },
           error => {
-            console.log(error);
+            console.error(error);
             this.connect()
           }
       );
