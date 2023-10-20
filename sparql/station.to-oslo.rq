@@ -1,0 +1,13 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:       <http://schema.org/>
+PREFIX time:         <http://www.w3.org/2006/time#>
+PREFIX wgs:          <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX locn:         <http://www.w3.org/ns/locn#>
+PREFIX geo:          <http://www.opengis.net/ont/geosparql#>
+PREFIX sf:           <http://www.opengis.net/ont/sf#>
+PREFIX gbfs:         <https://w3id.org/gbfs#>
+
+PREFIX :             <https://blue-bike.be/ns#>
+
+# TODO: see https://github.com/TREEcg/Blue-Bike-to-OSLO/blob/master/mapping-webapi-official.rml.ttl

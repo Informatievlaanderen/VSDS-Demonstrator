@@ -38,7 +38,7 @@ export default {
         datasets: [],
         stompClient: null,
       },
-      colorCodesFlanders: ["#FFED00", "#443939"],
+      //colorCodesFlanders: ["#FFED00", "blue", "#443939"],
       options: {
         interaction: {
           intersect: false,
@@ -70,12 +70,13 @@ export default {
               let linechart = JSON.parse(memberCounter.body)
               let datasetsOfLineChart = []
               for (let i = 0; i < linechart.dataSetDtos.length; i++) {
+                let color = import.meta.env.VITE_STREAMS.streams.find(stream => stream.id == linechart.dataSetDtos[i].name).color
                 datasetsOfLineChart.push({
-                  borderColor: this.colorCodesFlanders[i],
+                  borderColor: color,
                   pointRadius: 0,
                   tension: 0.3,
                   label: 'Aantal members ' + linechart.dataSetDtos[i].name,
-                  backgroundColor: this.colorCodesFlanders[i],
+                  backgroundColor: color,
                   data: linechart.dataSetDtos[i].values,
                 })
               }

@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp, String timePeriod) {
-        var duration = Duration.parse(timePeriod).dividedBy(2);
+        Duration duration = Duration.parse(timePeriod).dividedBy(2);
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, timestamp.minus(duration), timestamp.plus(duration))
                 .stream()
                 .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))

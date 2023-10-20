@@ -1,0 +1,28 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:       <http://schema.org/>
+PREFIX time:         <http://www.w3.org/2006/time#>
+PREFIX wgs:          <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX locn:         <http://www.w3.org/ns/locn#>
+PREFIX geo:          <http://www.opengis.net/ont/geosparql#>
+PREFIX sf:           <http://www.opengis.net/ont/sf#>
+PREFIX gbfs:         <https://w3id.org/gbfs#>
+
+PREFIX :             <https://blue-bike.be/ns#>
+
+CONSTRUCT {
+  ?station :capacity ?capacity .
+  ?station :occupancy ?occupancy .
+  ?station :availability ?availability .
+  ?station locn:geometry [a sf:Point; geo:asWKT ?geometry ] .
+} WHERE {
+  ?station rdf:type gbfs:Station .
+  ?station gbfs:bikes_available ?bikes_available .
+  ?station gbfs:bikes_in_use ?bikes_in_use .
+  bind(strdt(str(?bikes_in_use + ?bikes_available), xsd:integer) as ?capacity) .
+  bind(strdt(str(?bikes_in_use / ?capacity), xsd:double) as ?occupancy) .
+  bind(strdt(str(?bikes_available / ?capacity), xsd:double) as ?availability) .
+  ?station wgs:longitude ?longitude .
+  ?station wgs:latitude ?latitude .
+  bind(strdt(concat("POINT(",str(?longitude)," ",str(?latitude),")"), geo:wktLiteral) as ?geometry) .
+}
