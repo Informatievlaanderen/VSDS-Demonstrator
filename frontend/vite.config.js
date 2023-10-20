@@ -28,7 +28,7 @@ export default defineConfig(({command, mode}) => {
             outDir: 'target/dist'
         },
         define: {
-            'import.meta.env.VITE_STREAMS': JSON.stringify({ streams: [{id: "gipod", fullName: "GIPOD", color: "#FFED00"}, {id: "verkeersmeting", fullName: "Verkeersmetingen Verkeerscentrum LDES", color: "443939"}, {id: "bluebikes", fullName: "Blue Bikes", color: "blue"}]})
+            'import.meta.env.VITE_STREAMS': JSON.stringify({ streams: [{id: "gipod", fullName: "GIPOD", color: "#FFED00"}, {id: "verkeersmeting", fullName: "Verkeersmetingen Verkeerscentrum LDES", color: "#443939"}, {id: "bluebikes", fullName: "Blue Bikes", color: "#05c"}]})
         }
     }
 })

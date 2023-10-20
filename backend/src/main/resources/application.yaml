@@ -24,6 +24,14 @@ ldes:
       property-predicates:
         fullName: "http://custom/meetpunt#VolledigeNaam"
         countObservationResult: "http://def.isotc211.org/iso19156/2011/CountObservation#OM_CountObservation.result"
+    bluebikes:
+      member-type: "https://w3id.org/gbfs#Station"
+      timestamp-path: "http://www.w3.org/ns/prov#generatedAtTime"
+      property-predicates:
+        fullName: "http://schema.org/name"
+        capacity: "https://blue-bike.be/ns#capacity"
+        available: "https://w3id.org/gbfs#bikes_available"
+        used: "https://w3id.org/gbfs#bikes_in_use"
 graphdb:
   url: "http://localhost:8080/rdf4j-server/repositories/"
   repositoryId: "test"
