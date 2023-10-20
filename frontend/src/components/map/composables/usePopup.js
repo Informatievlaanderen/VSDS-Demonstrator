@@ -5,8 +5,8 @@ import alertIcon from "../../../assets/svgs/legend/alert-triangle-filled.svg"
 export function usePopup(collection, properties) {
     switch (collection) {
         case "gipod":
-            return `<div class="popup-gipod-grid body body-xxsmall-regular">
-<img class="popup-gipod-icon" src="${alertIcon}">
+            return `<div class="popup-grid body body-xxsmall-regular">
+<img class="popup-grid-icon popup-gipod-icon" src="${alertIcon}">
 <b class="popup-gipod-start-label">Vanaf</b><span class="popup-gipod-start-date">${properties.startTime}</span>
 <b class="popup-gipod-end-label">Tot</b><span class="popup-gipod-end-date">${properties.endTime}</span>
 </div>`
@@ -20,12 +20,12 @@ export function usePopup(collection, properties) {
 </div>
 </div>`
         case "bluebikes":
-            return `<div class="popup-verkeersmeting">
-<img class="popup-verkeersmeting-map-marker" src="${bikeIcon}">
-<span class="popup-verkeersmeting-fullname body body-xxsmall-regular">${"Station: " + properties.fullname}</span>
-<span class="popup-verkeersmeting-counting-result body">${"Capacity: " + properties.capacity}</span>
-<span class="popup-verkeersmeting-counting-result body">${"Availability: " + properties.available}</span>
-<span class="popup-verkeersmeting-counting-result body">${"Usage: " + properties.used}</span>
+            return `<div class="popup-grid body body-xxsmall-regular">
+<img class="popup-grid-icon popup-bluebike-icon" src="${bikeIcon}">
+<span class="popup-title body-small-regular">${properties.fullName}</span>
+<b>${properties.capacity}</b><span class="">staanplaatsen</span>
+<b>${properties.available}</b><span>beschikbare fietsen</span>
+<b>${properties.used}</b><span>fietsen in gebruik</span>
 </div>`
 
     }

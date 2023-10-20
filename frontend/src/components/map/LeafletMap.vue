@@ -264,28 +264,38 @@ export default {
   gap: 6px;
 }
 
-.popup-gipod-grid {
+.popup-grid {
   display: grid;
   row-gap: 6px;
   column-gap: 12px;
-  grid-template-areas:
-      "icon-header icon-header"
-      ". start-date"
-      ". end-date";
+  grid-template-columns: auto auto;
 }
 
 .popup-gipod-icon {
-  grid-area: icon-header;
+  width: 11px;
+  height: 16px;
+}
+
+.popup-bluebike-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.popup-grid-icon {
+  grid-column-start: span 2;
+  justify-self: center;
+}
+
+.popup-title {
+  grid-column-start: span 2;
   justify-self: center;
 }
 
 .popup-gipod-start-date {
-  grid-area: start-date;
   justify-self: end;
 }
 
 .popup-gipod-end-date {
-  grid-area: end-date;
   justify-self: end;
 }
 
