@@ -116,7 +116,6 @@ function visualizeTriples(triples) {
     let transform;
 
     const zoom = d3.zoom().on("zoom", e => {
-        console.log(e.transform)
         g.attr("transform", () => transform = e.transform);
         nodes.attr("r", NODE_RADIUS / Math.sqrt(transform.k))
         nodes.style("stroke-width", `${NODE_STROKE_WIDTH / Math.sqrt(transform.k)}px`)

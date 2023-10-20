@@ -13,7 +13,7 @@
       time = timestamp;
       timePeriod = period;
     }"
-            @realtime-toggled="(isRealTimeEnabled) => isRealTimeEnabled ? connect() : disconnect()"
+            @realtime-toggled="isRealTimeEnabled => isRealTimeEnabled ? connect() : disconnect()"
     />
   </div>
 </template>
@@ -155,6 +155,7 @@ export default {
     },
     //websocket
     connect() {
+      this.layers.forEach(layer => layer.clearLayers())
       this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
@@ -188,7 +189,7 @@ export default {
       }
     },
     updateMarker(marker) {
-      marker.setStyle({color: '#808080'})
+      marker.setStyle({color: '#A813F7'})
     }
   }
 
@@ -291,11 +292,7 @@ export default {
   justify-self: center;
 }
 
-.popup-gipod-start-date {
-  justify-self: end;
-}
-
-.popup-gipod-end-date {
+.popup-grid-end {
   justify-self: end;
 }
 
