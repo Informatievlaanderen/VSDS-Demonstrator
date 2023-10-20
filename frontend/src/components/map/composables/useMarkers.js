@@ -1,17 +1,19 @@
 import L from "leaflet";
 import marker from "../../../assets/svgs/legend/maps.marker.svg"
+import altMarker from "../../../assets/svgs/legend/maps.marker-alt.svg"
 import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
+import altSelectedMarker from "../../../assets/svgs/legend/maps.marker-alt-1.svg"
 import {usePopup} from "@/components/map/composables/usePopup";
 
 export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopupClosed) {
     let icon = L.icon({
-        iconUrl: marker,
+        iconUrl: collection === "bluebikes" ? marker : altMarker,
         iconAnchor: [10, 28],
-        popupAnchor: [0, -25]
+        popupAnchor: [0, -25],
 
     });
     let selectedIcon = L.icon({
-        iconUrl: selectedMarker,
+        iconUrl: collection === "bluebikes" ? selectedMarker : altSelectedMarker,
         iconAnchor: [14, 40],
         popupAnchor: [0, -25]
     })
