@@ -10,6 +10,7 @@ import java.util.Map;
 @Configuration
 public class EventStreamConfig {
     private String memberType;
+    private String versionOfPath;
     private String timestampPath;
     private String timezoneId;
     private Map<String, String> propertyPredicates;
@@ -49,5 +50,13 @@ public class EventStreamConfig {
 
     public void setTimezoneId(String timezoneId) {
         this.timezoneId = timezoneId;
+    }
+
+    public String getVersionOfPath() {
+        return versionOfPath;
+    }
+
+    public void setVersionOfPath(String versionOfPath) {
+        this.versionOfPath = versionOfPath;
     }
 }

@@ -53,6 +53,7 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
             "properties": {
                 "memberId": feature.memberId,
                 "popupProperties": feature.properties,
+                "isVersionOf": feature.isVersionOf
             }
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})

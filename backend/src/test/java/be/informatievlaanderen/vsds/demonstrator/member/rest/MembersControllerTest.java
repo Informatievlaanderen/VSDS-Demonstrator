@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,6 +51,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MembersControllerTest {
     private static final String ID = "member-id";
     private static final String COLLECTION = "collection";
+    private static final String IS_VERSION_OF = "isVersionOf";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static org.wololo.geojson.Geometry geoJSON;
 
@@ -76,7 +76,7 @@ class MembersControllerTest {
         @Test
         void when_MemberGeometryPresent_then_MemberGeomtryIsReturned_and_StatusIs200() throws Exception {
             final String json = transformToJson(ID, geoJSON, timestamp);
-            MemberDto dto = new MemberDto(ID, geoJSON, timestamp, Map.of());
+            MemberDto dto = new MemberDto(ID, geoJSON, timestamp, IS_VERSION_OF, Map.of());
 
             when(service.getMemberById(ID)).thenReturn(dto);
 
@@ -154,7 +154,7 @@ class MembersControllerTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp, Map.of()));
+                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp, IS_VERSION_OF, Map.of()));
             }
         }
         return members;

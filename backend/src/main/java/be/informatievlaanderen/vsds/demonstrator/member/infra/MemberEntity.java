@@ -18,6 +18,7 @@ public class MemberEntity {
     private String collection;
     private Geometry geometry;
     private LocalDateTime timestamp;
+    private String isVersionOf;
     @Type(value = PostgreSQLHStoreType.class)
     @Column(columnDefinition = "hstore")
     private Map<String, String> properties;
@@ -25,11 +26,12 @@ public class MemberEntity {
     public MemberEntity() {
     }
 
-    public MemberEntity(String memberId, String collection, Geometry geometry, LocalDateTime timestamp, Map<String, String> properties) {
+    public MemberEntity(String memberId, String collection, Geometry geometry, LocalDateTime timestamp, String isVersionOf, Map<String, String> properties) {
         this.memberId = memberId;
         this.collection = collection;
         this.geometry = geometry;
         this.timestamp = timestamp;
+        this.isVersionOf = isVersionOf;
         this.properties = properties;
     }
 
@@ -45,6 +47,10 @@ public class MemberEntity {
         return timestamp;
     }
 
+    public String getIsVersionOf() {
+        return isVersionOf;
+    }
+
     public String getCollection() {
         return collection;
     }
@@ -54,7 +60,7 @@ public class MemberEntity {
     }
 
     public Member toDomainObject() {
-        return new Member(memberId, collection, geometry, timestamp, properties);
+        return new Member(memberId, collection, geometry, isVersionOf, timestamp, properties);
     }
 
     public static MemberEntity fromDomainObject(Member member) {
@@ -63,6 +69,7 @@ public class MemberEntity {
                 member.getCollection(),
                 member.getGeometry(),
                 member.getTimestamp(),
+                member.getIsVersionOf(),
                 member.getProperties()
         );
     }

@@ -41,6 +41,7 @@ class MemberServiceImplTest {
     private static final String TIME_PERIOD = "PT5M";
     private static final String COLLECTION = "gipod";
     private static final Duration duration = Duration.parse(TIME_PERIOD).dividedBy(2);
+    private static final String IS_VERSION_OF = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = timestamp.minus(duration);
     private static final LocalDateTime endTime = timestamp.plus(duration);
@@ -61,6 +62,7 @@ class MemberServiceImplTest {
         EventStreamConfig eventStreamConfig = new EventStreamConfig();
         eventStreamConfig.setMemberType("https://data.vlaanderen.be/ns/mobiliteit#Mobiliteitshinder");
         eventStreamConfig.setTimestampPath("http://www.w3.org/ns/prov#generatedAtTime");
+        eventStreamConfig.setVersionOfPath("http://purl.org/dc/terms/isVersionOf");
         StreamsConfig streams = new StreamsConfig();
         streams.setStreams(Map.of(COLLECTION, eventStreamConfig));
         service = new MemberServiceImpl(repository, streams, mock(MessageController.class));
@@ -75,7 +77,7 @@ class MemberServiceImplTest {
             when(repository.getMembersByGeometry(eq(rectangle), eq(COLLECTION), any(), eq(timestamp))).thenReturn(members);
 
             final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp, TIME_PERIOD).stream()
-                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getTimestamp(), Map.of()))
+                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), IS_VERSION_OF, dto.getTimestamp(), Map.of()))
                     .toList();
             assertEquals(members, retrievedMembers);
         }
@@ -103,7 +105,7 @@ class MemberServiceImplTest {
 
         @Test
         void when_MemberIsPresent_then_ReturnMember() {
-            Member memberGeometry = new Member(ID, COLLECTION, rectangle, timestamp, Map.of());
+            Member memberGeometry = new Member(ID, COLLECTION, rectangle, IS_VERSION_OF, timestamp, Map.of());
 
             when(repository.findByMemberId(ID)).thenReturn(Optional.of(memberGeometry));
 
@@ -164,14 +166,14 @@ class MemberServiceImplTest {
     }
 
     private List<Member> getMemberList() {
-        Member id1 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id2 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id3 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id4 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id5 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id6 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id7 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
-        Member id8 = new Member("id1", COLLECTION, null, LocalDateTime.now(), Map.of());
+        Member id1 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id2 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id3 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id4 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id5 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id6 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id7 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
+        Member id8 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
         return List.of(id1, id2, id3, id4, id5, id6, id7, id8);
     }
 
@@ -181,7 +183,7 @@ class MemberServiceImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp, Map.of()));
+                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, IS_VERSION_OF, timestamp, Map.of()));
             }
         }
         return members;

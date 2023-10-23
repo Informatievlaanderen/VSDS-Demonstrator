@@ -29,6 +29,7 @@ class MemberRepositoryImplTest {
     private static final String ID = "member-id";
     private static final String COLLECTION = "collection";
     private static final String OTHER_COLLECTION = "otherCollection";
+    private static final String IS_VERSION_OF = "http://item.be/id";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
     private static final LocalDateTime startTime = ZonedDateTime.parse("2022-05-20T09:53:15.867Z").toLocalDateTime();
     private static final LocalDateTime endTime = ZonedDateTime.parse("2022-05-20T10:03:15.867Z").toLocalDateTime();
@@ -54,8 +55,8 @@ class MemberRepositoryImplTest {
     class RetrievalById {
         @Test
         void when_DbContainsMember_then_ReturnMemberInOptional() {
-            final MemberEntity entity = new MemberEntity(ID, COLLECTION, point, timestamp, Map.of());
-            final Member member = new Member(ID, COLLECTION, point, timestamp, Map.of());
+            final MemberEntity entity = new MemberEntity(ID, COLLECTION, point, timestamp, IS_VERSION_OF, Map.of());
+            final Member member = new Member(ID, COLLECTION, point, IS_VERSION_OF, timestamp, Map.of());
 
             when(jpaRepository.findById(ID)).thenReturn(Optional.of(entity));
 
@@ -84,7 +85,7 @@ class MemberRepositoryImplTest {
         void when_DbDoesContainMembers_then_ReturnMembersInRectangle() throws ParseException {
             final List<MemberEntity> entities = initMembers();
             final List<Member> members = entities.stream()
-                    .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), timestamp, Map.of()))
+                    .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), IS_VERSION_OF, timestamp, Map.of()))
                     .toList();
 
             when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime)).thenReturn(entities);
@@ -106,7 +107,7 @@ class MemberRepositoryImplTest {
 
     @Test
     void test_Saving() {
-        Member member = new Member(ID, COLLECTION, point, timestamp, Map.of());
+        Member member = new Member(ID, COLLECTION, point, IS_VERSION_OF, timestamp, Map.of());
 
         repository.saveMember(member);
 
@@ -123,10 +124,10 @@ class MemberRepositoryImplTest {
     @Test
     void test_findMembersAfterLocalDateTime() {
         LocalDateTime now = LocalDateTime.now();
-        List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, COLLECTION, point, timestamp, Map.of()));
+        List<MemberEntity> memberEntities = List.of(new MemberEntity(ID, COLLECTION, point, timestamp, IS_VERSION_OF, Map.of()));
         when(jpaRepository.findByCollectionAndTimestampAfter(COLLECTION, now)).thenReturn(memberEntities);
         List<Member> expectedMembers = memberEntities.stream()
-                .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), entity.getTimestamp(), Map.of()))
+                .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), IS_VERSION_OF, entity.getTimestamp(), Map.of()))
                 .toList();
 
         List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, now);
@@ -142,7 +143,7 @@ class MemberRepositoryImplTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberEntity("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp, Map.of()));
+                members.add(new MemberEntity("id-%d".formatted(i * 6 + j), COLLECTION, geometry, timestamp, IS_VERSION_OF, Map.of()));
             }
         }
         return members;

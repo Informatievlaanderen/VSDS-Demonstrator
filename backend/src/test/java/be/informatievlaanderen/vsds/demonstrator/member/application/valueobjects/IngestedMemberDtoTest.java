@@ -24,6 +24,7 @@ class IngestedMemberDtoTest {
         eventStreamConfig = new EventStreamConfig();
         eventStreamConfig.setMemberType("https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting");
         eventStreamConfig.setTimestampPath("http://www.w3.org/ns/prov#generatedAtTime");
+        eventStreamConfig.setVersionOfPath("http://purl.org/dc/terms/isVersionOf");
         eventStreamConfig.setPropertyPredicates(Map.of(
                 "fullName", "http://custom/meetpunt#VolledigeNaam",
                 "countObservationResult", "http://def.isotc211.org/iso19156/2011/CountObservation#OM_CountObservation.result",
