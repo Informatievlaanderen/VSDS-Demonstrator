@@ -11,8 +11,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,16 +41,23 @@ public class IngestedMemberDto {
     public Member getMember(EventStreamConfig eventStreamConfig) throws FactoryException, TransformException {
         Geometry geometry = getGeometry();
         String memberId = getMemberId(eventStreamConfig);
-        String timestampString = getTimestampPath(eventStreamConfig, memberId);
+        String timestampString = getTimestampPath(eventStreamConfig);
         Map<String, String> properties = getProperties(eventStreamConfig);
-        System.out.println(properties);
+        LocalDateTime timestamp = getTimestamp(eventStreamConfig, timestampString);
+        return new Member(memberId, collection, geometry, timestamp, properties);
+    }
+
+    private LocalDateTime getTimestamp(EventStreamConfig eventStreamConfig, String timestampString) {
         LocalDateTime timestamp;
         if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
-            timestamp = LocalDateTime.parse(timestampString);
+            timestamp = LocalDateTime.parse(timestampString)
+                    .atZone(eventStreamConfig.getTimezoneId())
+                    .withZoneSameInstant(ZoneOffset.UTC)
+                    .toLocalDateTime();
         }
-        return new Member(memberId, collection, geometry, timestamp, properties);
+        return timestamp;
     }
 
     private Geometry getGeometry() throws FactoryException, TransformException {
@@ -75,8 +81,8 @@ public class IngestedMemberDto {
                 .getURI();
     }
 
-    private String getTimestampPath(EventStreamConfig streamConfig, String memberId) {
-        return getMemberProperty(streamConfig, stream -> new SelectorImpl(createResource(memberId), createProperty(stream.getTimestampPath()), (Resource) null))
+    private String getTimestampPath(EventStreamConfig streamConfig) {
+        return getMemberProperty(streamConfig, stream -> new SelectorImpl(null, createProperty(stream.getTimestampPath()), (Resource) null))
                 .getObject()
                 .asLiteral().getString();
     }

@@ -95,7 +95,7 @@ public class MemberServiceImpl implements MemberService {
                 .map(collection -> {
                     long numberOfMembers = getNumberOfMembersByCollection(collection);
 
-                    List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection,startDate);
+                    List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection, startDate);
                     return new Dataset(collection, numberOfMembers - membersAfterLocalDateTime.size(), new HourCount(membersAfterLocalDateTime));
                 }).forEach(lineChart::addDataSet);
 

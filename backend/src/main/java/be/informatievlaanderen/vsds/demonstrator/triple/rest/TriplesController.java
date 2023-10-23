@@ -2,11 +2,7 @@ package be.informatievlaanderen.vsds.demonstrator.triple.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.triple.application.services.TripleService;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,11 +16,9 @@ public class TriplesController {
     }
 
 
-    @GetMapping(value = "/triples/**")
+    @GetMapping(value = "/triples")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<Triple> retrieveTriplesOfNode(HttpServletRequest request) {
-        String requestURL = request.getRequestURL().toString();
-        String memberId = requestURL.split("/triples/")[1];
+    public List<Triple> retrieveTriplesOfNode(@RequestParam String memberId) {
         return tripleService.getTriplesById(memberId);
     }
 }
