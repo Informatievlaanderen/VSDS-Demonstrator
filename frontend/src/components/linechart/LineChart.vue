@@ -15,6 +15,7 @@ import {
 } from 'chart.js'
 import {Line} from 'vue-chartjs'
 import Stomp from "webstomp-client";
+import {streams} from "../../../streams.json"
 
 ChartJS.register(
     CategoryScale,
@@ -69,15 +70,15 @@ export default {
             this.stompClient.subscribe("/broker/linechart", (memberCounter) => {
               let linechart = JSON.parse(memberCounter.body)
               let datasetsOfLineChart = []
-              for (let i = 0; i < linechart.dataSetDtos.length; i++) {
-                let color = import.meta.env.VITE_STREAMS.streams.find(stream => stream.id == linechart.dataSetDtos[i].name).color
+              for (const element of linechart.dataSetDtos) {
+                let color = streams.find(stream => stream.id == element.name).color
                 datasetsOfLineChart.push({
                   borderColor: color,
                   pointRadius: 0,
                   tension: 0.3,
-                  label: 'Aantal members ' + linechart.dataSetDtos[i].name,
+                  label: 'Aantal members ' + element.name,
                   backgroundColor: color,
-                  data: linechart.dataSetDtos[i].values,
+                  data: element.values,
                 })
               }
               this.data = {

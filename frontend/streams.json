@@ -1,0 +1,19 @@
+{
+  "streams": [
+    {
+      "id": "gipod",
+      "fullName": "GIPOD",
+      "color": "#443939"
+    },
+    {
+      "id": "verkeersmeting",
+      "fullName": "Verkeersmetingen Verkeerscentrum LDES",
+      "color": "#FFE615"
+    },
+    {
+      "id": "bluebikes",
+      "fullName": "Blue Bikes",
+      "color": "#05c"
+    }
+  ]
+}

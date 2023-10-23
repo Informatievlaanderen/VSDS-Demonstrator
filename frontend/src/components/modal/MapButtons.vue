@@ -2,12 +2,12 @@
 import {ref} from "vue";
 import CheckboxTile from "@/components/checkbox/CheckboxTile.vue";
 import Legend from "@/components/legend/Legend.vue";
+import {streams} from "../../../streams.json"
 
 const showLayers = ref(false);
 const showLegend = ref(false);
 const props = defineProps({"layersToShow": Map})
 const emit = defineEmits(["onLayersUpdated"])
-const streams = import.meta.env.VITE_STREAMS.streams
 
 function onMapButtonClicked(button : "layers" | "legend") {
   showLayers.value = button === "layers" && !showLayers.value;

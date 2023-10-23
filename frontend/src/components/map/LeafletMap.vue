@@ -36,6 +36,7 @@ import Slider from "@/components/slider/Slider.vue";
 import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
 import MapButtons from "@/components/modal/MapButtons.vue";
+import {streams} from "../../../streams.json"
 
 const iconCreateFunction = (cluster, name) => {
   const count = cluster.getChildCount();
@@ -75,10 +76,7 @@ export default {
     },
   },
   setup() {
-    const layerNames = Array.from(import.meta.env.VITE_STREAMS.streams, (stream) => {
-      return stream.id
-    }) //["gipod", "verkeersmeting", "bluebikes"]
-
+    const layerNames = Array.from(streams, (stream) => stream.id) //["gipod", "verkeersmeting", "bluebikes"]
     const time = ref(new Date().getTime())
     const timePeriod = ref("PT10M")
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));

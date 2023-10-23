@@ -28,9 +28,7 @@ export function usePopup(collection, properties) {
             return `<div class="popup-grid body body-xxsmall-regular">
 <img class="popup-grid-icon popup-bluebike-icon" src="${bikeIcon}">
 <span class="popup-title body-small-regular">${properties.fullname}</span>
-<b>${properties.capacity}</b><span class="">staanplaatsen</span>
-<b>${properties.available}</b><span>beschikbare ${getBikeString(properties.available)}</span>
-<b>${properties.used}</b><span>${getBikeString(properties.used)} in gebruik</span>
+<span>${properties.available}</span><b>beschikbare ${getBikeString(properties.available)}</b>
 </div>`
 
     }

@@ -2,6 +2,8 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.config;
 
 import org.springframework.context.annotation.Configuration;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +11,7 @@ import java.util.Map;
 public class EventStreamConfig {
     private String memberType;
     private String timestampPath;
+    private String timezoneId;
     private Map<String, String> propertyPredicates;
     public String getMemberType() {
         return memberType;
@@ -35,5 +38,16 @@ public class EventStreamConfig {
 
     public void setPropertyPredicates(Map<String, String> propertyPredicates) {
         this.propertyPredicates = propertyPredicates;
+    }
+
+    public ZoneId getTimezoneId() {
+        if(timezoneId == null) {
+            return ZoneOffset.UTC;
+        }
+        return ZoneId.of(timezoneId);
+    }
+
+    public void setTimezoneId(String timezoneId) {
+        this.timezoneId = timezoneId;
     }
 }
