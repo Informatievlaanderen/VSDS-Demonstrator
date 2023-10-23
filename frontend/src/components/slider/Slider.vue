@@ -57,7 +57,7 @@ function onRealTime() {
   if(!isRealtime.value) {
     sliderValue.value = maxSeconds;
     onPauseClick()
-    // emit('timestampChanged', now.getTime(), "PT10M")
+    emit('timestampChanged', now.getTime(), "PT10M")
     isRealtime.value = true
   } else {
     isRealtime.value = false;
