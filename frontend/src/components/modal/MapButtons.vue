@@ -41,7 +41,7 @@ function onCheckboxClicked(key: string, isChecked: boolean) {
       <p class="body body-medium-regular margin-vert-24">
         Als decentrale oplossing maakt de Vlaamse Smart Data Space gebruik van een gezamenlijk <b>ecosysteem</b> met duidelijke spelregels, waardoor we data slim kunnen delen, publiceren en hergebruiken.
       </p>
-      <CheckboxTile v-for="stream in streams" :id="stream.id" :label="stream['fullname']" @on-checked="isChecked => onCheckboxClicked(stream.id, isChecked)" :checked="layersToShow.get(stream.id)"></CheckboxTile>
+      <CheckboxTile v-for="stream in streams" :id="stream.id" :label="stream.fullName" @on-checked="isChecked => onCheckboxClicked(stream.id, isChecked)" :checked="layersToShow.get(stream.id)"></CheckboxTile>
       <!--
             <CheckboxTile id="gipod" label="GIPOD" @on-checked="isChecked => onCheckboxClicked('gipod', isChecked)" :checked="layersToShow.get('gipod')"></CheckboxTile>
             <CheckboxTile id="verkeersmeting" label="Verkeersmetingen Verkeerscentrum LDES" @on-checked="isChecked => onCheckboxClicked('verkeersmeting', isChecked)" :checked="layersToShow.get('verkeersmeting')"></CheckboxTile>
