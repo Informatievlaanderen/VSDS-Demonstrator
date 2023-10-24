@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
@@ -40,11 +42,8 @@ import static org.mockito.Mockito.*;
 class MemberServiceImplTest {
     private static final String TIME_PERIOD = "PT5M";
     private static final String COLLECTION = "gipod";
-    private static final Duration duration = Duration.parse(TIME_PERIOD).dividedBy(2);
     private static final String IS_VERSION_OF = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
-    private static final LocalDateTime startTime = timestamp.minus(duration);
-    private static final LocalDateTime endTime = timestamp.plus(duration);
     private static Geometry rectangle;
 
     @Mock
@@ -77,9 +76,17 @@ class MemberServiceImplTest {
             when(repository.getMembersByGeometry(eq(rectangle), eq(COLLECTION), any(), eq(timestamp))).thenReturn(members);
 
             final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp, TIME_PERIOD).stream()
-                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), IS_VERSION_OF, dto.getTimestamp(), Map.of()))
+                    .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getIsVersionOf(), dto.getTimestamp(), Map.of()))
                     .toList();
-            assertEquals(members, retrievedMembers);
+
+            assertThat(retrievedMembers)
+                    .hasSize(2)
+                    .map(member -> Map.entry(member.getMemberId(), member.getIsVersionOf()))
+                    .containsExactlyInAnyOrder(
+                            Map.entry("http://gipod.be/stations/2/4", "http://gipod.be/stations/2"),
+                            Map.entry("http://gipod.be/stations/1/5", "http://gipod.be/stations/1")
+                    );
+
         }
 
         @Test
@@ -92,10 +99,11 @@ class MemberServiceImplTest {
                     .map(dto -> geoJSONReader.read(dto.getGeojsonGeometry()))
                     .toList();
             Geometry outsidePoint = wktReader.read("POINT(6 6)");
-            Geometry insidePoint = wktReader.read("POINT(3 3)");
+            Geometry insidePoint = wktReader.read("POINT(2 4)");
 
-            assertTrue(retrievedMembers.stream().noneMatch(geometry -> geometry.equals(outsidePoint)));
-            assertTrue(retrievedMembers.stream().anyMatch(geometry -> geometry.equals(insidePoint)));
+            assertThat(retrievedMembers)
+                    .noneMatch(geometry -> geometry.equals(outsidePoint))
+                    .anyMatch(geometry -> geometry.equals(insidePoint));
         }
     }
 
@@ -179,13 +187,37 @@ class MemberServiceImplTest {
 
     private List<Member> initMembers() throws ParseException {
         final WKTReader reader = new WKTReader();
+        int index = 0;
         List<Member> members = new ArrayList<>();
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new Member("id-%d".formatted(i * 6 + j), COLLECTION, geometry, IS_VERSION_OF, timestamp, Map.of()));
-            }
+
+        final Map<String, String> stations = Map.of(
+                "http://gipod.be/stations/1", "POINT(1 2)",
+                "http://gipod.be/stations/2", "POINT(2 4)"
+        );
+
+        final List<String> stationMemberIds = List.of(
+                "http://gipod.be/stations/1/0",
+                "http://gipod.be/stations/2/1",
+                "http://gipod.be/stations/1/2",
+                "http://gipod.be/stations/1/3",
+                "http://gipod.be/stations/2/4",
+                "http://gipod.be/stations/1/5"
+        );
+
+        for (String memberId : stationMemberIds) {
+            String isVersionOf = memberId.substring(0, 26);
+            Member member = new Member(
+                    memberId,
+                    COLLECTION,
+                    reader.read(stations.get(isVersionOf)),
+                    isVersionOf,
+                    timestamp.plusDays(index),
+                    Map.of()
+            );
+            members.add(member);
+            index++;
         }
+
         return members;
     }
 }

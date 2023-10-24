@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -60,6 +63,10 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp, String timePeriod) {
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, LocalDateTime.now().minusDays(7), timestamp)
                 .stream()
+                .collect(Collectors.groupingBy(Member::getIsVersionOf, Collectors.maxBy(Comparator.comparing(Member::getTimestamp))))
+                .values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
                 .toList();
     }
