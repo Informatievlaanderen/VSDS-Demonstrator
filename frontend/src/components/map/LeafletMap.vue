@@ -111,6 +111,7 @@ export default {
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
     this.map.on("popupclose", () => this.memberId = null)
+    this.map.on("zoomstart", () => this.map.closePopup())
     this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
       if (value) {
@@ -189,7 +190,6 @@ export default {
               this.updateMarker(marker)
             }.bind(this), 1000)
           }
-          console.log(markerToRemove)
           if(markerToRemove) {
             this.layers.get(collection).removeLayer(markerToRemove);
           }

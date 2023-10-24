@@ -6,11 +6,11 @@ import pause from "../../assets/svgs/video/pause.svg"
 import {computed, ref, watch} from "vue";
 
 const emit = defineEmits(['timestampChanged', 'realtimeToggled'])
-const now = new Date();
+const now = ref(new Date());
 const isRealtime = ref(true)
 
 watch(isRealtime, (newVal, oldVal) => {
-  if(newVal !== oldVal) {
+  if (newVal !== oldVal) {
     emit("realtimeToggled", newVal)
   }
 })
@@ -28,7 +28,18 @@ const sliderBg = computed({
   }
 })
 
-const getTime = () => now.getTime() - (maxSeconds - sliderValue.value) * 1000
+const getTime = () => now.value.getTime() - (maxSeconds - sliderValue.value) * 1000
+
+const formattedDate = computed(() => {
+  const date = new Date(getTime());
+  return date.toLocaleString("nl-BE", {
+    year: "numeric",
+    month: "2-digit",
+    day:  "2-digit" ,
+    hour:  "2-digit" ,
+    minute:  "2-digit"
+  })
+})
 
 function onChange() {
   emit('timestampChanged', getTime(), "PT10M")
@@ -49,19 +60,15 @@ function onForwardClick(amount) {
 
 function onShortcutClick(amount) {
   sliderValue.value = maxSeconds - amount * 60 * 60;
-  emit('timestampChanged', now.getTime() - amount * 60 * 60 * 1000, "PT10M")
+  emit('timestampChanged', now.value.getTime() - amount * 60 * 60 * 1000, "PT10M")
   isRealtime.value = false
 }
 
 function onRealTime() {
-  if(!isRealtime.value) {
-    sliderValue.value = maxSeconds;
-    onPauseClick()
-    emit('timestampChanged', now.getTime(), "PT10M")
-    isRealtime.value = true
-  } else {
-    isRealtime.value = false;
-  }
+  sliderValue.value = maxSeconds;
+  onPauseClick()
+  emit('timestampChanged', now.value.getTime(), "PT10M")
+  isRealtime.value = true
 }
 
 function onPlayClick() {
@@ -101,12 +108,25 @@ function onPauseClick() {
       <img :src="next" alt="Next"/>
     </button>
   </div>
+  <div class="center-flex">
+    <b class="body body-small-regular date-label">{{ formattedDate }}</b>
+  </div>
   <div class="shortcuts-flex-box">
-    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 7 * 24 * 60 * 60}" @click="onShortcutClick(24 * 7)">-7 dagen</button>
-    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 48 * 60 * 60}" @click="onShortcutClick(48)">-48 uur</button>
-    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 24 * 60 * 60}" @click="onShortcutClick(24)">-24 uur</button>
-    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 12 * 60 * 60}" @click="onShortcutClick(12)">-12 uur</button>
-    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 60 * 60}" @click="onShortcutClick(1)">-1 uur</button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 7 * 24 * 60 * 60}"
+            @click="onShortcutClick(24 * 7)">-7 dagen
+    </button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 48 * 60 * 60}"
+            @click="onShortcutClick(48)">-48 uur
+    </button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 24 * 60 * 60}"
+            @click="onShortcutClick(24)">-24 uur
+    </button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 12 * 60 * 60}"
+            @click="onShortcutClick(12)">-12 uur
+    </button>
+    <button class="secondary-btn shadow-medium" :class="{'active': sliderValue === maxSeconds - 60 * 60}"
+            @click="onShortcutClick(1)">-1 uur
+    </button>
     <button class="secondary-btn shadow-medium" :class="{'active': isRealtime}" @click="onRealTime()">Realtime</button>
   </div>
 </template>
@@ -125,6 +145,7 @@ function onPauseClick() {
 }
 
 .slider-container {
+  position: relative;
   display: flex;
   height: 50px;
   align-items: center;
@@ -160,5 +181,17 @@ function onPauseClick() {
   background: url("../../assets/svgs/range-handle.svg");
   cursor: pointer;
 }
+
+.date-label {
+  color: #0055CC;
+  margin-top: 12px;
+}
+
+.center-flex {
+  display: flex;
+  justify-content: center;
+
+}
+
 
 </style>

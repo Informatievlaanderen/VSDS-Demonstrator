@@ -9,7 +9,7 @@ import LineChart from "@/components/linechart/LineChart.vue";
   <GlobalHeader/>
   <main class="container">
     <div class="content-header">
-      <h1 class="header header1">VSDS Demonstrator</h1>
+      <h1 class="header header1">Vlaamse Smart Data Space Demonstrator</h1>
       <MemberCounter/>
     </div>
     <div class="explanation-chart-container">
