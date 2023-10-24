@@ -22,9 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.wololo.jts2geojson.GeoJSONWriter;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -48,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
                     .orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
             Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getProperties());
+            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
             messageController.send(memberDto, ingestedMemberDto.getCollection());
 
             log.info("new member ingested");
@@ -61,14 +63,18 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp, String timePeriod) {
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, LocalDateTime.now().minusDays(7), timestamp)
                 .stream()
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
+                .collect(Collectors.groupingBy(Member::getIsVersionOf, Collectors.maxBy(Comparator.comparing(Member::getTimestamp))))
+                .values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
                 .toList();
     }
 
     @Override
     public MemberDto getMemberById(String memberId) {
         return repository.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getProperties()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
                 .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
     }
 

@@ -41,19 +41,20 @@ public class IngestedMemberDto {
     public Member getMember(EventStreamConfig eventStreamConfig) throws FactoryException, TransformException {
         Geometry geometry = getGeometry();
         String memberId = getMemberId(eventStreamConfig);
-        String timestampString = getTimestampPath(eventStreamConfig);
+        String isVersionOf = getIsVersionOf(eventStreamConfig);
+        String timestampString = getTimestamp(eventStreamConfig);
         Map<String, String> properties = getProperties(eventStreamConfig);
-        LocalDateTime timestamp = getTimestamp(eventStreamConfig, timestampString);
-        return new Member(memberId, collection, geometry, timestamp, properties);
+        LocalDateTime timestamp = getTimestamp(eventStreamConfig.getTimezoneId(), timestampString);
+        return new Member(memberId, collection, geometry, isVersionOf, timestamp, properties);
     }
 
-    private LocalDateTime getTimestamp(EventStreamConfig eventStreamConfig, String timestampString) {
+    private LocalDateTime getTimestamp(ZoneId timezoneId, String timestampString) {
         LocalDateTime timestamp;
         if (timestampString.contains("Z") || timestampString.contains("+")) {
             timestamp = ZonedDateTime.parse(timestampString).toLocalDateTime();
         } else {
             timestamp = LocalDateTime.parse(timestampString)
-                    .atZone(eventStreamConfig.getTimezoneId())
+                    .atZone(timezoneId)
                     .withZoneSameInstant(ZoneOffset.UTC)
                     .toLocalDateTime();
         }
@@ -81,10 +82,17 @@ public class IngestedMemberDto {
                 .getURI();
     }
 
-    private String getTimestampPath(EventStreamConfig streamConfig) {
+    private String getTimestamp(EventStreamConfig streamConfig) {
         return getMemberProperty(streamConfig, stream -> new SelectorImpl(null, createProperty(stream.getTimestampPath()), (Resource) null))
                 .getObject()
                 .asLiteral().getString();
+    }
+
+    private String getIsVersionOf(EventStreamConfig streamConfig) {
+        return getMemberProperty(streamConfig, stream -> new SelectorImpl(null, createProperty(stream.getVersionOfPath()), (Resource) null))
+                .getObject()
+                .asResource()
+                .getURI();
     }
 
     private Map<String, String> getProperties(EventStreamConfig streamConfig) {

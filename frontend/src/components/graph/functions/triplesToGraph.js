@@ -19,12 +19,12 @@ export function triplesToGraph(triples) {
         var objNode = filterNodesById(graph.nodes, object.value)[0];
 
         if (subjNode == null) {
-            subjNode = {id: subject.value, label: subject.value.substring(0, 5) === "genid" ? "blank node" : subject.prefixedValue, weight: 1};
+            subjNode = {id: subject.value, label: subject.value.substring(0, 5) === "genid" ? "" : subject.prefixedValue, weight: 1};
             graph.nodes.push(subjNode);
         }
 
         if (objNode == null) {
-            objNode = {id: object.value, label: object.value.substring(0, 5) === "genid" ? "blank node" : object.prefixedValue, weight: 1};
+            objNode = {id: object.value, label: object.value.substring(0, 5) === "genid" ? "" : object.prefixedValue, weight: 1};
             graph.nodes.push(objNode);
         }
 

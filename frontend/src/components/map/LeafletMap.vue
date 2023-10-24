@@ -111,6 +111,7 @@ export default {
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
     this.map.on("popupclose", () => this.memberId = null)
+    this.map.on("zoomstart", () => this.map.closePopup())
     this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
       if (value) {
@@ -179,6 +180,7 @@ export default {
       for (let collection of this.layersToShow.keys()) {
         this.stompClient.subscribe("/broker/member/" + collection, (member) => {
           let body = JSON.parse(member.body)
+          let markerToRemove = this.layers.get(collection).getLayers().filter(m => m.feature.properties.isVersionOf === body.isVersionOf)[0];
           let marker = useMarkers([body], collection, (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
           marker.setStyle({
             color: '#FFA405',
@@ -187,6 +189,9 @@ export default {
             setTimeout(function () {
               this.updateMarker(marker)
             }.bind(this), 1000)
+          }
+          if(markerToRemove) {
+            this.layers.get(collection).removeLayer(markerToRemove);
           }
           this.layers.get(collection).addLayer(marker)
         });

@@ -76,7 +76,7 @@ export default {
                   borderColor: color,
                   pointRadius: 0,
                   tension: 0.3,
-                  label: 'Aantal members ' + element.name,
+                  label: 'Aantal datapunten ' + element.name,
                   backgroundColor: color,
                   data: element.values,
                 })

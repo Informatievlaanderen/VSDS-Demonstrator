@@ -21,7 +21,7 @@ export function usePopup(collection, properties) {
 <span class="popup-verkeersmeting-fullname body body-xxsmall-regular">${properties.fullname}</span>
 <div class="popup-verkeersmeting-counting-row">
 <img class="popup-verkeersmeting-car-icon" src="${carIcon}">
-<span class="popup-verkeersmeting-counting-result body">${properties.countObservationResult ?? " - "}</span>
+<span class="popup-verkeersmeting-counting-result body">${properties.observationresult ?? " - "}</span>
 </div>
 </div>`
         case "bluebikes":

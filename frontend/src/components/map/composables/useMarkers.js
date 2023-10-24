@@ -53,11 +53,20 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
             "properties": {
                 "memberId": feature.memberId,
                 "popupProperties": feature.properties,
+                "isVersionOf": feature.isVersionOf
             }
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})
         geoJson.setStyle({color: '#A813F7'});
-        markers.push(geoJson)
+        // 2023-11-24T22:59:00Z
+        // console.log(Date.parse(feature.properties.endtime))
+        if(collection === "gipod") {
+            if(Date.now() < Date.parse(feature.properties.endtime)) {
+                markers.push(geoJson);
+            }
+        } else {
+            markers.push(geoJson)
+        }
     })
     return markers;
 }

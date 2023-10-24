@@ -1,7 +1,7 @@
 <template>
   <div class="member-counter-container">
     <h2 class="header header2 member-counter">{{ memberCounter }}</h2>
-    <span class="body body-xxlarge-regular">members</span>
+    <span class="body body-xxlarge-regular">datapunten</span>
   </div>
 </template>
 
