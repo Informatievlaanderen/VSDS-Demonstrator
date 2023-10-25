@@ -4,17 +4,22 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.config.Event
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MissingCollectionException;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFParser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.ResourceUtils;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 class MemberValidatorImplTest {
-    private static final String COLLECTION = "collection";
+    private static final String COLLECTION = "gipod";
 
     private MemberValidatorImpl memberValidator;
 
@@ -27,10 +32,14 @@ class MemberValidatorImplTest {
     }
 
     @Test
-    void testCollectionNamePresent() {
-        Model member = mock(Model.class);
-
+    void testCollectionNamePresent() throws IOException {
+        Model member = readModelFromFile();
         assertDoesNotThrow(() -> memberValidator.validate(member, COLLECTION));
         assertThrows(MissingCollectionException.class, () -> memberValidator.validate(member, "notPresent"));
+    }
+
+    private Model readModelFromFile() throws IOException {
+        Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
+        return RDFParser.source(path).lang(Lang.NQUADS).toModel();
     }
 }
