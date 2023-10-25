@@ -9,10 +9,7 @@
     </div>
   </div>
   <div>
-    <Slider @timestamp-changed="(timestamp, period) => {
-      time = timestamp;
-      timePeriod = period;
-    }"
+    <Slider @timestamp-changed="(timestamp) => time = timestamp"
             @realtime-toggled="isRealTimeEnabled => isRealTimeEnabled ? subscribe() : unsubscribe()"
     />
   </div>
@@ -94,7 +91,6 @@ export default {
     })]))
 
     const map = {}
-
     const subscription = null;
 
     return {

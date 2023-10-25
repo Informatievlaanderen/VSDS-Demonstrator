@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp, String timePeriod) {
+    public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp) {
         return repository.getMembersByGeometry(rectangleGeometry, collectionName, LocalDateTime.now().minusDays(7), timestamp)
                 .stream()
                 .collect(Collectors.groupingBy(Member::getIsVersionOf, Collectors.maxBy(Comparator.comparing(Member::getTimestamp))))

@@ -5,10 +5,15 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.config.Strea
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MembertypeException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MissingCollectionException;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Property;
 import org.springframework.stereotype.Service;
+
+import static org.apache.jena.rdf.model.ResourceFactory.createProperty;
+import static org.apache.jena.rdf.model.ResourceFactory.createResource;
 
 @Service
 public class MemberValidatorImpl implements MemberValidator {
+    private static final Property RDF_SYNTAX_TYPE = createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
     private final StreamsConfig streams;
 
@@ -26,7 +31,6 @@ public class MemberValidatorImpl implements MemberValidator {
     }
 
     private boolean testMembertype(Model member, String memberType) {
-        //TODO
-        return true;
+        return member.listStatements(null, RDF_SYNTAX_TYPE, createResource(memberType)).hasNext();
     }
 }
