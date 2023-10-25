@@ -112,7 +112,6 @@ export default {
     }).addTo(this.map);
     this.map.on("popupclose", () => this.member = null)
     this.map.on("zoomstart", () => this.map.closePopup())
-    this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
       if (value) {
         this.layers.get(key).addTo(this.map)
@@ -126,9 +125,6 @@ export default {
       } else {
         this.map.removeLayer(this.layers.get(key))
       }
-    },
-    onPopupClosed() {
-      this.member = null;
     },
     fetchMembers() {
       for (let [collection, layer] of this.layers.entries()) {
@@ -155,12 +151,12 @@ export default {
     },
     handleMemberGeometries(collection, layer, memberGeometries) {
       layer.clearLayers();
-      let markers = useMarkers(memberGeometries, collection, (member) => this.member = member, this.onPopupClosed)
+      let markers = useMarkers(memberGeometries, collection, (member) => this.member = member)
       layer.addLayers(markers)
     },
     //websocket
     connect() {
-      this.layers.forEach(layer => layer.clearLayers())
+      this.fetchMembers();
       this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
       this.stompClient.connect(
           {},
@@ -181,11 +177,11 @@ export default {
         this.stompClient.subscribe("/broker/member/" + collection, (member) => {
           let body = JSON.parse(member.body)
           let markerToRemove = this.layers.get(collection).getLayers().filter(m => m.feature.properties.isVersionOf === body.isVersionOf)[0];
-          let marker = useMarkers([body], collection, (member) => this.member = member, this.onPopupClosed).at(0)
-          marker.setStyle({
+          let marker = useMarkers([body], collection, (memberId) => this.memberId = memberId).at(0)
+          marker?.setStyle({
             color: '#FFA405',
           })
-          if (collection === "gipod") {
+          if (collection === "gipod" && marker) {
             setTimeout(function () {
               this.updateMarker(marker)
             }.bind(this), 1000)

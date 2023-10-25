@@ -5,7 +5,7 @@ import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
 import altSelectedMarker from "../../../assets/svgs/legend/maps.marker-alt-1.svg"
 import {usePopup} from "@/components/map/composables/usePopup";
 
-export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopupClosed) {
+export function useMarkers(memberGeometries, collection, onMarkerClicked) {
     let icon = L.icon({
         iconUrl: collection === "bluebikes" ? marker : altMarker,
         iconAnchor: [10, 28],
@@ -23,12 +23,6 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
         if (feature.properties?.popupProperties) {
             let content = usePopup(collection, feature.properties.popupProperties)
             let popup = L.popup().setContent(content)
-            popup.on("remove", () => {
-                if(layer.defaultOptions.icon) {
-                    layer.setIcon(icon)
-                }
-                onPopupClosed();
-            })
             layer.bindPopup(popup)
         }
         //bind click
