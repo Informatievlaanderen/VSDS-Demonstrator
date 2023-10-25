@@ -133,7 +133,7 @@ body {
 }
 
 b {
-    font-weight: 700;
+    font-weight: 700 !important;
 }
 
 .small-regular {

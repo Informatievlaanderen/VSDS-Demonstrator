@@ -5,7 +5,7 @@ import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
 import altSelectedMarker from "../../../assets/svgs/legend/maps.marker-alt-1.svg"
 import {usePopup} from "@/components/map/composables/usePopup";
 
-export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopupClosed) {
+export function useMarkers(memberGeometries, collection, onMarkerClicked) {
     let icon = L.icon({
         iconUrl: collection === "bluebikes" ? marker : altMarker,
         iconAnchor: [10, 28],
@@ -24,17 +24,16 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
             let content = usePopup(collection, feature.properties.popupProperties)
             let popup = L.popup().setContent(content)
             popup.on("remove", () => {
-                if(layer.defaultOptions.icon) {
+                if (layer.defaultOptions.icon) {
                     layer.setIcon(icon)
                 }
-                onPopupClosed();
             })
             layer.bindPopup(popup)
         }
         //bind click
         layer.on({
             click: () => {
-                if(layer.defaultOptions.icon) {
+                if (layer.defaultOptions.icon) {
                     layer.setIcon(selectedIcon)
                 }
                 onMarkerClicked(feature.properties);
@@ -59,10 +58,12 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})
         geoJson.setStyle({color: '#A813F7'});
-        // 2023-11-24T22:59:00Z
-        // console.log(Date.parse(feature.properties.endtime))
-        if(collection === "gipod") {
-            if(Date.now() < Date.parse(feature.properties.endtime)) {
+        if (collection === "gipod") {
+            if (Date.now() < Date.parse(feature.properties.endtime)) {
+                markers.push(geoJson);
+            }
+        } else if (collection === "verkeersmeting") {
+            if (!feature.isVersionOf.includes("snelheid")) {
                 markers.push(geoJson);
             }
         } else {

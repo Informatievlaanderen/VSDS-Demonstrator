@@ -19,8 +19,8 @@ function visualizeTriples(triples) {
         .attr("class", "shadow-medium body body-xxsmall-regular")
         .style("display", "none")
 
-    const width = +svg.style("width").replace("px", "")
-    const height = +svg.style("height").replace("px", "");
+    const width = +div.style("width").replace("px", "")
+    const height = +div.style("height").replace("px", "");
     const graph = triplesToGraph(triples);
     d3.select("#knowledge-graph-loading").remove();
     d3.select("#knowledge-graph-zoom-buttons").style("opacity", "1")
