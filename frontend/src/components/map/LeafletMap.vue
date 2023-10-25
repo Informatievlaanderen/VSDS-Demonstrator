@@ -110,6 +110,15 @@ export default {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
+    L.tileLayer('https://geo.api.vlaanderen.be/GRB/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=grb_bsk&STYLE=&FORMAT=image/png&TILEMATRIXSET=GoogleMapsVL&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}', {
+      layers: 'GRB-basiskaart',
+      maxZoom: 19,
+      minZoom: 12,
+      format: 'image/png',
+      transparent: true,
+      version: '1.1.0',
+      attribution: '© GRB'
+    }).addTo(this.map);
     this.map.on("popupclose", () => this.member = null)
     this.map.on("zoomstart", () => this.map.closePopup())
     for (let [key, value] of this.layersToShow.entries()) {
