@@ -81,7 +81,7 @@ function onPlayClick() {
       sliderValue.value = 0;
     }
     emit("timestampChanged", getTime(), "PT1H")
-  }, 500)
+  }, 2000)
 }
 
 function onPauseClick() {
