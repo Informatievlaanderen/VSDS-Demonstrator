@@ -30,6 +30,7 @@ class TripleServiceImplTest {
     private static final int NUMBER_OF_STATEMENTS = 36;
     private static final int NUMBER_OF_STATEMENTS_WITH_ID_AS_SUBJECT = 15;
     private static final String MEMBER_ID = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
+    private static final String COLLECTION = "collection";
     @InjectMocks
     private TripleServiceImpl service;
     @Mock
@@ -37,36 +38,36 @@ class TripleServiceImplTest {
 
     @Test
     void when_MemberIsPresent_then_RetrieveTriples() throws IOException {
-        when(repository.getById(MEMBER_ID)).thenReturn(readTriplesFromFile());
+        when(repository.getById(MEMBER_ID, COLLECTION)).thenReturn(readTriplesFromFile());
 
-        var fetchedTriples = service.getTriplesById(MEMBER_ID);
+        var fetchedTriples = service.getTriplesById(MEMBER_ID, COLLECTION);
 
         assertThat(fetchedTriples)
                 .hasSize(NUMBER_OF_STATEMENTS)
                 .filteredOn(triple -> triple.getSubject().getValue().equals(MEMBER_ID))
                 .hasSize(NUMBER_OF_STATEMENTS_WITH_ID_AS_SUBJECT);
-        verify(repository).getById(MEMBER_ID);
+        verify(repository).getById(MEMBER_ID, COLLECTION);
     }
 
     @Test
     void when_MemberHasEmptyModel_then_RetrieveEmptyList() {
-        when(repository.getById(MEMBER_ID)).thenReturn(List.of());
+        when(repository.getById(MEMBER_ID, COLLECTION)).thenReturn(List.of());
 
-        var fetchedTriples = service.getTriplesById(MEMBER_ID);
+        var fetchedTriples = service.getTriplesById(MEMBER_ID, COLLECTION);
 
         assertThat(fetchedTriples).isEmpty();
-        verify(repository).getById(MEMBER_ID);
+        verify(repository).getById(MEMBER_ID, COLLECTION);
     }
 
     @Test
     void when_MemberCannotBeFetched_then_RetrieveEmptyList() {
-        when(repository.getById(MEMBER_ID)).thenThrow(new TripleFetchFailedException(MEMBER_ID, new RuntimeException()));
+        when(repository.getById(MEMBER_ID, COLLECTION)).thenThrow(new TripleFetchFailedException(MEMBER_ID, new RuntimeException()));
 
-        assertThatThrownBy(() -> service.getTriplesById(MEMBER_ID))
+        assertThatThrownBy(() -> service.getTriplesById(MEMBER_ID, COLLECTION))
                 .isInstanceOf(TripleFetchFailedException.class)
                 .hasMessage("Something went wrong while trying to fetch the triples with id %s".formatted(MEMBER_ID));
 
-        verify(repository).getById(MEMBER_ID);
+        verify(repository).getById(MEMBER_ID, COLLECTION);
     }
 
     private List<Triple> readTriplesFromFile() throws IOException {

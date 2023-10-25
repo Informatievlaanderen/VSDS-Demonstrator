@@ -5,5 +5,5 @@ import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Trip
 import java.util.List;
 
 public interface TripleService {
-    List<Triple> getTriplesById(String id);
+    List<Triple> getTriplesById(String id, String collection);
 }

@@ -1,6 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.infra;
 
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.config.RepositoryConfig;
 import org.eclipse.rdf4j.repository.manager.LocalRepositoryManager;
@@ -9,6 +10,7 @@ import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.eclipse.rdf4j.model.Resource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TripleRepositoryRDF4JImplTest {
 
     private static final String MEMBER_ID = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
+    private static final String COLLECTION = "collection";
     private static final GraphDBConfig graphDbConfig = new GraphDBConfig();
     private static final String LOCAL_SERVER_URL = "http://localhost:8080/rdf4j-server";
     private static final String LOCAL_REPOSITORY_ID = "test";
@@ -62,14 +65,14 @@ class TripleRepositoryRDF4JImplTest {
     void when_ExistingTriplesAreRequested_then_MemberDescriptionIsExpected() throws IOException {
         populateRepository();
 
-        List<Triple> triples = repo.getById(MEMBER_ID);
+        List<Triple> triples = repo.getById(MEMBER_ID, COLLECTION);
 
         assertThat(triples).isNotEmpty();
     }
 
     @Test
     void when_MemberNotPresent_then_EmptyModelIsExpected() {
-        List<Triple> triples = repo.getById(MEMBER_ID);
+        List<Triple> triples = repo.getById(MEMBER_ID, COLLECTION);
 
         assertThat(triples).isEmpty();
     }
@@ -77,7 +80,8 @@ class TripleRepositoryRDF4JImplTest {
     void populateRepository() throws IOException {
         var model = Rio.parse(readDataFromFile(), "", RDFFormat.NQUADS);
         connection.begin();
-        connection.add(model);
+        var namedGraphIRI = connection.getValueFactory().createIRI("http://" + COLLECTION);
+        connection.add(model, namedGraphIRI);
         connection.commit();
         connection.close();
     }

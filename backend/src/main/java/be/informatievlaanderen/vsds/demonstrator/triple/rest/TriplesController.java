@@ -18,7 +18,7 @@ public class TriplesController {
 
     @GetMapping(value = "/triples")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<Triple> retrieveTriplesOfNode(@RequestParam String memberId) {
-        return tripleService.getTriplesById(memberId);
+    public List<Triple> retrieveTriplesOfNode(@RequestParam String memberId, @RequestParam String collection) {
+        return tripleService.getTriplesById(memberId, collection);
     }
 }

@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.repository.config.RepositoryImplConfig;
 import org.eclipse.rdf4j.repository.manager.RemoteRepositoryManager;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
 import org.eclipse.rdf4j.repository.sail.config.SailRepositoryConfig;
-import org.eclipse.rdf4j.sail.memory.config.MemoryStoreConfig;
+import org.eclipse.rdf4j.sail.nativerdf.config.NativeStoreConfig;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,8 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
         repositoryManager.init();
         try {
             if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
-                MemoryStoreConfig storeConfig = new MemoryStoreConfig(true);
+                String indeces = "spoc,cspo";
+                NativeStoreConfig storeConfig = new NativeStoreConfig(indeces);
                 RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
                 RepositoryConfig config = new RepositoryConfig(graphDBConfig.getRepositoryId(), repositoryImplConfig);
                 repositoryManager.addRepositoryConfig(config);
@@ -52,12 +53,12 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
     }
 
     @Override
-    public List<Triple> getById(@NotNull String id) {
+    public List<Triple> getById(@NotNull String id, @NotNull String collection) {
         try (RepositoryConnection dbConnection = repository.getConnection()) {
             dbConnection.setIsolationLevel(IsolationLevels.NONE);
             dbConnection.begin();
 
-            String queryString = "Describe<" + id + ">";
+            String queryString = "Describe<" + id + "> From<http://" + collection + ">";
             GraphQueryResult result = dbConnection.prepareGraphQuery(queryString).evaluate();
             Model model = QueryResults.asModel(result);
             dbConnection.commit();

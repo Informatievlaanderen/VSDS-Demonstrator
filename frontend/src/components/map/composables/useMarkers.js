@@ -37,7 +37,7 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
                 if(layer.defaultOptions.icon) {
                     layer.setIcon(selectedIcon)
                 }
-                onMarkerClicked(feature.properties.memberId);
+                onMarkerClicked(feature.properties);
             }
         });
     }
@@ -52,6 +52,7 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked, onPopu
             "geometry": feature.geojsonGeometry,
             "properties": {
                 "memberId": feature.memberId,
+                "collection": feature.collection,
                 "popupProperties": feature.properties,
                 "isVersionOf": feature.isVersionOf
             }

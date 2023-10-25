@@ -50,7 +50,7 @@ public class MemberServiceImpl implements MemberService {
                     .orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
             Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
-            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
+            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), ingestedMemberDto.getCollection(), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
             messageController.send(memberDto, ingestedMemberDto.getCollection());
 
             log.info("new member ingested");
@@ -67,14 +67,14 @@ public class MemberServiceImpl implements MemberService {
                 .values().stream()
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), collectionName, memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
                 .toList();
     }
 
     @Override
     public MemberDto getMemberById(String memberId) {
         return repository.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
+                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getCollection(), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
                 .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
     }
 
