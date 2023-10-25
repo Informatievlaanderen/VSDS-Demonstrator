@@ -23,7 +23,6 @@ export default {
   watch: {
     member: function (newVal) {
       if (newVal) {
-        console.log(newVal)
         useTriplesFetching(newVal.memberId, newVal.collection)
       }
     }

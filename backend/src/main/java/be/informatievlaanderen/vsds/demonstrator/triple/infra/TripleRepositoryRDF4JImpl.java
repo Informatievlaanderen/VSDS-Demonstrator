@@ -57,8 +57,6 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
         try (RepositoryConnection dbConnection = repository.getConnection()) {
             dbConnection.setIsolationLevel(IsolationLevels.NONE);
             dbConnection.begin();
-            System.out.println(id);
-            System.out.println(collection);
 
             String queryString = "Describe<" + id + "> From<http://" + collection + ">";
             GraphQueryResult result = dbConnection.prepareGraphQuery(queryString).evaluate();
