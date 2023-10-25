@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {TriplesController.class, TripleExceptionHandler.class})
 class TriplesControllerTest {
     private static final String ID = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464";
+    private static final String COLLECTION = "collection";
 
     @MockBean
     private TripleService tripleService;
@@ -42,23 +43,23 @@ class TriplesControllerTest {
     void when_triplesFetchingSucceeded_then_ReturnStatus200() throws Exception {
         List<Triple> triples = readTriplesFromFile();
         String json = new ObjectMapper().writeValueAsString(triples);
-        when(tripleService.getTriplesById(ID)).thenReturn(triples);
+        when(tripleService.getTriplesById(ID, COLLECTION)).thenReturn(triples);
 
-        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID)))
+        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "collection=" + COLLECTION)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json));
 
-        verify(tripleService).getTriplesById(ID);
+        verify(tripleService).getTriplesById(ID, COLLECTION);
     }
 
     @Test
     void when_triplesFetchingFails_then_ReturnStatus404() throws Exception {
-        when(tripleService.getTriplesById(ID)).thenThrow(new TripleFetchFailedException(ID, new RuntimeException()));
+        when(tripleService.getTriplesById(ID, COLLECTION)).thenThrow(new TripleFetchFailedException(ID, new RuntimeException()));
 
-        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID)))
+        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "collection=" + COLLECTION)))
                 .andExpect(status().isNotFound());
 
-        verify(tripleService).getTriplesById(ID);
+        verify(tripleService).getTriplesById(ID, COLLECTION);
     }
 
     private List<Triple> readTriplesFromFile() throws IOException {

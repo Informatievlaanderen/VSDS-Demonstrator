@@ -4,7 +4,7 @@
     <div class="linked-data-container">
       <div style="width: 50%" id="map"></div>
       <div style="width: 50%">
-        <KnowledgeGraph :member-id="memberId"></KnowledgeGraph>
+        <KnowledgeGraph :member="member"></KnowledgeGraph>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@ export default {
     return {
       data: [],
       map: {},
-      memberId: null,
+      member: null,
       simulation: null,
       stompClient: null
     };
@@ -110,7 +110,7 @@ export default {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
-    this.map.on("popupclose", () => this.memberId = null)
+    this.map.on("popupclose", () => this.member = null)
     this.map.on("zoomstart", () => this.map.closePopup())
     this.fetchMembers();
     for (let [key, value] of this.layersToShow.entries()) {
@@ -128,7 +128,7 @@ export default {
       }
     },
     onPopupClosed() {
-      this.memberId = null;
+      this.member = null;
     },
     fetchMembers() {
       for (let [collection, layer] of this.layers.entries()) {
@@ -155,7 +155,7 @@ export default {
     },
     handleMemberGeometries(collection, layer, memberGeometries) {
       layer.clearLayers();
-      let markers = useMarkers(memberGeometries, collection, (memberId) => this.memberId = memberId, this.onPopupClosed)
+      let markers = useMarkers(memberGeometries, collection, (member) => this.member = member, this.onPopupClosed)
       layer.addLayers(markers)
     },
     //websocket
@@ -181,7 +181,7 @@ export default {
         this.stompClient.subscribe("/broker/member/" + collection, (member) => {
           let body = JSON.parse(member.body)
           let markerToRemove = this.layers.get(collection).getLayers().filter(m => m.feature.properties.isVersionOf === body.isVersionOf)[0];
-          let marker = useMarkers([body], collection, (memberId) => this.memberId = memberId, this.onPopupClosed).at(0)
+          let marker = useMarkers([body], collection, (member) => this.member = member, this.onPopupClosed).at(0)
           marker.setStyle({
             color: '#FFA405',
           })

@@ -76,7 +76,7 @@ class MembersControllerTest {
         @Test
         void when_MemberGeometryPresent_then_MemberGeomtryIsReturned_and_StatusIs200() throws Exception {
             final String json = transformToJson(ID, geoJSON, timestamp);
-            MemberDto dto = new MemberDto(ID, geoJSON, timestamp, IS_VERSION_OF, Map.of());
+            MemberDto dto = new MemberDto(ID, geoJSON, COLLECTION, timestamp, IS_VERSION_OF, Map.of());
 
             when(service.getMemberById(ID)).thenReturn(dto);
 
@@ -154,7 +154,7 @@ class MembersControllerTest {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 Geometry geometry = reader.read("POINT(%d %d)".formatted(i, j));
-                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), timestamp, IS_VERSION_OF, Map.of()));
+                members.add(new MemberDto("id-%d".formatted(i * 6 + j), geoJSONWriter.write(geometry), COLLECTION, timestamp, IS_VERSION_OF, Map.of()));
             }
         }
         return members;

@@ -13,6 +13,7 @@ orchestrator:
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
+            named-graph: http://gipod
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             content-type: application/n-quads
@@ -44,6 +45,7 @@ orchestrator:
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
+            named-graph: http://verkeersmeting
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/verkeersmeting/members
@@ -64,6 +66,7 @@ orchestrator:
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
+            named-graph: http://bluebikes
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/bluebikes/members

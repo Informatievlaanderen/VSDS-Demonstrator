@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="knowledge-graph" class="knowledge-graph-container" v-if="memberId">
+    <div id="knowledge-graph" class="knowledge-graph-container" v-if="member">
       <ZoomButtons></ZoomButtons>
       <div id="knowledge-graph-loading" class="small-regular loading">Kennisgrafiek wordt ingeladen ...</div>
     </div>
@@ -18,12 +18,13 @@ import ZoomButtons from "@/components/graph/ZoomButtons.vue";
 export default {
   components: {ZoomButtons},
   props: {
-    memberId: String | null,
+    member: Object | null,
   },
   watch: {
-    memberId: function (newVal) {
+    member: function (newVal) {
       if (newVal) {
-        useTriplesFetching(newVal)
+        console.log(newVal)
+        useTriplesFetching(newVal.memberId, newVal.collection)
       }
     }
   },

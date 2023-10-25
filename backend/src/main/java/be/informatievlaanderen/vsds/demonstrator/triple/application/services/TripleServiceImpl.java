@@ -15,7 +15,7 @@ public class TripleServiceImpl implements TripleService {
     }
 
     @Override
-    public List<Triple> getTriplesById(String id) {
-        return repository.getById(id);
+    public List<Triple> getTriplesById(String id, String collection) {
+        return repository.getById(id, collection);
     }
 }

@@ -183,11 +183,11 @@ function visualizeTriples(triples) {
         .force("center", d3.forceCenter(width / 5, height / 4));
 }
 
-export function useTriplesFetching(memberId) {
+export function useTriplesFetching(memberId, collection) {
     axios({
         method: 'get',
         url: 'api/triples',
-        params: new URLSearchParams({"memberId": memberId})
+        params: new URLSearchParams({"memberId": memberId, "collection": collection})
     }).then((response) => {
         visualizeTriples(response.data)
     });
