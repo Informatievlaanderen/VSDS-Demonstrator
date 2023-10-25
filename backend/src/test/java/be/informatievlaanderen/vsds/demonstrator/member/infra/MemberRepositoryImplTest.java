@@ -88,20 +88,20 @@ class MemberRepositoryImplTest {
                     .map(entity -> new Member(entity.getMemberId(), entity.getCollection(), entity.getGeometry(), IS_VERSION_OF, timestamp, Map.of()))
                     .toList();
 
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime)).thenReturn(entities);
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(COLLECTION, startTime, endTime)).thenReturn(entities);
 
             assertEquals(members, repository.getMembersByGeometry(rectangle, COLLECTION, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(COLLECTION, startTime, endTime);
         }
 
         @Test
         void when_DbContainsOnlyMembersOutsideRectangle_then_ReturnEmptyList() {
-            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime)).thenReturn(List.of());
+            when(jpaRepository.getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(COLLECTION, startTime, endTime)).thenReturn(List.of());
 
             assertEquals(List.of(), repository.getMembersByGeometry(rectangle, COLLECTION, startTime, endTime));
 
-            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(rectangle, COLLECTION, startTime, endTime);
+            verify(jpaRepository).getMemberGeometryEntitiesCoveredByGeometryInTimePeriodAndCollection(COLLECTION, startTime, endTime);
         }
     }
 

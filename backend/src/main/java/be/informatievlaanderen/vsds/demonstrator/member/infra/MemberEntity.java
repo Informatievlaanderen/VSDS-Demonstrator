@@ -2,9 +2,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.infra;
 
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import io.hypersistence.utils.hibernate.type.basic.PostgreSQLHStoreType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Geometry;
 
@@ -12,6 +10,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity(name = "member_entity")
+@Table(indexes = {
+         @Index(columnList = "collection"),
+         @Index(columnList = "geometry"),
+         @Index(columnList = "timestamp")
+})
 public class MemberEntity {
     @Id
     private String memberId;
