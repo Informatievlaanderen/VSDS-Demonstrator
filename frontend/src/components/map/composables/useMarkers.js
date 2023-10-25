@@ -23,12 +23,17 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked) {
         if (feature.properties?.popupProperties) {
             let content = usePopup(collection, feature.properties.popupProperties)
             let popup = L.popup().setContent(content)
+            popup.on("remove", () => {
+                if (layer.defaultOptions.icon) {
+                    layer.setIcon(icon)
+                }
+            })
             layer.bindPopup(popup)
         }
         //bind click
         layer.on({
             click: () => {
-                if(layer.defaultOptions.icon) {
+                if (layer.defaultOptions.icon) {
                     layer.setIcon(selectedIcon)
                 }
                 onMarkerClicked(feature.properties);
@@ -53,10 +58,12 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked) {
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})
         geoJson.setStyle({color: '#A813F7'});
-        // 2023-11-24T22:59:00Z
-        // console.log(Date.parse(feature.properties.endtime))
-        if(collection === "gipod") {
-            if(Date.now() < Date.parse(feature.properties.endtime)) {
+        if (collection === "gipod") {
+            if (Date.now() < Date.parse(feature.properties.endtime)) {
+                markers.push(geoJson);
+            }
+        } else if (collection === "verkeersmeting") {
+            if (!feature.isVersionOf.includes("snelheid")) {
                 markers.push(geoJson);
             }
         } else {

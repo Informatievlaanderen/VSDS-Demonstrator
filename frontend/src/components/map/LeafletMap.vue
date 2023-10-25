@@ -103,8 +103,8 @@ export default {
   },
 
   mounted() {
-    this.connect()
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.9, 4.15], 8)
+    this.connect()
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -177,7 +177,7 @@ export default {
         this.stompClient.subscribe("/broker/member/" + collection, (member) => {
           let body = JSON.parse(member.body)
           let markerToRemove = this.layers.get(collection).getLayers().filter(m => m.feature.properties.isVersionOf === body.isVersionOf)[0];
-          let marker = useMarkers([body], collection, (memberId) => this.memberId = memberId).at(0)
+          let marker = useMarkers([body], collection, (member) => this.member = member).at(0)
           marker?.setStyle({
             color: '#FFA405',
           })
@@ -189,7 +189,9 @@ export default {
           if(markerToRemove) {
             this.layers.get(collection).removeLayer(markerToRemove);
           }
-          this.layers.get(collection).addLayer(marker)
+          if(marker) {
+            this.layers.get(collection).addLayer(marker)
+          }
         });
       }
     },
