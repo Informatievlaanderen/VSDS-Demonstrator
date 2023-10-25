@@ -156,22 +156,22 @@ class MemberServiceImplTest {
     }
 
 
-    @Test
-    @Disabled
-    void test_getLineChartDto() {
-        when(repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, any())).thenReturn(getMemberList());
-        when(repository.getNumberOfMembers()).thenReturn(8L);
-
-        LineChartDto lineChartDto = service.getLineChartDtos();
-
-        verify(repository).getNumberOfMembers();
-        verify(repository).findMembersByCollectionAfterLocalDateTime(COLLECTION, any());
-        assertEquals(1, lineChartDto.getLabels().size());
-//        assertEquals(1, lineChartDto.getValues().size());
-//        assertEquals(1, lineChartDto.getValues().get(0).size());
-//        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).toString(), lineChartDto.getLabels().get(0));
-//        assertEquals(8, lineChartDto.getValues().get(0).get(0));
-    }
+//    @Test
+//    @Disabled
+//    void test_getLineChartDto() {
+//        when(repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, any())).thenReturn(getMemberList());
+//        when(repository.getNumberOfMembers()).thenReturn(8L);
+//
+//        LineChartDto lineChartDto = service.getLineChartDtos();
+//
+//        verify(repository).getNumberOfMembers();
+//        verify(repository).findMembersByCollectionAfterLocalDateTime(COLLECTION, any());
+//        assertEquals(1, lineChartDto.getLabels().size());
+////        assertEquals(1, lineChartDto.getValues().size());
+////        assertEquals(1, lineChartDto.getValues().get(0).size());
+////        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).toString(), lineChartDto.getLabels().get(0));
+////        assertEquals(8, lineChartDto.getValues().get(0).get(0));
+//    }
 
     private List<Member> getMemberList() {
         Member id1 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());

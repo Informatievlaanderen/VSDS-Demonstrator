@@ -45,7 +45,7 @@ class TriplesControllerTest {
         String json = new ObjectMapper().writeValueAsString(triples);
         when(tripleService.getTriplesById(ID, COLLECTION)).thenReturn(triples);
 
-        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "collection=" + COLLECTION)))
+        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "&collection=" + COLLECTION)))
                 .andExpect(status().isOk())
                 .andExpect(content().json(json));
 
@@ -56,7 +56,7 @@ class TriplesControllerTest {
     void when_triplesFetchingFails_then_ReturnStatus404() throws Exception {
         when(tripleService.getTriplesById(ID, COLLECTION)).thenThrow(new TripleFetchFailedException(ID, new RuntimeException()));
 
-        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "collection=" + COLLECTION)))
+        mockMvc.perform(get(URI.create("/api/triples?memberId=" + ID + "&collection=" + COLLECTION)))
                 .andExpect(status().isNotFound());
 
         verify(tripleService).getTriplesById(ID, COLLECTION);
