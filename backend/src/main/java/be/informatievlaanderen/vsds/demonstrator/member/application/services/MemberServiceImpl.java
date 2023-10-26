@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
             Member member = ingestedMemberDto.getMember(eventStreamConfig);
             repository.saveMember(member);
             MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), ingestedMemberDto.getCollection(), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
-            messageController.send(memberDto, ingestedMemberDto.getCollection());
+            messageController.send(memberDto);
 
             log.info("new member ingested");
         } catch (FactoryException | TransformException e) {

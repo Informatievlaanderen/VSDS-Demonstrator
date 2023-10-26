@@ -9,16 +9,15 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class MessageController {
-	private SimpMessagingTemplate template;
+	private final SimpMessagingTemplate template;
 	private static final Logger log = LoggerFactory.getLogger(MessageController.class);
 
-	@Autowired
 	public MessageController(SimpMessagingTemplate template) {
 		this.template = template;
 	}
 
-	public void send(MemberDto member, String collection) {
+	public void send(MemberDto member) {
 		log.info("sending member");
-		this.template.convertAndSend("/broker/member/" + collection, member);
+		this.template.convertAndSend("/broker/member/", member);
 	}
 }

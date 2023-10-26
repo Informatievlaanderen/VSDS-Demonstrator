@@ -5,27 +5,27 @@ import selectedMarker from "../../../assets/svgs/legend/maps.marker-1.svg"
 import altSelectedMarker from "../../../assets/svgs/legend/maps.marker-alt-1.svg"
 import {usePopup} from "@/components/map/composables/usePopup";
 
-export function useMarkers(memberGeometries, collection, onMarkerClicked) {
-    let icon = L.icon({
+export function useMarkers(memberGeometries, onMarkerClicked) {
+    const getIcon = (collection) => L.icon({
         iconUrl: collection === "bluebikes" ? marker : altMarker,
         iconAnchor: [10, 28],
         popupAnchor: [0, -25],
 
     });
-    let selectedIcon = L.icon({
+    const getSelectedIcon = (collection) => L.icon({
         iconUrl: collection === "bluebikes" ? selectedMarker : altSelectedMarker,
         iconAnchor: [14, 40],
         popupAnchor: [0, -25]
     })
     let markers = []
 
-    function onEachFeature(feature, layer) {
-        if (feature.properties?.popupProperties) {
-            let content = usePopup(collection, feature.properties.popupProperties)
+    function onEachFeature({properties}, layer) {
+        if (properties?.popupProperties) {
+            let content = usePopup(properties.collection, properties.popupProperties)
             let popup = L.popup().setContent(content)
             popup.on("remove", () => {
                 if (layer.defaultOptions.icon) {
-                    layer.setIcon(icon)
+                    layer.setIcon(getIcon(properties.collection))
                 }
             })
             layer.bindPopup(popup)
@@ -34,15 +34,15 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked) {
         layer.on({
             click: () => {
                 if (layer.defaultOptions.icon) {
-                    layer.setIcon(selectedIcon)
+                    layer.setIcon(getSelectedIcon(properties.collection))
                 }
-                onMarkerClicked(feature.properties);
+                onMarkerClicked(properties);
             }
         });
     }
 
-    function pointToLayer(feature, latLng) {
-        return L.marker(latLng, {icon})
+    function pointToLayer({properties}, latLng) {
+        return L.marker(latLng, {icon: getIcon(properties.collection)})
     }
 
     memberGeometries.forEach(feature => {
@@ -58,11 +58,11 @@ export function useMarkers(memberGeometries, collection, onMarkerClicked) {
         }
         let geoJson = L.geoJson(geoJsonFeature, {onEachFeature: onEachFeature, pointToLayer: pointToLayer})
         geoJson.setStyle({color: '#A813F7'});
-        if (collection === "gipod") {
+        if (feature.collection === "gipod") {
             if (Date.now() < Date.parse(feature.properties.endtime)) {
                 markers.push(geoJson);
             }
-        } else if (collection === "verkeersmeting") {
+        } else if (feature.collection === "verkeersmeting") {
             if (!feature.isVersionOf.includes("snelheid")) {
                 markers.push(geoJson);
             }
