@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.dtos;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.locationtech.jts.geom.Coordinate;

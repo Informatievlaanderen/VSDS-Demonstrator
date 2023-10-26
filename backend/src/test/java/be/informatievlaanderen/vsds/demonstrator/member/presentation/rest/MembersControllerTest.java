@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.rest;
 
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
@@ -7,7 +7,9 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.services.Mem
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidatorImpl;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.custom.MeetPuntRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.converters.ModelHttpConverter;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.rest.converters.ModelHttpConverter;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.rest.MemberExceptionHandler;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.rest.MembersController;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.GraphDBConfig;
 import org.apache.jena.riot.Lang;
 import org.junit.jupiter.api.BeforeAll;

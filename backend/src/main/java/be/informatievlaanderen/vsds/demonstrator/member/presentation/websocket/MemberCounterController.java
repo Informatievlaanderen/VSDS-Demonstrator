@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.websocket;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;

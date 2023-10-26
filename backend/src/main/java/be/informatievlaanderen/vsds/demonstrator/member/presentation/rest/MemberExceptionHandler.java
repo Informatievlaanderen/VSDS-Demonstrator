@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.NoGeometryProvidedException;

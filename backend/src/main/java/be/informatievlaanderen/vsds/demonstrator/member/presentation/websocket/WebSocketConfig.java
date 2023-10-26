@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.websocket;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

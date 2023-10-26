@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.websocket;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import org.slf4j.Logger;

@@ -1,11 +1,11 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidator;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.custom.MeetPuntRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.MapBoundsDto;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.MapBoundsDto;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.web.bind.annotation.*;
 

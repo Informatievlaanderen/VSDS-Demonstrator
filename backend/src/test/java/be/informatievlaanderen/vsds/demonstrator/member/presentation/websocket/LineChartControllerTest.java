@@ -1,7 +1,7 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.websocket;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.LineChartDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

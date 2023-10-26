@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.converters;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.rest.converters;
 
 
 import org.apache.jena.rdf.model.Model;

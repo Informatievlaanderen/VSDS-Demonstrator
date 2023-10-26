@@ -7,7 +7,7 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket.MessageController;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;

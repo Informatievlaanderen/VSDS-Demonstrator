@@ -12,8 +12,8 @@ import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjec
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.LineChart;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.LineChartDto;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket.MessageController;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;

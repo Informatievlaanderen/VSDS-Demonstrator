@@ -2,7 +2,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
-import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MembertypeException;
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MemberTypeException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.MissingCollectionException;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class MemberValidatorImpl implements MemberValidator {
         EventStreamConfig streamConfig = streams.getStream(collectionName)
                 .orElseThrow(() -> new MissingCollectionException(collectionName));
         if (!testMemberType(member, streamConfig.getMemberType())) {
-            throw new MembertypeException(collectionName, streamConfig.getMemberType());
+            throw new MemberTypeException(collectionName, streamConfig.getMemberType());
         }
     }
 
