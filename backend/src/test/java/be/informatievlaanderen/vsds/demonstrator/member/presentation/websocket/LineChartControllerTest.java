@@ -25,13 +25,13 @@ class LineChartControllerTest {
     private LineChartController lineChartController;
 
     @Test
-    void test_lineChartIsTransferredToWebsocket(){
+    void test_lineChartIsTransferredToWebsocket() {
         LineChartDto lineChartDto = new LineChartDto(List.of(), List.of());
         when(memberService.getLineChartDtos()).thenReturn(lineChartDto);
         lineChartController.send();
 
         verify(memberService).getLineChartDtos();
-        verify(simpMessagingTemplate).convertAndSend("/broker/linechart",lineChartDto);
+        verify(simpMessagingTemplate).convertAndSend("/broker/linechart", lineChartDto);
     }
 
 }

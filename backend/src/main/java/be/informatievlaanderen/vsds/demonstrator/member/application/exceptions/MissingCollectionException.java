@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.exceptions;
 
-public class MissingCollectionException extends RuntimeException{
+public class MissingCollectionException extends RuntimeException {
     private final String collectionName;
 
     public MissingCollectionException(String collectionName) {

@@ -43,7 +43,7 @@ class MemberValidatorImplTest {
 
         assertThatThrownBy(() -> memberValidator.validate(member, collection))
                 .isInstanceOf(MissingCollectionException.class)
-                .hasMessage("Eventstream with name %s could not be found.".formatted(collection));
+                .hasMessage("Eventstream with name %s could not be found.", collection);
     }
 
     @Test
@@ -53,7 +53,7 @@ class MemberValidatorImplTest {
 
         assertThatThrownBy(() -> memberValidator.validate(member, COLLECTION))
                 .isInstanceOf(MemberTypeException.class)
-                .hasMessage("Member of collection %s was not of expected type %s".formatted(COLLECTION, memberType));
+                .hasMessage("Member of collection %s was not of expected type %s", COLLECTION, memberType);
     }
 
     private void setUpValidator(String memberType) {

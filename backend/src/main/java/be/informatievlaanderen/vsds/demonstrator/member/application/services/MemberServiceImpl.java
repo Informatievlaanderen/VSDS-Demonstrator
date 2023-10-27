@@ -7,11 +7,11 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.M
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
+import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.Dataset;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.HourCount;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects.LineChart;
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
-import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket.MessageController;
 import org.locationtech.jts.geom.Geometry;

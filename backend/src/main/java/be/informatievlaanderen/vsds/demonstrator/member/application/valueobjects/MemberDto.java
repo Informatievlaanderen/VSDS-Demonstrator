@@ -25,6 +25,7 @@ public class MemberDto {
     public String getMemberId() {
         return memberId;
     }
+
     public String getCollection() {
         return collection;
     }

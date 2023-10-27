@@ -8,18 +8,18 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class MemberCounterController {
-	private final SimpMessagingTemplate template;
-	private final MemberService memberService;
+    private final SimpMessagingTemplate template;
+    private final MemberService memberService;
 
-	@Autowired
-	public MemberCounterController(SimpMessagingTemplate template, MemberService memberService) {
-		this.template = template;
-		this.memberService = memberService;
-	}
+    @Autowired
+    public MemberCounterController(SimpMessagingTemplate template, MemberService memberService) {
+        this.template = template;
+        this.memberService = memberService;
+    }
 
-	@Scheduled(fixedDelay = 1000)
-	public void send() {
-		long counter = memberService.getNumberOfMembers();
-		this.template.convertAndSend("/broker/membercounter", counter);
-	}
+    @Scheduled(fixedDelay = 1000)
+    public void send() {
+        long counter = memberService.getNumberOfMembers();
+        this.template.convertAndSend("/broker/membercounter", counter);
+    }
 }

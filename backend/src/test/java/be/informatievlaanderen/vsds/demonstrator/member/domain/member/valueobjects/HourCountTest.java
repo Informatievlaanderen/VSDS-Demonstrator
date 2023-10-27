@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HourCountTest {
 
@@ -15,7 +15,7 @@ class HourCountTest {
     private final static String IS_VERSION_OF = "versionOf";
 
     @Test
-    void test_HourCount(){
+    void test_HourCount() {
         Member id1 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.of(2023, 1, 5, 1, 5), Map.of());
         Member id2 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.of(2023, 1, 5, 1, 5), Map.of());
         Member id3 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.of(2023, 1, 5, 1, 15), Map.of());
@@ -29,10 +29,10 @@ class HourCountTest {
         Map<LocalDateTime, Integer> memberCountByHour = hourCount.getMemberCountByHour();
 
         assertEquals(4, hourCount.getMemberCountByHour().size());
-        assertEquals(3,memberCountByHour.get(LocalDateTime.of(2023,1,5,1,0)));
-        assertEquals(2,memberCountByHour.get(LocalDateTime.of(2023,1,5,2,0)));
-        assertEquals(2,memberCountByHour.get(LocalDateTime.of(2023,1,6,1,0)));
-        assertEquals(1,memberCountByHour.get(LocalDateTime.of(2023,1,6,2,0)));
+        assertEquals(3, memberCountByHour.get(LocalDateTime.of(2023, 1, 5, 1, 0)));
+        assertEquals(2, memberCountByHour.get(LocalDateTime.of(2023, 1, 5, 2, 0)));
+        assertEquals(2, memberCountByHour.get(LocalDateTime.of(2023, 1, 6, 1, 0)));
+        assertEquals(1, memberCountByHour.get(LocalDateTime.of(2023, 1, 6, 2, 0)));
 
     }
 

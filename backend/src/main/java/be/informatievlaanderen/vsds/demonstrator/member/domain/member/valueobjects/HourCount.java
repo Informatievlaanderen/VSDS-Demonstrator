@@ -16,7 +16,7 @@ public class HourCount {
         this.memberList = memberList;
     }
 
-    public Map<LocalDateTime, Integer> getMemberCountByHour(){
+    public Map<LocalDateTime, Integer> getMemberCountByHour() {
         return memberList
                 .stream()
                 .map(Member::getTimestamp)

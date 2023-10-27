@@ -1,7 +1,7 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.application.services;
 
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

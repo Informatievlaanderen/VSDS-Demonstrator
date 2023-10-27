@@ -22,12 +22,12 @@ class MemberCounterControllerTest {
     private MemberCounterController memberCounterController;
 
     @Test
-    void test_numberOfMembersIsTransferredToWebsocket(){
+    void test_numberOfMembersIsTransferredToWebsocket() {
         when(memberService.getNumberOfMembers()).thenReturn(76L);
         memberCounterController.send();
 
         verify(memberService).getNumberOfMembers();
-        verify(simpMessagingTemplate).convertAndSend("/broker/membercounter",76L);
+        verify(simpMessagingTemplate).convertAndSend("/broker/membercounter", 76L);
     }
 
 }

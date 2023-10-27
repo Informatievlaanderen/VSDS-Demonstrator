@@ -39,7 +39,7 @@ function disconnect() {
     <div class="explanation-chart-container">
       <div class="body body-large-regular">
         <p>
-          De Vlaamse Smart Data Space helpt bij het <b>duurzame</b> delen van snel en traag veranderende data en hun
+          De Vlaamse Smart Data Space helpt bij het <b>duurzaam</b> delen van snel en traag veranderende data en hun
           contextinformatie. Hiervoor wordt data gepubliceerd als <b>Linked Data Event Streams</b>.
         </p>
         <p>

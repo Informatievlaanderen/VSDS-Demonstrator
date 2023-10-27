@@ -22,29 +22,29 @@ import static org.apache.jena.riot.RDFLanguages.nameToLang;
 @Component
 public class ModelHttpConverter extends AbstractHttpMessageConverter<Model> {
 
-	public ModelHttpConverter() {
-		super(MediaType.ALL);
-	}
+    public ModelHttpConverter() {
+        super(MediaType.ALL);
+    }
 
-	@Override
-	protected boolean supports(Class<?> clazz) {
-		return clazz.isAssignableFrom(Model.class);
-	}
+    @Override
+    protected boolean supports(Class<?> clazz) {
+        return clazz.isAssignableFrom(Model.class);
+    }
 
-	@Override
-	protected Model readInternal(@NotNull Class<? extends Model> clazz, HttpInputMessage inputMessage)
-			throws IOException, HttpMessageNotReadableException {
-		MediaType contentType = Objects.requireNonNull(inputMessage.getHeaders().getContentType());
-		Lang lang =
-				ofNullable(nameToLang(contentType.getType() + "/" + contentType.getSubtype()))
-						.orElseGet(() -> ofNullable(nameToLang(contentType.getSubtype()))
-								.orElseThrow(() -> new RuntimeException("TODO")));
-		return RDFParser.source(inputMessage.getBody()).lang(lang).toModel();
-	}
+    @Override
+    protected Model readInternal(@NotNull Class<? extends Model> clazz, HttpInputMessage inputMessage)
+            throws IOException, HttpMessageNotReadableException {
+        MediaType contentType = Objects.requireNonNull(inputMessage.getHeaders().getContentType());
+        Lang lang =
+                ofNullable(nameToLang(contentType.getType() + "/" + contentType.getSubtype()))
+                        .orElseGet(() -> ofNullable(nameToLang(contentType.getSubtype()))
+                                .orElseThrow(() -> new RuntimeException("TODO")));
+        return RDFParser.source(inputMessage.getBody()).lang(lang).toModel();
+    }
 
-	@Override
-	protected void writeInternal(@NotNull Model model, @NotNull HttpOutputMessage outputMessage)
-			throws UnsupportedOperationException, HttpMessageNotWritableException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    protected void writeInternal(@NotNull Model model, @NotNull HttpOutputMessage outputMessage)
+            throws UnsupportedOperationException, HttpMessageNotWritableException {
+        throw new UnsupportedOperationException();
+    }
 }

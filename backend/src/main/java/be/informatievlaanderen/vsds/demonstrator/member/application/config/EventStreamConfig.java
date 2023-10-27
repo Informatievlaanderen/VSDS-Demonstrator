@@ -14,6 +14,7 @@ public class EventStreamConfig {
     private String timestampPath;
     private String timezoneId;
     private Map<String, String> propertyPredicates;
+
     public String getMemberType() {
         return memberType;
     }
@@ -31,7 +32,7 @@ public class EventStreamConfig {
     }
 
     public Map<String, String> getPropertyPredicates() {
-        if(propertyPredicates == null) {
+        if (propertyPredicates == null) {
             propertyPredicates = new HashMap<>();
         }
         return propertyPredicates;
@@ -42,7 +43,7 @@ public class EventStreamConfig {
     }
 
     public ZoneId getTimezoneId() {
-        if(timezoneId == null) {
+        if (timezoneId == null) {
             return ZoneOffset.UTC;
         }
         return ZoneId.of(timezoneId);

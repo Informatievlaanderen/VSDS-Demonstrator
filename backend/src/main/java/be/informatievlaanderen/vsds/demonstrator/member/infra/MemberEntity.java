@@ -11,8 +11,8 @@ import java.util.Map;
 
 @Entity(name = "member_entity")
 @Table(indexes = {
-         @Index(columnList = "collection"),
-         @Index(columnList = "timestamp")
+        @Index(columnList = "collection"),
+        @Index(columnList = "timestamp")
 })
 public class MemberEntity {
     @Id

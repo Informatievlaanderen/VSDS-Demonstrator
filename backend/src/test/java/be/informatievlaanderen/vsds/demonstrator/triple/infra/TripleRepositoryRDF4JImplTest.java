@@ -28,8 +28,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TripleRepositoryRDF4JImplTest {
 
@@ -118,7 +118,7 @@ class TripleRepositoryRDF4JImplTest {
 
             assertThatThrownBy(() -> repo.getById(MEMBER_ID, COLLECTION))
                     .isInstanceOf(TripleFetchFailedException.class)
-                    .hasMessage("Something went wrong while trying to fetch the triples with id %s".formatted(MEMBER_ID));
+                    .hasMessage("Something went wrong while trying to fetch the triples with id %s", MEMBER_ID);
         }
     }
 

@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.exceptions;
 
-public class MemberTypeException extends RuntimeException{
+public class MemberTypeException extends RuntimeException {
     private final String collection;
     private final String memberType;
 
