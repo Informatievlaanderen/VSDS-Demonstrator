@@ -7,42 +7,38 @@
 
 <script>
 import "leaflet/dist/leaflet.css"
-import Stomp from "webstomp-client";
 
 export default {
   name: "ConnectionState",
+  props: ["stompClient"],
   data() {
     return {
       memberCounter: 0,
-      stompClient: null
+      subscription: null
     };
   },
-
-  mounted() {
-    this.connect()
+  watch: {
+    'stompClient.connected': {
+      handler(newConnectedValue) {
+        if(newConnectedValue) {
+          this.subscribe();
+        }
+      },
+      immediate: true
+    }
+  },
+  unmounted() {
+    this.unsubscribe();
   },
   methods: {
-    //websocket
-    connect() {
-      this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
-      this.stompClient.connect(
-          {},
-          () => {
-            this.stompClient.subscribe("/broker/membercounter", (memberCounter) => {
-              this.memberCounter = JSON.parse(memberCounter.body)
-            });
-          },
-          error => {
-            console.error(error);
-            this.connect()
-          }
-      );
+    subscribe() {
+      this.stompClient.subscribe("/broker/membercounter", (memberCounter) => {
+        this.memberCounter = JSON.parse(memberCounter.body)
+      });
     },
-    disconnect() {
-      if (this.stompClient) {
-        this.stompClient.disconnect();
-      }
-    }
+    unsubscribe() {
+      this.subscription?.unsubscribe();
+    },
   }
 
 };

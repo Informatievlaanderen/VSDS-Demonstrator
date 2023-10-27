@@ -13,7 +13,7 @@
       time = timestamp;
       timePeriod = period;
     }"
-            @realtime-toggled="isRealTimeEnabled => isRealTimeEnabled ? connect() : disconnect()"
+            @realtime-toggled="isRealTimeEnabled => isRealTimeEnabled ? subscribe() : unsubscribe()"
     />
   </div>
 </template>
@@ -33,7 +33,6 @@ import axios from 'axios'
 import {useMarkers} from "@/components/map/composables/useMarkers";
 import {ref} from "vue";
 import Slider from "@/components/slider/Slider.vue";
-import Stomp from "webstomp-client";
 import KnowledgeGraph from "@/components/graph/KnowledgeGraph.vue";
 import MapButtons from "@/components/modal/MapButtons.vue";
 import {streams} from "../../../streams.json"
@@ -74,37 +73,42 @@ export default {
       this.map.closePopup();
       this.fetchMembers();
     },
+    'stompClient.connected': {
+      handler(newConnectedValue) {
+        if(newConnectedValue) {
+          this.subscribe();
+        }
+      },
+      immediate: true
+    }
   },
+  props: ["stompClient"],
   setup() {
-    const layerNames = Array.from(streams, (stream) => stream.id) //["gipod", "verkeersmeting", "bluebikes"]
     const time = ref(new Date().getTime())
-    const timePeriod = ref("PT10M")
+    const member = ref(null);
+
+    const layerNames = Array.from(streams, (stream) => stream.id)
     const layersToShow = ref(new Map(layerNames.map(name => [name, true])));
     const layers = new Map(layerNames.map(name => [name, L.markerClusterGroup({
       iconCreateFunction: (cluster) => iconCreateFunction(cluster, name)
     })]))
 
+    const map = {}
+
+    const subscription = null;
+
     return {
       time,
-      timePeriod,
+      member,
+      map,
       layersToShow,
-      layers
+      layers,
+      subscription
     }
   },
   name: "ConnectionState",
-  data() {
-    return {
-      data: [],
-      map: {},
-      member: null,
-      simulation: null,
-      stompClient: null
-    };
-  },
-
   mounted() {
     this.map = L.map("map", {zoomAnimation: false, zoomControl: false}).setView([50.9, 4.15], 8)
-    this.connect()
     L.control.zoom({position: "topright"}).addTo(this.map)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -127,6 +131,9 @@ export default {
       }
     }
   },
+  unmounted() {
+    this.subscription?.unsubscribe();
+  },
   methods: {
     updateLayers(key) {
       if (this.layersToShow.get(key)) {
@@ -141,8 +148,7 @@ export default {
           method: 'post',
           url: `/api/${collection}/in-rectangle`,
           params: {
-            timestamp: new Date(this.time).toISOString().replace("Z", ""),
-            timePeriod: this.timePeriod
+            timestamp: new Date(this.time).toISOString().replace("Z", "")
           },
           data: {
             _northEast: {lat: 51.61113728, lng: 6.60827637},
@@ -153,56 +159,41 @@ export default {
             'Access-Control-Allow-Origin': '*'
           }
         }).then((response) => {
-          this.handleMemberGeometries(collection, layer, response.data)
+          this.handleMemberGeometries(layer, response.data)
         });
 
       }
     },
-    handleMemberGeometries(collection, layer, memberGeometries) {
+    handleMemberGeometries(layer, memberGeometries) {
       layer.clearLayers();
-      let markers = useMarkers(memberGeometries, collection, (member) => this.member = member)
+      let markers = useMarkers(memberGeometries, (member) => this.member = member)
       layer.addLayers(markers)
     },
-    //websocket
-    connect() {
-      this.fetchMembers();
-      this.stompClient = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
-      this.stompClient.connect(
-          {},
-          () => this.subscribe(),
-          error => {
-            console.error(error);
-            this.connect()
-          }
-      );
-    },
-    disconnect() {
-      if (this.stompClient) {
-        this.stompClient.disconnect();
-      }
-    },
     subscribe() {
-      for (let collection of this.layersToShow.keys()) {
-        this.stompClient.subscribe("/broker/member/" + collection, (member) => {
-          let body = JSON.parse(member.body)
-          let markerToRemove = this.layers.get(collection).getLayers().filter(m => m.feature.properties.isVersionOf === body.isVersionOf)[0];
-          let marker = useMarkers([body], collection, (member) => this.member = member).at(0)
-          marker?.setStyle({
-            color: '#FFA405',
-          })
-          if (collection === "gipod" && marker) {
-            setTimeout(function () {
-              this.updateMarker(marker)
-            }.bind(this), 1000)
-          }
-          if(markerToRemove) {
-            this.layers.get(collection).removeLayer(markerToRemove);
-          }
-          if(marker) {
-            this.layers.get(collection).addLayer(marker)
-          }
-        });
-      }
+      this.fetchMembers();
+      this.subscription = this.stompClient.subscribe("/broker/member/", (message) => {
+        const member = JSON.parse(message.body)
+        const markerToRemove = this.layers.get(member.collection).getLayers()
+            .filter(m => m.feature.properties.isVersionOf === member.isVersionOf)[0];
+        const marker = useMarkers([member], (member) => this.member = member).at(0)
+        marker?.setStyle({
+          color: '#FFA405',
+        })
+        if (member.collection === "gipod" && marker) {
+          setTimeout(function () {
+            this.updateMarker(marker)
+          }.bind(this), 1000)
+        }
+        if (markerToRemove) {
+          this.layers.get(member.collection).removeLayer(markerToRemove);
+        }
+        if (marker) {
+          this.layers.get(member.collection).addLayer(marker)
+        }
+      });
+    },
+    unsubscribe() {
+      this.subscription?.unsubscribe();
     },
     updateMarker(marker) {
       marker.setStyle({color: '#A813F7'})

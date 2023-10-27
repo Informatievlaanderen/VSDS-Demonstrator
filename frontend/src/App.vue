@@ -3,6 +3,30 @@ import LeafletMap from './components/map/LeafletMap.vue'
 import GlobalHeader from "@/components/headers/GlobalHeader.vue";
 import MemberCounter from './components/membercounter/MemberCounter.vue'
 import LineChart from "@/components/linechart/LineChart.vue";
+import {onMounted, onUnmounted, ref} from "vue";
+import Stomp from "webstomp-client";
+
+const stompClient = ref(null);
+
+onMounted(() => connect())
+onUnmounted(() => disconnect())
+
+function connect() {
+  stompClient.value = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
+  stompClient.value.connect(
+      {},
+      () => console.debug("Websocket connection readiness:", stompClient.value.connected),
+      error => {
+        console.error(error);
+        connect();
+      }
+  )
+}
+
+function disconnect() {
+  stompClient.value?.disconnect();
+}
+
 </script>
 
 <template>
@@ -10,7 +34,7 @@ import LineChart from "@/components/linechart/LineChart.vue";
   <main class="container">
     <div class="content-header">
       <h1 class="header header1">Vlaamse Smart Data Space Demonstrator</h1>
-      <MemberCounter/>
+      <MemberCounter :stomp-client="stompClient"/>
     </div>
     <div class="explanation-chart-container">
       <div class="body body-large-regular">
@@ -25,12 +49,12 @@ import LineChart from "@/components/linechart/LineChart.vue";
         </p>
       </div>
       <div class="line-chart body body-xxsmall-regular">
-        <LineChart></LineChart>
+        <LineChart :stomp-client="stompClient"></LineChart>
       </div>
     </div>
     <hr class="divider content-separator">
     <div>
-      <LeafletMap></LeafletMap>
+      <LeafletMap :stomp-client="stompClient"></LeafletMap>
     </div>
 
   </main>
