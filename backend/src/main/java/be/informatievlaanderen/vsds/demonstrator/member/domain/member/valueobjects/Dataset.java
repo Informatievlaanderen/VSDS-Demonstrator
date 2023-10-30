@@ -4,10 +4,11 @@ public class Dataset {
     private final String collection;
     private final long membersOutsideTimeFrame;
     private final HourCount hourCount;
+
     public Dataset(String collection, long membersOutsideTimeFrame, HourCount hourCount) {
-        this.collection=collection;
+        this.collection = collection;
         this.membersOutsideTimeFrame = membersOutsideTimeFrame;
-        this.hourCount=hourCount;
+        this.hourCount = hourCount;
     }
 
     public String getCollection() {

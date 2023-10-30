@@ -1,4 +1,6 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.dtos;
+package be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects;
+
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.DataSetDto;
 
 import java.util.List;
 

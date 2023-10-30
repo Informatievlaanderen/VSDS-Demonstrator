@@ -42,7 +42,7 @@ const formattedDate = computed(() => {
 })
 
 function onChange() {
-  emit('timestampChanged', getTime(), "PT10M")
+  emit('timestampChanged', getTime())
   isRealtime.value = false
 }
 
@@ -54,20 +54,20 @@ function onForwardClick(amount) {
     updatedValue = maxSeconds;
   }
   sliderValue.value = updatedValue;
-  emit('timestampChanged', getTime(), "PT5M")
+  emit('timestampChanged', getTime())
   isRealtime.value = false
 }
 
 function onShortcutClick(amount) {
   sliderValue.value = maxSeconds - amount * 60 * 60;
-  emit('timestampChanged', now.value.getTime() - amount * 60 * 60 * 1000, "PT10M")
+  emit('timestampChanged', now.value.getTime() - amount * 60 * 60 * 1000)
   isRealtime.value = false
 }
 
 function onRealTime() {
   sliderValue.value = maxSeconds;
   onPauseClick()
-  emit('timestampChanged', now.value.getTime(), "PT10M")
+  emit('timestampChanged', now.value.getTime())
   isRealtime.value = true
 }
 
@@ -80,7 +80,7 @@ function onPlayClick() {
     } else {
       sliderValue.value = 0;
     }
-    emit("timestampChanged", getTime(), "PT1H")
+    emit("timestampChanged", getTime())
   }, 2000)
 }
 

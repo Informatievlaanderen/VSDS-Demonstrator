@@ -3,6 +3,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.exceptions;
 public class ResourceNotFoundException extends RuntimeException {
     private final String type;
     private final String id;
+
     public ResourceNotFoundException(String type, String id) {
         this.type = type;
         this.id = id;

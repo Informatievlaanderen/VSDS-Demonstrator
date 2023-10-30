@@ -1,11 +1,11 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.rest;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberValidator;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
 import be.informatievlaanderen.vsds.demonstrator.member.custom.MeetPuntRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.MapBoundsDto;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.MapBoundsDto;
 import org.apache.jena.rdf.model.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +32,13 @@ public class MembersController {
 
     @PostMapping(value = "/{collectionName}/in-rectangle", consumes = {"application/json"})
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<MemberDto> getMembersInRectangle(@PathVariable(name = "collectionName") String collectionName, @RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp, @RequestParam(defaultValue = "PT1M") String timePeriod) {
-        return service.getMembersInRectangle(mapBoundsDto.getGeometry(), collectionName, timestamp, timePeriod);
+    public List<MemberDto> getMembersInRectangle(@PathVariable String collectionName, @RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp) {
+        return service.getMembersInRectangle(mapBoundsDto.getGeometry(), collectionName, timestamp);
     }
 
     @PostMapping(value = "/{collectionName}/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public void ingestLdesMember(@PathVariable(name = "collectionName") String collectionName, @RequestBody Model model) {
+    public void ingestLdesMember(@PathVariable String collectionName, @RequestBody Model model) {
         validator.validate(model, collectionName);
         if (collectionName.equals("verkeersmeting")) {
             addMeetpuntLocation(model); // CUSTOM CODE
@@ -48,6 +48,6 @@ public class MembersController {
 
     private void addMeetpuntLocation(Model model) {
         String[] split = model.listObjectsOfProperty(model.createProperty("https://data.vlaanderen.be/ns/verkeersmetingen#verkeersmeetpunt")).next().toString().split("/");
-        model.add(meetPuntRepository.get(split[split.length-1]));
+        model.add(meetPuntRepository.get(split[split.length - 1]));
     }
 }

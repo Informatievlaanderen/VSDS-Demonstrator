@@ -1,8 +1,8 @@
 package be.informatievlaanderen.vsds.demonstrator.triple.application.services;
 
+import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Node;
 import be.informatievlaanderen.vsds.demonstrator.triple.domain.valueobjects.Triple;
-import be.informatievlaanderen.vsds.demonstrator.triple.domain.repositories.TripleRepository;
 import be.informatievlaanderen.vsds.demonstrator.triple.infra.exceptions.TripleFetchFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,7 +65,7 @@ class TripleServiceImplTest {
 
         assertThatThrownBy(() -> service.getTriplesById(MEMBER_ID, COLLECTION))
                 .isInstanceOf(TripleFetchFailedException.class)
-                .hasMessage("Something went wrong while trying to fetch the triples with id %s".formatted(MEMBER_ID));
+                .hasMessage("Something went wrong while trying to fetch the triples with id %s", MEMBER_ID);
 
         verify(repository).getById(MEMBER_ID, COLLECTION);
     }

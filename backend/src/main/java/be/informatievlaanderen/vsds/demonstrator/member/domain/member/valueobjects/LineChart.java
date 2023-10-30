@@ -1,6 +1,6 @@
 package be.informatievlaanderen.vsds.demonstrator.member.domain.member.valueobjects;
 
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.DataSetDto;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.DataSetDto;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

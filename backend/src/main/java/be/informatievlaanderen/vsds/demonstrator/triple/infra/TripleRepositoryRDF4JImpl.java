@@ -37,7 +37,7 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
     protected void initRepo(RepositoryManager repositoryManager) {
         repositoryManager.init();
         try {
-            if(!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
+            if (!repositoryManager.hasRepositoryConfig(graphDBConfig.getRepositoryId())) {
                 String indeces = "spoc,cspo";
                 NativeStoreConfig storeConfig = new NativeStoreConfig(indeces);
                 RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);

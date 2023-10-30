@@ -2,45 +2,52 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.StreamsConfig;
+import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberIngestedEvent;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.dtos.LineChartDto;
-import be.informatievlaanderen.vsds.demonstrator.member.rest.websocket.MessageController;
+import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.DataSetDto;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.opengis.referencing.operation.TransformException;
+import org.opengis.util.FactoryException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.ResourceUtils;
 import org.wololo.jts2geojson.GeoJSONReader;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
-    private static final String TIME_PERIOD = "PT5M";
     private static final String COLLECTION = "gipod";
     private static final String IS_VERSION_OF = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464";
     private static final LocalDateTime timestamp = ZonedDateTime.parse("2022-05-20T09:58:15.867Z").toLocalDateTime();
@@ -48,6 +55,8 @@ class MemberServiceImplTest {
 
     @Mock
     private MemberRepository repository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private MemberService service;
 
@@ -64,7 +73,7 @@ class MemberServiceImplTest {
         eventStreamConfig.setVersionOfPath("http://purl.org/dc/terms/isVersionOf");
         StreamsConfig streams = new StreamsConfig();
         streams.setStreams(Map.of(COLLECTION, eventStreamConfig));
-        service = new MemberServiceImpl(repository, streams, mock(MessageController.class));
+        service = new MemberServiceImpl(repository, streams, eventPublisher);
     }
 
     @Nested
@@ -75,7 +84,7 @@ class MemberServiceImplTest {
             final List<Member> members = initMembers();
             when(repository.getMembersByGeometry(eq(rectangle), eq(COLLECTION), any(), eq(timestamp))).thenReturn(members);
 
-            final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp, TIME_PERIOD).stream()
+            final List<Member> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp).stream()
                     .map(dto -> new Member(dto.getMemberId(), COLLECTION, geoJSONReader.read(dto.getGeojsonGeometry()), dto.getIsVersionOf(), dto.getTimestamp(), Map.of()))
                     .toList();
 
@@ -95,7 +104,7 @@ class MemberServiceImplTest {
             final GeoJSONReader geoJSONReader = new GeoJSONReader();
             when(repository.getMembersByGeometry(eq(rectangle), eq(COLLECTION), any(), eq(timestamp))).thenReturn(initMembers());
 
-            List<Geometry> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp, TIME_PERIOD).stream()
+            List<Geometry> retrievedMembers = service.getMembersInRectangle(rectangle, COLLECTION, timestamp).stream()
                     .map(dto -> geoJSONReader.read(dto.getGeojsonGeometry()))
                     .toList();
             Geometry outsidePoint = wktReader.read("POINT(6 6)");
@@ -136,17 +145,32 @@ class MemberServiceImplTest {
         }
     }
 
+    @Nested
+    class IngestMember {
+        @Test
+        void when_IngestValidMember_then_SaveMember() throws IOException {
+            final String id = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
+            Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
+            Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
+            IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
+            service.ingestMember(ingestedMemberDto);
 
-    @Test
-    void test_saveMember() throws IOException {
-        final String id = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
-        Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
-        Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
-        IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
-        service.ingestMember(ingestedMemberDto);
+            verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
+            verify(eventPublisher).publishEvent(argThat((MemberIngestedEvent event) -> event.getMemberDto().getMemberId().equals(id)));
+        }
 
-        verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
+        @Test
+        void when_IngestInvalidMember_then_ThrowException() throws FactoryException, TransformException {
+            IngestedMemberDto ingestedMemberDto = mock(IngestedMemberDto.class);
+            when(ingestedMemberDto.getCollection()).thenReturn(COLLECTION);
+            when(ingestedMemberDto.getMember(any())).thenThrow(FactoryException.class);
+
+            assertThatThrownBy(() -> service.ingestMember(ingestedMemberDto))
+                    .isInstanceOf(InvalidGeometryProvidedException.class);
+            verifyNoInteractions(eventPublisher, repository);
+        }
     }
+
 
     @Test
     void test_getNumberOfMembers() {
@@ -156,33 +180,34 @@ class MemberServiceImplTest {
     }
 
 
-//    @Test
-//    @Disabled
-//    void test_getLineChartDto() {
-//        when(repository.findMembersByCollectionAfterLocalDateTime(COLLECTION, any())).thenReturn(getMemberList());
-//        when(repository.getNumberOfMembers()).thenReturn(8L);
-//
-//        LineChartDto lineChartDto = service.getLineChartDtos();
-//
-//        verify(repository).getNumberOfMembers();
-//        verify(repository).findMembersByCollectionAfterLocalDateTime(COLLECTION, any());
-//        assertEquals(1, lineChartDto.getLabels().size());
-////        assertEquals(1, lineChartDto.getValues().size());
-////        assertEquals(1, lineChartDto.getValues().get(0).size());
-////        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).toString(), lineChartDto.getLabels().get(0));
-////        assertEquals(8, lineChartDto.getValues().get(0).get(0));
-//    }
+    @Test
+    void test_getLineChartDto() {
+        final List<Member> members = getMemberList();
+        final int numberOfLabelsPerHourForOneWeek = 7 * 24 + 1;
+        when(repository.findMembersByCollectionAfterLocalDateTime(eq(COLLECTION), any())).thenReturn(members);
+        when(repository.getNumberOfMembersByCollection(COLLECTION)).thenReturn(Long.valueOf(members.size()));
+
+        LineChartDto lineChartDto = service.getLineChartDtos();
+        DataSetDto dataSetDto = lineChartDto.getDataSetDtos().get(0);
+
+        verify(repository).getNumberOfMembersByCollection(COLLECTION);
+        verify(repository).findMembersByCollectionAfterLocalDateTime(eq(COLLECTION), any());
+        assertThat(lineChartDto.getLabels()).hasSize(numberOfLabelsPerHourForOneWeek);
+        assertThat(dataSetDto.getName()).isEqualTo(COLLECTION);
+        assertThat(dataSetDto.getValues()).hasSize(numberOfLabelsPerHourForOneWeek);
+    }
 
     private List<Member> getMemberList() {
-        Member id1 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id2 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id3 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id4 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id5 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id6 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id7 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        Member id8 = new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of());
-        return List.of(id1, id2, id3, id4, id5, id6, id7, id8);
+        return List.of(
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of()),
+                new Member("id1", COLLECTION, null, IS_VERSION_OF, LocalDateTime.now(), Map.of())
+        );
     }
 
     private List<Member> initMembers() throws ParseException {
@@ -194,7 +219,6 @@ class MemberServiceImplTest {
                 "http://gipod.be/stations/1", "POINT(1 2)",
                 "http://gipod.be/stations/2", "POINT(2 4)"
         );
-
         final List<String> stationMemberIds = List.of(
                 "http://gipod.be/stations/1/0",
                 "http://gipod.be/stations/2/1",
@@ -206,14 +230,8 @@ class MemberServiceImplTest {
 
         for (String memberId : stationMemberIds) {
             String isVersionOf = memberId.substring(0, 26);
-            Member member = new Member(
-                    memberId,
-                    COLLECTION,
-                    reader.read(stations.get(isVersionOf)),
-                    isVersionOf,
-                    timestamp.plusDays(index),
-                    Map.of()
-            );
+            Geometry geometry = reader.read(stations.get(isVersionOf));
+            Member member = new Member(memberId, COLLECTION, geometry, isVersionOf, timestamp.plusDays(index), Map.of());
             members.add(member);
             index++;
         }

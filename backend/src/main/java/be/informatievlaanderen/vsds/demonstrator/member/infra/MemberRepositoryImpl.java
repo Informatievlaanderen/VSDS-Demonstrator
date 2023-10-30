@@ -46,7 +46,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public List<Member> findMembersByCollectionAfterLocalDateTime(String collection, LocalDateTime localDateTime) {
         return memberGeometryJpaRepo
-                .findByCollectionAndTimestampAfter(collection,localDateTime)
+                .findByCollectionAndTimestampAfter(collection, localDateTime)
                 .stream()
                 .map(MemberEntity::toDomainObject)
                 .toList();

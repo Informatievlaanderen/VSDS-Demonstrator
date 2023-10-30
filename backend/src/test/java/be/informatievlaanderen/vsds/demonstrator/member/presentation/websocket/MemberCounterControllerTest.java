@@ -1,4 +1,4 @@
-package be.informatievlaanderen.vsds.demonstrator.member.rest.websocket;
+package be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.services.MemberService;
 import org.junit.jupiter.api.Test;
@@ -22,12 +22,12 @@ class MemberCounterControllerTest {
     private MemberCounterController memberCounterController;
 
     @Test
-    void test_numberOfMembersIsTransferredToWebsocket(){
+    void test_numberOfMembersIsTransferredToWebsocket() {
         when(memberService.getNumberOfMembers()).thenReturn(76L);
         memberCounterController.send();
 
         verify(memberService).getNumberOfMembers();
-        verify(simpMessagingTemplate).convertAndSend("/broker/membercounter",76L);
+        verify(simpMessagingTemplate).convertAndSend("/broker/membercounter", 76L);
     }
 
 }
