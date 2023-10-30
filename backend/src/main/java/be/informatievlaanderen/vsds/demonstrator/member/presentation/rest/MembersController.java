@@ -32,13 +32,13 @@ public class MembersController {
 
     @PostMapping(value = "/{collectionName}/in-rectangle", consumes = {"application/json"})
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public List<MemberDto> getMembersInRectangle(@PathVariable(name = "collectionName") String collectionName, @RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp) {
+    public List<MemberDto> getMembersInRectangle(@PathVariable String collectionName, @RequestBody MapBoundsDto mapBoundsDto, @RequestParam LocalDateTime timestamp) {
         return service.getMembersInRectangle(mapBoundsDto.getGeometry(), collectionName, timestamp);
     }
 
     @PostMapping(value = "/{collectionName}/members")
     @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public void ingestLdesMember(@PathVariable(name = "collectionName") String collectionName, @RequestBody Model model) {
+    public void ingestLdesMember(@PathVariable String collectionName, @RequestBody Model model) {
         validator.validate(model, collectionName);
         if (collectionName.equals("verkeersmeting")) {
             addMeetpuntLocation(model); // CUSTOM CODE

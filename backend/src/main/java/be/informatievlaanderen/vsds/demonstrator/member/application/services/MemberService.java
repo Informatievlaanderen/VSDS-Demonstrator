@@ -1,8 +1,8 @@
 package be.informatievlaanderen.vsds.demonstrator.member.application.services;
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
-import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.LineChartDto;
 import org.locationtech.jts.geom.Geometry;
 
 import java.time.LocalDateTime;

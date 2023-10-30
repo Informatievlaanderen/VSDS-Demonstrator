@@ -5,12 +5,12 @@ import be.informatievlaanderen.vsds.demonstrator.member.application.config.Strea
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.InvalidGeometryProvidedException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.ResourceNotFoundException;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.IngestedMemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.LineChartDto;
 import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberDto;
+import be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.MemberIngestedEvent;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.DataSetDto;
-import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.LineChartDto;
-import be.informatievlaanderen.vsds.demonstrator.member.presentation.websocket.MessageController;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.opengis.referencing.operation.TransformException;
 import org.opengis.util.FactoryException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.ResourceUtils;
 import org.wololo.jts2geojson.GeoJSONReader;
 
@@ -54,6 +55,8 @@ class MemberServiceImplTest {
 
     @Mock
     private MemberRepository repository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     private MemberService service;
 
@@ -70,7 +73,7 @@ class MemberServiceImplTest {
         eventStreamConfig.setVersionOfPath("http://purl.org/dc/terms/isVersionOf");
         StreamsConfig streams = new StreamsConfig();
         streams.setStreams(Map.of(COLLECTION, eventStreamConfig));
-        service = new MemberServiceImpl(repository, streams, mock(MessageController.class));
+        service = new MemberServiceImpl(repository, streams, eventPublisher);
     }
 
     @Nested
@@ -153,6 +156,7 @@ class MemberServiceImplTest {
             service.ingestMember(ingestedMemberDto);
 
             verify(repository).saveMember(argThat(result -> result.getMemberId().equals(id)));
+            verify(eventPublisher).publishEvent(argThat((MemberIngestedEvent event) -> event.getMemberDto().getMemberId().equals(id)));
         }
 
         @Test
@@ -163,6 +167,7 @@ class MemberServiceImplTest {
 
             assertThatThrownBy(() -> service.ingestMember(ingestedMemberDto))
                     .isInstanceOf(InvalidGeometryProvidedException.class);
+            verifyNoInteractions(eventPublisher, repository);
         }
     }
 
