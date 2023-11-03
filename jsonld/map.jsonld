@@ -1,0 +1,11 @@
+{
+    "@context": [
+      {
+        "@vocab": "https://www.crowdscan.be/ns/map#",
+        "last_updated": {
+          "@type": "http://www.w3.org/2001/XMLSchema#DateTime"
+        }
+      },
+      "http://geojson.org/geojson-ld/geojson-context.jsonld"
+    ]
+}

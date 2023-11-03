@@ -1,7 +1,7 @@
 services:
 
   data-provider:
-    image: ghcr.io/informatievlaanderen/ldi-orchestrator:20230927142432
+    image: ghcr.io/informatievlaanderen/ldi-orchestrator:latest
     container_name: demonstrator-data-provider
     ports:
       - 8082:8080
@@ -9,10 +9,13 @@ services:
       - ./gipod.config.yml:/ldio/application.yml:ro
       - ./rml:/ldio/rml:ro
       - ./sparql:/ldio/sparql:ro
+      - ./jsonld:/ldio/jsonld:ro
     depends_on:
       rdf4j-server:
         condition: service_healthy
       demonstrator:
+        condition: service_started
+      crowdscan-location-provider:
         condition: service_started
     networks:
       - demonstrator
@@ -63,6 +66,25 @@ services:
       test: "PGPASSWORD=test pg_isready -h 127.0.0.1 -U postgres -d test"
     networks:
       - demonstrator
+
+  crowdscan-location-provider:
+    image: ghcr.io/informatievlaanderen/ldi-orchestrator:20230927142432
+    container_name: demonstrator-crowdscan-location-provider
+    ports:
+      - 8085:8080
+    volumes:
+      - ./crowdscan-locations.config.yml:/ldio/application.yml:ro
+      - ./rml:/ldio/rml:ro
+      - ./sparql:/ldio/sparql:ro
+      - ./jsonld:/ldio/jsonld:ro
+    depends_on:
+      rdf4j-server:
+        condition: service_healthy
+      demonstrator:
+        condition: service_started
+    networks:
+      - demonstrator
+
 
 networks:
   demonstrator:

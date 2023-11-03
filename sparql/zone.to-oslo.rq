@@ -1,0 +1,60 @@
+PREFIX rdfs:            <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema:          <http://schema.org/>
+PREFIX time:            <http://www.w3.org/2006/time#>
+PREFIX xsd:             <http://www.w3.org/2001/XMLSchema#>
+PREFIX dcterms:         <http://purl.org/dc/terms/>
+PREFIX sosa:            <http://www.w3.org/ns/sosa/>
+PREFIX ssn:             <http://www.w3.org/ns/ssn/> 
+PREFIX gsp:             <http://www.opengis.net/ont/geosparql#> 
+PREFIX sf:              <http://www.opengis.net/ont/sf#>
+PREFIX locn:            <http://www.w3.org/ns/locn#> 
+PREFIX iso19156-sf:     <http://def.isotc211.org/iso19156/2011/SamplingFeature#> 
+PREFIX iso19156-ss:     <http://def.isotc211.org/iso19156/2011/SamplingSurface#> 
+PREFIX iso19156-sp:     <http://def.isotc211.org/iso19156/2011/SamplingPoint#> 
+PREFIX iso19156-gfi:    <http://def.isotc211.org/iso19156/2011/GeneralFeatureInstance#> 
+PREFIX iso19156-dssf:   <http://def.isotc211.org/iso19156/2011/DomainSpecificSamplingFeatures#> 
+
+PREFIX :                <https://www.crowdscan.be/ns/map#>
+
+CONSTRUCT {
+
+    ?zone 
+        a iso19156-ss:SF_SamplingSurface ;
+        dcterms:modified ?modified ;
+        iso19156-sf:SF_SamplingFeature.sampledFeature ?zoneFeature;
+        iso19156-ss:SF_SamplingSurface.shape [
+            a gsp:Surface ; 
+            gsp:asWKT ?zoneGeometry
+        ] ;
+        sosa:isResultOf ?zoneSampling .
+
+    ?zoneFeature 
+        a iso19156-gfi:GFI_DomainFeature, dcterms:Location ; 
+        rdfs:label ?placeName .
+
+    ?zoneSampling  
+        a sosa:Sampling ; 
+        sosa:madeBySampler [
+            a sosa:Sampler ;
+            locn:location [
+                a locn:Geometry ; 
+                gsp:asWKT ?gatewayGeometry
+            ]
+        ] .
+
+} WHERE {
+
+    ?zone a :Zone .
+    ?zone dcterms:modified ?modified .
+    ?zone :region ?region .
+    ?zone locn:geometry ?zoneShape .
+    ?zoneShape gsp:asWKT ?zoneGeometry .
+    bind(BNODE() as ?zoneSampling) .
+    bind(BNODE() as ?zoneFeature) .
+    ?gateway a :Gateway .
+    ?gateway :environment ?environment .
+    ?gateway locn:geometry ?gatewayLocation .
+    ?gatewayLocation gsp:asWKT ?gatewayGeometry .
+    bind(STRLANG(concat(?environment, " zone ", STR(?region)), "nl") AS ?placeName) .
+
+}

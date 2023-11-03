@@ -1,0 +1,43 @@
+server:
+  port: 8085
+orchestrator:
+  pipelines:
+    - name: map-pipeline
+      description: "HTTP polling, OSLO transformation, version creation & HTTP sending."
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+        config:
+          url: https://test.crowdscan.be/dataapi/antwerpen/beacon/map
+          interval: P1D
+        adapter:
+          name: be.vlaanderen.informatievlaanderen.ldes.ldi.JsonToLdAdapter
+          config:
+            core-context: file:///ldio/jsonld/map.jsonld
+      transformers:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.GeoJsonToWktTransformer
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/map.to-zone.rq
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/zone.to-oslo.rq
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
+          config:
+            member-type: http://def.isotc211.org/iso19156/2011/SamplingSurface#SF_SamplingSurface
+            delimiter: "/"
+            date-observed-property: http://purl.org/dc/terms/modified
+            generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
+            versionOf-property: http://purl.org/dc/terms/isVersionOf
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionMaterialiser
+#          config:
+#            versionOf-property: http://purl.org/dc/terms/isVersionOf
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://rdf4j-server:8080/rdf4j-server
+            repository-id: locations
+            named-graph: http://crowdscan-locations
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+#          config:
+#            endpoint: https://webhook.site/51437bbb-a96c-4900-9535-836d6707aa83
+#            content-type: application/n-quads

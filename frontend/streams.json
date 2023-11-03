@@ -14,6 +14,11 @@
       "id": "bluebikes",
       "fullName": "Blue Bikes",
       "color": "#05c"
+    },
+    {
+      "id": "crowdscan",
+      "fullName": "CrowdScan",
+      "color": "#A4E2EB"
     }
   ]
 }

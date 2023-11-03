@@ -1,0 +1,2 @@
+<https://crowdscan.be/id/zone/${environment}/${zone}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://crowdscan.be/ns/Zone> .
+<https://crowdscan.be/id/zone/${environment}/${zone}> <http://www.opengis.net/ont/geosparql#asWKT> "${geometry}"^^<http://www.opengis.net/ont/geosparql#wktLiteral> .

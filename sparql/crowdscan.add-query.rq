@@ -1,0 +1,30 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+
+PREFIX :             <https://crowdscan.be/ns/>
+PREFIX http:         <https://crowdscan.be/ns/HttpRequest.>
+PREFIX obs:          <http://def.isotc211.org/iso19156/2011/Observation#>
+PREFIX prov:         <http://www.w3.org/ns/prov#>
+
+CONSTRUCT {
+  ?request a :HttpRequest .
+  ?request http:url ?url .
+  ?request http:body ?body .
+  ?request http:method "POST" .
+  ?request http:header ?type .
+  ?request http:header ?accept .
+} WHERE {
+  ?obs rdf:type obs:OM_Observation .
+  ?obs obs:OM_Observation.featureOfInterest ?loc .
+  ?obs prov:generatedAtTime ?obstime .
+
+
+  bind(concat(str(?loc), "/") as ?locpart) .
+
+  # set HTTP request parameters
+  bind(bnode() as ?request) .
+  bind("http://rdf4j-server:8080/rdf4j-server/repositories/locations" as ?url) .
+  bind(concat("describe ?zone From <http://crowdscan-locations> Where { { select (max(?t) as ?max) Where { ?z <http://www.w3.org/ns/prov#generatedAtTime> ?time . Filter(?t < \"", str(?obstime), "\") . bind(str(?time) as ?t) . } } bind(IRI(concat(\"", ?locpart, "\", ?max)) as ?zone) . }") as ?body) .
+  bind("Content-Type: application/sparql-query" as ?type) .
+  bind("Accept: application/n-quads" as ?accept) .
+}

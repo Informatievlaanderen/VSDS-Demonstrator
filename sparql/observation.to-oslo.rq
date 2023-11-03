@@ -1,0 +1,26 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:       <http://schema.org/>
+PREFIX time:         <http://www.w3.org/2006/time#>
+PREFIX iso19156-om:  <http://def.isotc211.org/iso19156/2011/Observation#>
+PREFIX sosa:         <http://www.w3.org/ns/sosa/>
+PREFIX dv-seb:       <https://data.vlaanderen.be/ns/sensoren-en-bemonstering#>
+PREFIX :             <https://www.crowdscan.be/ns/count#>
+
+CONSTRUCT {
+  ?observation a iso19156-om:OM_Observation ;
+    iso19156-om:OM_Observation.resultTime ?time ;
+    iso19156-om:OM_Observation.phenomenonTime [ a time:Interval; time:hasXSDDuration ?delta; time:hasEnd [a time:Instant; time:inXSDDateTimeStamp ?time ] ];
+    iso19156-om:OM_Observation.result [ a schema:QuantitativeValue ; schema:value ?value ] ;
+    iso19156-om:OM_Observation.observedProperty :PeopleEstimate ;
+    iso19156-om:OM_Observation.featureOfInterest ?feature ;
+    iso19156-om:OM_Observation.procedure [ a sosa:Procedure ; dv-seb:Observatieprocedure.specificatie <http://www.crowdscan.be/id/countProcedure/v1> ] .
+} WHERE {
+  ?observation rdf:type :Observation .
+  ?observation :time ?time .
+  ?observation :value ?value .
+  ?observation :timedelta ?delta .
+  ?observation :environment ?env .
+  ?observation :region ?zone .
+  bind(IRI(concat("https://www.crowdscan.be/id/zone/", ?env, "/", STR(?zone))) AS ?feature) .
+}

@@ -2,72 +2,131 @@ server:
   port: 8082
 orchestrator:
   pipelines:
-    - name: gipod
-      input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
-        config:
-          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2024-10-05T10:28:37.923Z
-          sourceFormat: application/ld+json
-      outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
-          config:
-            sparql-host: http://rdf4j-server:8080/rdf4j-server
-            repository-id: test
-            named-graph: http://gipod
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
-          config:
-            content-type: application/n-quads
-            endpoint: http://host.docker.internal:8084/api/gipod/members
-    - name: verkeersmetingen-pipeline
+#    - name: gipod
+#      input:
+#        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+#        config:
+#          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2024-10-05T10:28:37.923Z
+#          sourceFormat: application/ld+json
+#      outputs:
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+#          config:
+#            sparql-host: http://rdf4j-server:8080/rdf4j-server
+#            repository-id: test
+#            named-graph: http://gipod
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+#          config:
+#            content-type: application/n-quads
+#            endpoint: http://host.docker.internal:8084/api/gipod/members
+#    - name: verkeersmetingen-pipeline
+#      description: "Simple http in, version creation, http out pipeline allowing to pause output."
+#      input:
+#        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+#        config:
+#          url: http://miv.opendata.belfla.be/miv/verkeersdata
+#          interval: PT10S
+#        adapter:
+#          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
+#          config:
+#            mapping: /ldio/rml/verkeersmetingen.ttl
+#      transformers:
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+#          config:
+#            query: /ldio/sparql/meting.to-oslo.rq
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
+#          config:
+#            member-type: https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
+#            delimiter: "/"
+#            date-observed-property: "<http://def.isotc211.org/iso19156/2011/CountObservation#OM_CountObservation.phenomenonTime>/<http://www.w3.org/2006/time#hasBeginning>/<http://www.w3.org/2006/time#inXSDDateTimeStamp>"
+#            generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
+#            versionOf-property: http://purl.org/dc/terms/isVersionOf
+#      outputs:
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+#          config:
+#            sparql-host: http://rdf4j-server:8080/rdf4j-server
+#            repository-id: test
+#            named-graph: http://verkeersmeting
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+#          config:
+#            endpoint: http://host.docker.internal:8084/api/verkeersmeting/members
+#            content-type: application/n-quads
+#    - name: stations-pipeline
+#      description: "HTTP polling, OSLO transformation, version creation & HTTP sending."
+#      input:
+#        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+#        config:
+#          url: https://api.blue-bike.be/pub/location
+#          interval: PT2M
+#        adapter:
+#          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
+#          config:
+#            mapping: /ldio/rml/stations.ttl
+#      outputs:
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+#          config:
+#            sparql-host: http://rdf4j-server:8080/rdf4j-server
+#            repository-id: test
+#            named-graph: http://bluebikes
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+#          config:
+#            endpoint: http://host.docker.internal:8084/api/bluebikes/members
+#            content-type: application/n-quads
+    - name: observations-pipeline
       description: "Simple http in, version creation, http out pipeline allowing to pause output."
       input:
         name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
         config:
-          url: http://miv.opendata.belfla.be/miv/verkeersdata
-          interval: PT10S
+          url: https://test.crowdscan.be/dataapi/antwerpen/beacon/count
+          interval: PT1M
         adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
+          name: be.vlaanderen.informatievlaanderen.ldes.ldi.JsonToLdAdapter
           config:
-            mapping: /ldio/rml/verkeersmetingen.ttl
+            core-context: file:///ldio/jsonld/count.jsonld
       transformers:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
           config:
-            query: /ldio/sparql/meting.to-oslo.rq
+            query: ./sparql/count.to-observation.rq
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/observation.to-oslo.rq
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
           config:
-            member-type: https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
+            member-type: http://def.isotc211.org/iso19156/2011/Observation#OM_Observation
             delimiter: "/"
-            date-observed-property: "<http://def.isotc211.org/iso19156/2011/CountObservation#OM_CountObservation.phenomenonTime>/<http://www.w3.org/2006/time#hasBeginning>/<http://www.w3.org/2006/time#inXSDDateTimeStamp>"
+            date-observed-property: http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.resultTime
             generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
             versionOf-property: http://purl.org/dc/terms/isVersionOf
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/crowdscan.add-query.rq
+            infer: true
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpEnricher
+          config:
+            url-property-path: https://crowdscan.be/ns/HttpRequest.url
+            body-property-path: https://crowdscan.be/ns/HttpRequest.body
+            http-method-property-path: https://crowdscan.be/ns/HttpRequest.method
+            header-property-path: https://crowdscan.be/ns/HttpRequest.header
+#            auth:
+#              type: OAUTH2_CLIENT_CREDENTIALS
+#              token-endpoint: https://apieco.eco-counter-tools.com/token
+#              client-id: ${OAUTH2_CLIENT_ID}
+#              client-secret: ${OAUTH2_CLIENT_SECRET}
+#              rate-limit:
+#                enabled: true
+#                max-requests-per-minute: ${REQUESTS_PER_MINUTE}
+            adapter:
+              name: be.vlaanderen.informatievlaanderen.ldes.ldi.RdfAdapter
       outputs:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
-            named-graph: http://verkeersmeting
+            named-graph: http://crowdscan
         - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
           config:
-            endpoint: http://host.docker.internal:8084/api/verkeersmeting/members
+            endpoint: http://host.docker.internal:8084/api/crowdscan/members
             content-type: application/n-quads
-    - name: stations-pipeline
-      description: "HTTP polling, OSLO transformation, version creation & HTTP sending."
-      input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
-        config:
-          url: https://api.blue-bike.be/pub/location
-          interval: PT2M
-        adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
-          config:
-            mapping: /ldio/rml/stations.ttl
-      outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
-          config:
-            sparql-host: http://rdf4j-server:8080/rdf4j-server
-            repository-id: test
-            named-graph: http://bluebikes
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
-          config:
-            endpoint: http://host.docker.internal:8084/api/bluebikes/members
-            content-type: application/n-quads
+#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+#          config:
+#            endpoint: https://webhook.site/51437bbb-a96c-4900-9535-836d6707aa83
+#            content-type: text/turtle
