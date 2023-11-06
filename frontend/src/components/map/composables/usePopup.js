@@ -30,6 +30,10 @@ export function usePopup(collection, properties) {
 <span class="popup-title body-small-regular">${properties.fullname}</span>
 <span>${properties.available}</span><b>beschikbare ${getBikeString(properties.available)}</b>
 </div>`
+        case "crowdscan":
+            return `<div class="popup-grid body body-xxsmall-regular">
+<span>personen dichtheid: ${properties.density}</span>
+</div>`
 
     }
 }

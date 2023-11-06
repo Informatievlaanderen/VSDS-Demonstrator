@@ -2,6 +2,7 @@ package be.informatievlaanderen.vsds.demonstrator.member.application.valueobject
 
 import be.informatievlaanderen.vsds.demonstrator.member.application.config.EventStreamConfig;
 import be.informatievlaanderen.vsds.demonstrator.member.application.exceptions.NoGeometryProvidedException;
+import be.informatievlaanderen.vsds.demonstrator.member.application.services.PropertyPathExtractor;
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.Member;
 import org.apache.jena.geosparql.implementation.GeometryWrapper;
 import org.apache.jena.geosparql.implementation.vocabulary.SRS_URI;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class IngestedMemberDto {
     }
 
     public Member getMember(EventStreamConfig eventStreamConfig) throws FactoryException, TransformException {
-        Geometry geometry = getGeometry();
+        Geometry geometry = getGeometry(eventStreamConfig);
         String memberId = getMemberId(eventStreamConfig);
         String isVersionOf = getIsVersionOf(eventStreamConfig);
         String timestampString = getTimestamp(eventStreamConfig);
@@ -64,8 +66,14 @@ public class IngestedMemberDto {
         return timestamp;
     }
 
-    private Geometry getGeometry() throws FactoryException, TransformException {
-        List<RDFNode> wktNodes = model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList();
+    private Geometry getGeometry(EventStreamConfig config) throws FactoryException, TransformException {
+        List<RDFNode> wktNodes = new ArrayList<>();
+        if(config.getGeoLocationPath() != null) {
+            wktNodes.addAll(PropertyPathExtractor.from(config.getGeoLocationPath()).getProperties(model));
+        }
+        else {
+            wktNodes.addAll(model.listObjectsOfProperty(model.createProperty("http://www.opengis.net/ont/geosparql#asWKT")).toList());
+        }
         if (wktNodes.isEmpty()) {
             throw new NoGeometryProvidedException();
         } else {
