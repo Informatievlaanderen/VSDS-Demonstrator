@@ -19,7 +19,7 @@ CONSTRUCT {
   ?obs prov:generatedAtTime ?obstime .
 
 
-  bind(concat(str(?loc), "/") as ?locpart) .
+  bind(concat(replace(replace(str(?loc), "www.crowdscan.be", "crowdscan.be"),"box4","beacon"), "/") as ?locpart) .
 
   # set HTTP request parameters
   bind(bnode() as ?request) .

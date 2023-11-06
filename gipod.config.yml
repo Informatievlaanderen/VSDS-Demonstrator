@@ -2,22 +2,22 @@ server:
   port: 8082
 orchestrator:
   pipelines:
-#    - name: gipod
-#      input:
-#        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
-#        config:
-#          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2024-10-05T10:28:37.923Z
-#          sourceFormat: application/ld+json
-#      outputs:
-#        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
-#          config:
-#            sparql-host: http://rdf4j-server:8080/rdf4j-server
-#            repository-id: test
-#            named-graph: http://gipod
-#        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
-#          config:
-#            content-type: application/n-quads
-#            endpoint: http://host.docker.internal:8084/api/gipod/members
+    - name: gipod
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2024-10-05T10:28:37.923Z
+          sourceFormat: application/ld+json
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://rdf4j-server:8080/rdf4j-server
+            repository-id: test
+            named-graph: http://gipod
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+          config:
+            content-type: application/n-quads
+            endpoint: http://host.docker.internal:8084/api/gipod/members
     - name: verkeersmetingen-pipeline
       description: "Simple http in, version creation, http out pipeline allowing to pause output."
       input:
@@ -72,30 +72,11 @@ orchestrator:
             endpoint: http://host.docker.internal:8084/api/bluebikes/members
             content-type: application/n-quads
     - name: crowdscan-observations-pipeline
-      description: "Simple http in, version creation, http out pipeline allowing to pause output."
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
         config:
-          url: https://test.crowdscan.be/dataapi/antwerpen/beacon/count
-          interval: PT1M
-        adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.JsonToLdAdapter
-          config:
-            core-context: file:///ldio/jsonld/count.jsonld
+          url: https://azure.crowdscan.be/ldes-scewc/observations
       transformers:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
-          config:
-            query: ./sparql/count.to-observation.rq
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
-          config:
-            query: ./sparql/observation.to-oslo.rq
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
-          config:
-            member-type: http://def.isotc211.org/iso19156/2011/Observation#OM_Observation
-            delimiter: "/"
-            date-observed-property: http://def.isotc211.org/iso19156/2011/Observation#OM_Observation.resultTime
-            generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
-            versionOf-property: http://purl.org/dc/terms/isVersionOf
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
           config:
             query: ./sparql/crowdscan.add-query.rq
@@ -108,6 +89,10 @@ orchestrator:
             header-property-path: https://crowdscan.be/ns/HttpRequest.header
             adapter:
               name: be.vlaanderen.informatievlaanderen.ldes.ldi.RdfAdapter
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/crowdscan.remove-query.rq
+            infer: false
       outputs:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
           config:
@@ -119,31 +104,10 @@ orchestrator:
             endpoint: http://host.docker.internal:8084/api/crowdscan/members
             content-type: application/n-quads
     - name: crowdscan-locations-pipeline
-      description: "HTTP polling, OSLO transformation, version creation & HTTP sending."
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
         config:
-          url: https://test.crowdscan.be/dataapi/antwerpen/beacon/map
-          interval: P1D
-        adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.JsonToLdAdapter
-          config:
-            core-context: file:///ldio/jsonld/map.jsonld
-      transformers:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.GeoJsonToWktTransformer
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
-          config:
-            query: ./sparql/map.to-zone.rq
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
-          config:
-            query: ./sparql/zone.to-oslo.rq
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
-          config:
-            member-type: http://def.isotc211.org/iso19156/2011/SamplingSurface#SF_SamplingSurface
-            delimiter: "/"
-            date-observed-property: http://purl.org/dc/terms/modified
-            generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
-            versionOf-property: http://purl.org/dc/terms/isVersionOf
+          url: https://azure.crowdscan.be/ldes-scewc/zones
       outputs:
         - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
           config:
