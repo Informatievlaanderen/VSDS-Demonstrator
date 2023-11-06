@@ -50,6 +50,20 @@ public class TripleRepositoryRDF4JImpl implements TripleRepository {
         } catch (Exception e) {
             log.error("Could not create repository. Reason: {}", e.getMessage());
         }
+        // possibly temp solution to separate locations from other members
+        try {
+            String locationsRepoId = "locations";
+            if(!repositoryManager.hasRepositoryConfig(locationsRepoId)) {
+                String indeces = "spoc,cspo";
+                NativeStoreConfig storeConfig = new NativeStoreConfig(indeces);
+                RepositoryImplConfig repositoryImplConfig = new SailRepositoryConfig(storeConfig);
+                RepositoryConfig config = new RepositoryConfig(locationsRepoId, repositoryImplConfig);
+                repositoryManager.addRepositoryConfig(config);
+                log.info("Created repository with id: {}", locationsRepoId);
+            }
+        } catch (Exception e) {
+            log.error("Could not create repository. Reason: {}", e.getMessage());
+        }
     }
 
     @Override

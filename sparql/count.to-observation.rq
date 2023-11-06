@@ -1,0 +1,50 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:       <http://schema.org/>
+PREFIX time:         <http://www.w3.org/2006/time#>
+PREFIX :             <https://www.crowdscan.be/ns/count#>
+
+CONSTRUCT {
+
+  GRAPH ?observation { 
+    ?observation a :Observation ;
+      :time ?time ;
+      :value ?value ;
+      :environment ?environment ;
+      :timedelta ?delta ;
+      :region ?zone .
+  }
+
+} WHERE {
+
+  ?header :environment ?environment .
+  ?header :time ?time .
+  ?header :timedelta ?timedelta .
+  bind(strdt(concat("-PT", str(?timedelta), "M"), xsd:duration) as ?delta) .
+
+  ?payload :payload ?regions .
+  {
+    SELECT (count(?first) as ?zoneCount) WHERE { ?list rdf:first ?first . }
+  }
+  
+  OPTIONAL { filter(?zoneCount = 1)
+    ?list rdf:first ?value .
+    bind(0 as ?zone) .
+  }
+
+  OPTIONAL { filter(?zoneCount > 1) 
+    {
+      SELECT ?value (count(?mid) as ?zone) 
+      WHERE 
+      {
+        ?regions rdf:rest* ?mid . 
+        ?mid rdf:rest ?node .
+        ?node rdf:first ?value .
+      }
+      GROUP BY ?node ?value
+    }
+  }
+  
+  bind(uri(concat("https://crowdscan.be/id/observation/", ?environment, "/", str(?zone))) as ?observation) .
+
+}

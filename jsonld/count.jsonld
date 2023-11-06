@@ -1,0 +1,14 @@
+{
+    "@context": {
+        "@vocab": "https://www.crowdscan.be/ns/count#",
+        "time": {
+          "@type": "http://www.w3.org/2001/XMLSchema#DateTime"
+        },
+        "timedelta": {
+          "@type": "http://www.w3.org/2001/XMLSchema#int"
+        },
+        "regions": {
+            "@container": "@list"
+        }
+      }
+}

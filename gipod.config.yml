@@ -71,3 +71,46 @@ orchestrator:
           config:
             endpoint: http://host.docker.internal:8084/api/bluebikes/members
             content-type: application/n-quads
+    - name: crowdscan-observations-pipeline
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://azure.crowdscan.be/ldes-scewc/observations
+      transformers:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/crowdscan.add-query.rq
+            infer: true
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpEnricher
+          config:
+            url-property-path: https://crowdscan.be/ns/HttpRequest.url
+            body-property-path: https://crowdscan.be/ns/HttpRequest.body
+            http-method-property-path: https://crowdscan.be/ns/HttpRequest.method
+            header-property-path: https://crowdscan.be/ns/HttpRequest.header
+            adapter:
+              name: be.vlaanderen.informatievlaanderen.ldes.ldi.RdfAdapter
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+          config:
+            query: ./sparql/crowdscan.remove-query.rq
+            infer: false
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://rdf4j-server:8080/rdf4j-server
+            repository-id: test
+            named-graph: http://crowdscan
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+          config:
+            endpoint: http://host.docker.internal:8084/api/crowdscan/members
+            content-type: application/n-quads
+    - name: crowdscan-locations-pipeline
+      input:
+        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        config:
+          url: https://azure.crowdscan.be/ldes-scewc/zones
+      outputs:
+        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+          config:
+            sparql-host: http://rdf4j-server:8080/rdf4j-server
+            repository-id: locations
+            named-graph: http://crowdscan-locations

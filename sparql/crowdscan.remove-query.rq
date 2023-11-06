@@ -1,0 +1,15 @@
+PREFIX :             <https://crowdscan.be/ns/>
+
+
+CONSTRUCT {
+    ?s ?p ?o .
+}
+WHERE {
+    ?s ?p ?o .
+
+    {SELECT ?request
+    WHERE {
+        ?request a :HttpRequest .
+    }}
+    FILTER(?s != ?request)
+}

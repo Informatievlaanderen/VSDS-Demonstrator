@@ -1,0 +1,53 @@
+PREFIX rdf:          <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:          <http://www.w3.org/2001/XMLSchema#>
+PREFIX schema:       <http://schema.org/>
+PREFIX time:         <http://www.w3.org/2006/time#>
+PREFIX geojson:      <https://purl.org/geojson/vocab#>
+PREFIX locn:         <http://www.w3.org/ns/locn#>
+PREFIX gsp:          <http://www.opengis.net/ont/geosparql#>
+PREFIX sf:           <http://www.opengis.net/ont/sf#>
+PREFIX dcterms:      <http://purl.org/dc/terms/>
+
+PREFIX :             <https://www.crowdscan.be/ns/map#>
+
+CONSTRUCT {
+
+  GRAPH ?graph {
+    ?entity a ?type ;
+      dcterms:modified ?last_updated ;
+      :region ?region ;
+      :sn ?sn ;
+      :installationTime ?installation_time ;
+      :environment ?env ;
+      locn:geometry [a ?geometryType ; gsp:asWKT ?geometry ] .
+  }
+
+} WHERE {
+
+  ?feature geojson:properties ?properties .
+  ?feature locn:geometry ?geometry .
+
+  OPTIONAL { 
+    ?properties rdf:type :gateway .
+    ?properties :last_updated ?last_updated .
+    ?properties :env ?env .
+    ?properties :installation_time ?installation_time .
+    ?properties :sn ?sn .
+    bind(sf:Polygon as ?geometryType) .
+    bind(<urn:x-arq:DefaultGraphNode> as ?graph) .
+    bind(:Gateway as ?type) .
+    bind(bnode() as ?entity) .
+  }
+
+  OPTIONAL { 
+    ?properties rdf:type :zone .
+    ?properties :region ?region .
+    ?properties :last_updated ?last_updated .
+    bind(sf:Point as ?geometryType) .
+    bind(:Zone as ?type) .
+    ?sub :env ?environment .
+    bind(uri(concat("https://www.crowdscan.be/id/zone/", ?environment, "/", STR(?region))) as ?entity) .
+    bind(?entity as ?graph) .
+  }
+  
+}

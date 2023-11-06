@@ -13,6 +13,7 @@ public class EventStreamConfig {
     private String versionOfPath;
     private String timestampPath;
     private String timezoneId;
+    private String geoLocationPath;
     private Map<String, String> propertyPredicates;
 
     public String getMemberType() {
@@ -59,5 +60,13 @@ public class EventStreamConfig {
 
     public void setVersionOfPath(String versionOfPath) {
         this.versionOfPath = versionOfPath;
+    }
+
+    public String getGeoLocationPath() {
+        return geoLocationPath;
+    }
+
+    public void setGeoLocationPath(String geoLocationPath) {
+        this.geoLocationPath = geoLocationPath;
     }
 }
