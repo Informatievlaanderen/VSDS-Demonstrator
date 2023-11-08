@@ -32,6 +32,7 @@ export function usePopup(collection, properties) {
 </div>`
         case "crowdscan":
             return `<div class="popup-grid body body-xxsmall-regular">
+<span class="popup-title body-small-regular">${properties.zonename}</span>
 <span>personen dichtheid: ${properties.density}</span>
 </div>`
 

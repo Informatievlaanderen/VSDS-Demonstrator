@@ -11,5 +11,5 @@ WHERE {
     WHERE {
         ?request a :HttpRequest .
     }}
-    FILTER(?s != ?request)
+    FILTER(?s != ?request && !(?p = <http://purl.org/dc/terms/isVersionOf> && regex(str(?o),".*zone.*")))
 }
