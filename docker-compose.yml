@@ -1,12 +1,12 @@
 services:
 
   data-provider:
-    image: ghcr.io/informatievlaanderen/ldi-orchestrator:latest
+    image: ghcr.io/informatievlaanderen/ldi-orchestrator:20231107105019
     container_name: demonstrator-data-provider
     ports:
       - 8082:8080
     volumes:
-      - ./gipod.config.yml:/ldio/application.yml:ro
+      - ./dataprovider.config.yml:/ldio/application.yml:ro
       - ./rml:/ldio/rml:ro
       - ./sparql:/ldio/sparql:ro
       - ./jsonld:/ldio/jsonld:ro
@@ -48,6 +48,7 @@ services:
 
   postgresql:
     image: kartoza/postgis
+    container_name: demonstrator-postgresql
     environment:
       # If you need to create multiple database you can add coma separated databases eg gis,data
       - POSTGRES_DB=test
