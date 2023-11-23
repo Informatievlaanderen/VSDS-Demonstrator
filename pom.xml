@@ -21,16 +21,4 @@
             <url>https://eupl.eu/1.2/en</url>
         </license>
     </licenses>
-
-    <properties>
-        <!-- Jacoco -->
-        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml
-        </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.language>java</sonar.language>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.organization>informatievlaanderen</sonar.organization>
-        <sonar.projectKey>informatievlaanderen_vsds-demonstrator</sonar.projectKey>
-    </properties>
 </project>
