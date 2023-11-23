@@ -1,6 +1,6 @@
 # VSDS DEMONSTRATOR
 
-The VSDS Demonstrator is a fullstack application which can be used to demonstrate the ingestion/replication of Linked Data Event Streams.
+The VSDS Demonstrator is a web application which can be used to demonstrate the ingestion/replication of Linked Data Event Streams.
 The VSDS Demonstrator was built in the context of
 the [VSDS project](https://vlaamseoverheid.atlassian.net/wiki/spaces/VSDSSTART/overview) in order to easily exchange
 open data.
@@ -48,17 +48,12 @@ The [`demonstrator.env`](./docker-compose/demonstrator.env) is an `.env` example
 #### The Data Provider Config Files
 The data provider is an instance of a LDIO-orchestrator, which also can be configured via an `.env` file or a mounted `application.yml` file. 
 For this container, we chose to go with the second scenario. More information about how to configure the LDIO-Orchestrator 
-can be found in its [GitHub repository](https://github.com/Informatievlaanderen/VSDS-Linked-Data-Interactions).
+can be found in the [LDIO Documentation](https://informatievlaanderen.github.io/VSDS-Linked-Data-Interactions/).
 
 The [`data-provider.config.yml`](./docker-compose/data-provider.config.yml) is an `application.yml` example file.
 
 #### The docker compose File
 Modify the [`docker-compose.yml`](./docker-compose.yml) according to your needs. To start the containers, run the following commands.
-
-Firstly, if desired, build an image 
-```shell
-docker compose build
-```
 
 Run the containers in the services
 ```shell
