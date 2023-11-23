@@ -14,7 +14,7 @@ RUN mvn clean install -DskipTests
 # RUN THE APPLICATION
 #
 FROM openjdk:18-ea-bullseye
-RUN apt-get update & apt-get upgrade
+RUN apt-get update & apt-get upgrade -y
 
 COPY --from=app-stage backend/target/vsds-demonstrator.jar ./
 

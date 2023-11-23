@@ -2,6 +2,10 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Full stack application to demonstrate Linked Data Event Streams</description>
+    <url>https://demonstrator.smartdataspace.dev-vlaanderen.be/</url>
+
     <groupId>be.informatievlaanderen.vsds</groupId>
     <artifactId>demonstrator</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -10,6 +14,13 @@
         <module>frontend</module>
         <module>backend</module>
     </modules>
+
+    <licenses>
+        <license>
+            <name>EUPL</name>
+            <url>https://eupl.eu/1.2/en</url>
+        </license>
+    </licenses>
 
     <properties>
         <!-- Jacoco -->
