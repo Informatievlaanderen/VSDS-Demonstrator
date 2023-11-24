@@ -24,7 +24,7 @@
         <sonar.language>java</sonar.language>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>informatievlaanderen</sonar.organization>
-        <sonar.projectKey>informatievlaanderen_vsds-demonstrator-${project.groupId}:${project.artifactId}</sonar.projectKey>
+        <sonar.projectKey>informatievlaanderen_vsds-demonstrator</sonar.projectKey>
     </properties>
 
     <licenses>
