@@ -21,7 +21,6 @@
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
         <jetbrains-annotations.version>24.0.1</jetbrains-annotations.version>
-        <sonar.projectKey>informatievlaanderen_vsds-demonstrator</sonar.projectKey>
 
         <!-- SPRING BOOT -->
         <spring-boot.version>3.1.5</spring-boot.version>
