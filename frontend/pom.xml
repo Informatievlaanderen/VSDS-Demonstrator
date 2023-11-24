@@ -12,7 +12,7 @@
 
     <properties>
         <sonar.skip>true</sonar.skip>
-
+        <node.version>v16.14.2</node.version>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
     </properties>
 
@@ -30,7 +30,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v16.14.2</nodeVersion>
+                            <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>
                     <!-- Install all project dependencies -->
