@@ -1,3 +1,4 @@
+version: "3.5"
 services:
 
   data-provider:
@@ -6,32 +7,29 @@ services:
     ports:
       - 8082:8080
     volumes:
-      - ./gipod.config.yml:/ldio/application.yml:ro
-      - ./rml:/ldio/rml:ro
-      - ./sparql:/ldio/sparql:ro
-      - ./jsonld:/ldio/jsonld:ro
+      - ./docker-compose/data-provider.config.yml:/ldio/application.yml:ro
+      - ./docker-compose/rml:/ldio/rml:ro
+      - ./docker-compose/sparql:/ldio/sparql:ro
+      - ./docker-compose/jsonld:/ldio/jsonld:ro
     depends_on:
       rdf4j-server:
         condition: service_healthy
       demonstrator:
         condition: service_started
     networks:
-      - demonstrator
+      - demonstrator-network
 
   demonstrator:
     container_name: demonstrator
-    image: vsds-demonstrator
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file: ./demonstrator.env
+    image: ghcr.io/informatievlaanderen/vsds-demonstrator:latest
+    env_file: ./docker-compose/demonstrator.env
     ports:
       - 8084:8080
     depends_on:
       - postgresql
       - rdf4j-server
     networks:
-      - demonstrator
+      - demonstrator-network
 
   rdf4j-server:
     image: eclipse/rdf4j-workbench:latest
@@ -44,10 +42,11 @@ services:
     healthcheck:
       test: "curl --fail http://localhost:8080/rdf4j-workbench/repositories/NONE/repositories || exit 1"
     networks:
-      - demonstrator
+      - demonstrator-network
 
   postgresql:
     image: kartoza/postgis
+    container_name: demonstrator-postgresql
     environment:
       # If you need to create multiple database you can add coma separated databases eg gis,data
       - POSTGRES_DB=test
@@ -63,10 +62,10 @@ services:
     healthcheck:
       test: "PGPASSWORD=test pg_isready -h 127.0.0.1 -U postgres -d test"
     networks:
-      - demonstrator
+      - demonstrator-network
 
 
 networks:
-  demonstrator:
+  demonstrator-network:
     driver: bridge
-    name: demonstrator
+    name: demonstrator-network

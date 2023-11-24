@@ -12,7 +12,7 @@ onMounted(() => connect())
 onUnmounted(() => disconnect())
 
 function connect() {
-  stompClient.value = new Stomp.client(`${import.meta.env.VITE_WS_BASE_URL}/update`, {debug: false});
+  stompClient.value = new Stomp.client("ws://localhost:8084/update", {debug: false})
   stompClient.value.connect(
       {},
       () => console.debug("Websocket connection readiness:", stompClient.value.connected),
