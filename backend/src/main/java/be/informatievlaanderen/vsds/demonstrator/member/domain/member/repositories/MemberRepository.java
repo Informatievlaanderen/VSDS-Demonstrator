@@ -19,4 +19,6 @@ public interface MemberRepository {
     List<Member> findMembersByCollectionAfterLocalDateTime(String collection, LocalDateTime localDateTime);
 
     long getNumberOfMembersByCollection(String collection);
+
+	void deleteMembersOlderThenSevenDays();
 }

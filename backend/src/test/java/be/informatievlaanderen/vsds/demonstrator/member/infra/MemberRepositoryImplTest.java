@@ -137,6 +137,14 @@ class MemberRepositoryImplTest {
         assertEquals(expectedMembers, membersAfterLocalDateTime);
     }
 
+    @Test
+    void test_deleteMembersByTimestampBefore() {
+        repository.deleteMembersOlderThenSevenDays();
+
+        final LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
+        verify(jpaRepository).deleteAllByTimestampBefore(argThat(sevenDaysAgo::isAfter));
+    }
+
     private List<MemberEntity> initMembers() throws ParseException {
         final WKTReader reader = new WKTReader();
         List<MemberEntity> members = new ArrayList<>();

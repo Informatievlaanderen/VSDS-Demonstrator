@@ -16,4 +16,6 @@ public interface MemberEntityJpaRepository extends JpaRepository<MemberEntity, S
 
     long countAllByCollection(String collection);
 
+    void deleteAllByTimestampBefore(LocalDateTime retentionDate);
+
 }

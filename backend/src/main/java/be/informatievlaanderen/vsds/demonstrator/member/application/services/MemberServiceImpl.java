@@ -29,82 +29,93 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.RetentionPolicyConstants.MAX_AGE_OF_MEMBERS_IN_DAYS;
+
 @Service
 public class MemberServiceImpl implements MemberService {
-    private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
-    private final MemberRepository repository;
-    private final StreamsConfig streams;
-    private final ApplicationEventPublisher eventPublisher;
-    private static final Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
+	private final GeoJSONWriter geoJSONWriter = new GeoJSONWriter();
+	private final MemberRepository repository;
+	private final StreamsConfig streams;
+	private final ApplicationEventPublisher eventPublisher;
+	private static final Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 
 
-    public MemberServiceImpl(MemberRepository repository, StreamsConfig streams, ApplicationEventPublisher eventPublisher) {
-        this.repository = repository;
-        this.streams = streams;
-        this.eventPublisher = eventPublisher;
-    }
+	public MemberServiceImpl(MemberRepository repository, StreamsConfig streams, ApplicationEventPublisher eventPublisher) {
+		this.repository = repository;
+		this.streams = streams;
+		this.eventPublisher = eventPublisher;
+	}
 
-    @Override
-    public void ingestMember(IngestedMemberDto ingestedMemberDto) {
-        try {
-            EventStreamConfig eventStreamConfig = streams.getStream(ingestedMemberDto.getCollection())
-                    .orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
-            Member member = ingestedMemberDto.getMember(eventStreamConfig);
-            repository.saveMember(member);
-            MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), ingestedMemberDto.getCollection(), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
-            eventPublisher.publishEvent(new MemberIngestedEvent(memberDto));
+	@Override
+	public void ingestMember(IngestedMemberDto ingestedMemberDto) {
+		Member member = getMemberFromDto(ingestedMemberDto);
+		if (member.getTimestamp().isBefore(LocalDateTime.now().minusDays(MAX_AGE_OF_MEMBERS_IN_DAYS))) {
+			log.info("Member older then {} days ignored", MAX_AGE_OF_MEMBERS_IN_DAYS);
+			return;
+		}
 
-            log.info("new member ingested");
-        } catch (FactoryException | TransformException e) {
-            throw new InvalidGeometryProvidedException(ingestedMemberDto.getModel(), e);
-        }
-    }
+		repository.saveMember(member);
+		MemberDto memberDto = new MemberDto(member.getMemberId(), geoJSONWriter.write(member.getGeometry()), ingestedMemberDto.getCollection(), member.getTimestamp(), member.getIsVersionOf(), member.getProperties());
+		eventPublisher.publishEvent(new MemberIngestedEvent(memberDto));
 
-    @Override
-    public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp) {
-        return repository.getMembersByGeometry(rectangleGeometry, collectionName, LocalDateTime.now().minusDays(7), timestamp)
-                .stream()
-                .collect(Collectors.groupingBy(Member::getIsVersionOf, Collectors.maxBy(Comparator.comparing(Member::getTimestamp))))
-                .values().stream()
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), collectionName, memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
-                .toList();
-    }
+		log.info("new member ingested");
+	}
 
-    @Override
-    public MemberDto getMemberById(String memberId) {
-        return repository.findByMemberId(memberId)
-                .map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getCollection(), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
-                .orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
-    }
+	@Override
+	public List<MemberDto> getMembersInRectangle(Geometry rectangleGeometry, String collectionName, LocalDateTime timestamp) {
+		return repository.getMembersByGeometry(rectangleGeometry, collectionName, LocalDateTime.now().minusDays(7), timestamp)
+				.stream()
+				.collect(Collectors.groupingBy(Member::getIsVersionOf, Collectors.maxBy(Comparator.comparing(Member::getTimestamp))))
+				.values().stream()
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), collectionName, memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
+				.toList();
+	}
 
-    @Override
-    public long getNumberOfMembers() {
-        return repository.getNumberOfMembers();
-    }
+	@Override
+	public MemberDto getMemberById(String memberId) {
+		return repository.findByMemberId(memberId)
+				.map(memberGeometry -> new MemberDto(memberGeometry.getMemberId(), geoJSONWriter.write(memberGeometry.getGeometry()), memberGeometry.getCollection(), memberGeometry.getTimestamp(), memberGeometry.getIsVersionOf(), memberGeometry.getProperties()))
+				.orElseThrow(() -> new ResourceNotFoundException("Member", memberId));
+	}
 
-    @Override
-    public long getNumberOfMembersByCollection(String collection) {
-        return repository.getNumberOfMembersByCollection(collection);
-    }
+	@Override
+	public long getNumberOfMembers() {
+		return repository.getNumberOfMembers();
+	}
 
-    @Override
-    public LineChartDto getLineChartDtos() {
-        LocalDateTime startDate = LocalDateTime.now().minusDays(7);
-        LineChart lineChart = new LineChart(startDate);
+	@Override
+	public long getNumberOfMembersByCollection(String collection) {
+		return repository.getNumberOfMembersByCollection(collection);
+	}
 
-        streams
-                .getStreams()
-                .keySet()
-                .stream()
-                .map(collection -> {
-                    long numberOfMembers = getNumberOfMembersByCollection(collection);
+	@Override
+	public LineChartDto getLineChartDtos() {
+		LocalDateTime startDate = LocalDateTime.now().minusDays(7);
+		LineChart lineChart = new LineChart(startDate);
 
-                    List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection, startDate);
-                    return new Dataset(collection, numberOfMembers - membersAfterLocalDateTime.size(), new HourCount(membersAfterLocalDateTime));
-                }).forEach(lineChart::addDataSet);
+		streams
+				.getStreams()
+				.keySet()
+				.stream()
+				.map(collection -> {
+					long numberOfMembers = getNumberOfMembersByCollection(collection);
 
-        return new LineChartDto(lineChart.getLabels(), lineChart.getDatasetDtos());
-    }
+					List<Member> membersAfterLocalDateTime = repository.findMembersByCollectionAfterLocalDateTime(collection, startDate);
+					return new Dataset(collection, numberOfMembers - membersAfterLocalDateTime.size(), new HourCount(membersAfterLocalDateTime));
+				}).forEach(lineChart::addDataSet);
+
+		return new LineChartDto(lineChart.getLabels(), lineChart.getDatasetDtos());
+	}
+
+	private Member getMemberFromDto(IngestedMemberDto ingestedMemberDto) {
+		EventStreamConfig eventStreamConfig = streams.getStream(ingestedMemberDto.getCollection())
+				.orElseThrow(() -> new MissingCollectionException(ingestedMemberDto.getCollection()));
+		try {
+			return ingestedMemberDto.getMember(eventStreamConfig);
+		} catch (FactoryException | TransformException e) {
+			throw new InvalidGeometryProvidedException(ingestedMemberDto.getModel(), e);
+		}
+	}
 }

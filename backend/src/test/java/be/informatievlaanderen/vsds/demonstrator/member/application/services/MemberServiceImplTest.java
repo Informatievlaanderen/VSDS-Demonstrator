@@ -12,6 +12,7 @@ import be.informatievlaanderen.vsds.demonstrator.member.domain.member.entities.M
 import be.informatievlaanderen.vsds.demonstrator.member.domain.member.repositories.MemberRepository;
 import be.informatievlaanderen.vsds.demonstrator.member.presentation.dtos.DataSetDto;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFParser;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,8 +32,10 @@ import org.springframework.util.ResourceUtils;
 import org.wololo.jts2geojson.GeoJSONReader;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -148,9 +151,21 @@ class MemberServiceImplTest {
     @Nested
     class IngestMember {
         @Test
-        void when_IngestValidMember_then_SaveMember() throws IOException {
+        void given_TooOldMember_when_IngestMember_then_IgnoreMember() throws IOException {
+            Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
+            Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
+            IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
+            service.ingestMember(ingestedMemberDto);
+
+            verifyNoInteractions(repository, eventPublisher);
+        }
+
+        @Test
+        void given_ValidMember_when_IngestMember_then_SaveMember() throws IOException {
+            // TODO: replace timestamp with a timestamp that is less then seven days ago
             final String id = "https://private-api.gipod.beta-vlaanderen.be/api/v1/mobility-hindrances/10810464/#ID";
             Path path = ResourceUtils.getFile("classpath:members/mobility-hindrance.nq").toPath();
+
             Model model = RDFParser.source(path).lang(Lang.NQUADS).toModel();
             IngestedMemberDto ingestedMemberDto = new IngestedMemberDto(COLLECTION, model);
             service.ingestMember(ingestedMemberDto);

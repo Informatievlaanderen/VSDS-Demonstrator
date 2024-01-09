@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static be.informatievlaanderen.vsds.demonstrator.member.application.valueobjects.RetentionPolicyConstants.MAX_AGE_OF_MEMBERS_IN_DAYS;
+
 @Repository
 public class MemberRepositoryImpl implements MemberRepository {
     private final MemberEntityJpaRepository memberGeometryJpaRepo;
@@ -55,5 +57,10 @@ public class MemberRepositoryImpl implements MemberRepository {
     @Override
     public long getNumberOfMembersByCollection(String collection) {
         return memberGeometryJpaRepo.countAllByCollection(collection);
+    }
+
+    @Override
+    public void deleteMembersOlderThenSevenDays() {
+        memberGeometryJpaRepo.deleteAllByTimestampBefore(LocalDateTime.now().minusDays(MAX_AGE_OF_MEMBERS_IN_DAYS));
     }
 }
