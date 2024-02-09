@@ -16,7 +16,7 @@
     "leaflet.markercluster": "^1.5.3",
     "proj4": "^2.9.2",
     "proj4leaflet": "^1.0.2",
-    "vue": "^3.3.8",
+    "vue": "^3.4.16",
     "vue-chartjs": "^5.2.0",
     "vue-router": "^4.2.4",
     "webstomp-client": "^1.2.6"
