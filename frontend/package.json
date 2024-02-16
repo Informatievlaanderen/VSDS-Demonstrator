@@ -25,6 +25,6 @@
     "@types/chart.js": "^2.9.41",
     "@vitejs/plugin-vue": "^4.5.0",
     "leaflet": "^1.9.4",
-    "vite": "^5.0.2"
+    "vite": "^5.1.3"
   }
 }
