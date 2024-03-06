@@ -26,8 +26,10 @@ services:
     ports:
       - 8084:8080
     depends_on:
-      - postgresql
-      - rdf4j-server
+      postgresql:
+        condition: service_healthy
+      rdf4j-server:
+        condition: service_healthy
     networks:
       - demonstrator-network
 
