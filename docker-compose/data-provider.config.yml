@@ -4,36 +4,37 @@ orchestrator:
   pipelines:
     - name: gipod
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        name: Ldio:LdesClientConnector
         config:
           url: https://private-api.gipod.vlaanderen.be/api/v1/ldes/mobility-hindrances?generatedAtTime=2024-10-05T10:28:37.923Z
-          sourceFormat: application/ld+json
+          source-format: application/ld+json
       outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+        - name: Ldio:RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
             named-graph: http://gipod
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+        - name: Ldio:HttpOut
           config:
-            content-type: application/n-quads
+            rdf-writer:
+              content-type: application/n-quads
             endpoint: http://host.docker.internal:8084/api/gipod/members
     - name: verkeersmetingen-pipeline
       description: "Simple http in, version creation, http out pipeline allowing to pause output."
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+        name: Ldio:HttpInPoller
         config:
           url: http://miv.opendata.belfla.be/miv/verkeersdata
           interval: PT10S
         adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
+          name: Ldio:RmlAdapter
           config:
             mapping: /ldio/rml/verkeersmetingen.ttl
       transformers:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+        - name: Ldio:SparqlConstructTransformer
           config:
             query: /ldio/sparql/meting.to-oslo.rq
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.VersionObjectCreator
+        - name: Ldio:VersionObjectCreator
           config:
             member-type: https://data.vlaanderen.be/ns/verkeersmetingen#Verkeersmeting
             delimiter: "/"
@@ -41,75 +42,78 @@ orchestrator:
             generatedAt-property: http://www.w3.org/ns/prov#generatedAtTime
             versionOf-property: http://purl.org/dc/terms/isVersionOf
       outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+        - name: Ldio:RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
             named-graph: http://verkeersmeting
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+        - name: Ldio:HttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/verkeersmeting/members
-            content-type: application/n-quads
+            rdf-writer:
+              content-type: application/n-quads
     - name: stations-pipeline
       description: "HTTP polling, OSLO transformation, version creation & HTTP sending."
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpInPoller
+        name: Ldio:HttpInPoller
         config:
           url: https://api.blue-bike.be/pub/location
           interval: PT2M
         adapter:
-          name: be.vlaanderen.informatievlaanderen.ldes.ldi.RmlAdapter
+          name: Ldio:RmlAdapter
           config:
             mapping: /ldio/rml/stations.ttl
       outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+        - name: Ldio:RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
             named-graph: http://bluebikes
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+        - name: Ldio:HttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/bluebikes/members
-            content-type: application/n-quads
+            rdf-writer:
+              content-type: application/n-quads
     - name: crowdscan-observations-pipeline
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        name: Ldio:LdesClientConnector
         config:
           url: https://azure.crowdscan.be/ldes-scewc/observations
       transformers:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+        - name: Ldio:SparqlConstructTransformer
           config:
             query: ./sparql/crowdscan.add-query.rq
             infer: true
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpEnricher
+        - name: Ldio:HttpEnricher
           config:
             url-property-path: https://crowdscan.be/ns/HttpRequest.url
             body-property-path: https://crowdscan.be/ns/HttpRequest.body
             http-method-property-path: https://crowdscan.be/ns/HttpRequest.method
             header-property-path: https://crowdscan.be/ns/HttpRequest.header
             adapter:
-              name: be.vlaanderen.informatievlaanderen.ldes.ldi.RdfAdapter
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.SparqlConstructTransformer
+              name: Ldio:RdfAdapter
+        - name: Ldio:SparqlConstructTransformer
           config:
             query: ./sparql/crowdscan.remove-query.rq
             infer: false
       outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+        - name: Ldio:RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: test
             named-graph: http://crowdscan
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldio.LdioHttpOut
+        - name: Ldio:HttpOut
           config:
             endpoint: http://host.docker.internal:8084/api/crowdscan/members
-            content-type: application/n-quads
+            rdf-writer:
+              content-type: application/n-quads
     - name: crowdscan-locations-pipeline
       input:
-        name: be.vlaanderen.informatievlaanderen.ldes.ldi.client.LdioLdesClient
+        name: Ldio:LdesClientConnector
         config:
           url: https://azure.crowdscan.be/ldes-scewc/zones
       outputs:
-        - name: be.vlaanderen.informatievlaanderen.ldes.ldi.RepositoryMaterialiser
+        - name: Ldio:RepositoryMaterialiser
           config:
             sparql-host: http://rdf4j-server:8080/rdf4j-server
             repository-id: locations
