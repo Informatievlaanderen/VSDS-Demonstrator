@@ -33,7 +33,7 @@
 
         <!-- RDF4J -->
         <apache.jena.version>4.10.0</apache.jena.version>
-        <eclipse.rdf4j.version>4.3.3</eclipse.rdf4j.version>
+        <eclipse.rdf4j.version>4.3.9</eclipse.rdf4j.version>
 
         <!-- LOGGING -->
         <slf4j-api.version>2.0.7</slf4j-api.version>
