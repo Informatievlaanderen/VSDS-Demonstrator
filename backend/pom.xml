@@ -37,7 +37,7 @@
 
         <!-- LOGGING -->
         <slf4j-api.version>2.0.7</slf4j-api.version>
-        <ch.qos.logback.version>1.4.11</ch.qos.logback.version>
+        <ch.qos.logback.version>1.4.13</ch.qos.logback.version>
 
         <!-- GEO -->
         <locationtech.jts-core.version>1.19.0</locationtech.jts-core.version>
