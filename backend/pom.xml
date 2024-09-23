@@ -24,7 +24,7 @@
 
         <!-- SPRING BOOT -->
         <spring-boot.version>3.1.5</spring-boot.version>
-        <spring.ws.version>6.0.11</spring.ws.version>
+        <spring.ws.version>6.1.1</spring.ws.version>
 
         <!-- PERSISTENCE -->
         <postgresql.version>42.6.0</postgresql.version>
