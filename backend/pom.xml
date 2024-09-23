@@ -27,7 +27,7 @@
         <spring.ws.version>6.0.11</spring.ws.version>
 
         <!-- PERSISTENCE -->
-        <postgresql.version>42.6.0</postgresql.version>
+        <postgresql.version>42.7.1</postgresql.version>
         <hibernate-spatial.version>6.1.7.Final</hibernate-spatial.version>
         <hypersistence-utils-hibernate.version>3.5.1</hypersistence-utils-hibernate.version>
 
